@@ -19,6 +19,11 @@ export default async function Ogy2026ConstituenciesPage() {
     <main className="list-page">
       <h1>OGY 2026 vármegyei lista</h1>
       <p className="list-subtitle">Frissítés 15 percenként. Válassz vármegyét.</p>
+      <div className="page-actions">
+        <Link href="/" className="small-link-btn">
+          Főoldal
+        </Link>
+      </div>
 
       <section className="button-list" aria-label="Vármegyék listája">
         {counties.map((county) => {

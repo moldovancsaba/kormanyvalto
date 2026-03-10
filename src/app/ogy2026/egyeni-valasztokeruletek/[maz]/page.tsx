@@ -37,6 +37,9 @@ export default async function CountyPage({ params }: PageProps) {
       <p className="list-subtitle">Válassz egyéni választókerületet.</p>
 
       <div className="page-actions">
+        <Link href="/" className="small-link-btn">
+          Főoldal
+        </Link>
         <Link href="/ogy2026/egyeni-valasztokeruletek" className="small-link-btn">
           Vissza a vármegyékhez
         </Link>
