@@ -285,3 +285,46 @@ button:disabled {
   background: #fff;
   color: var(--neutral-blue);
 }
+
+.consent-banner {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1000;
+  background: #0f172a;
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.consent-text {
+  margin: 0 0 0.6rem;
+  font-size: 0.92rem;
+}
+
+.consent-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.consent-btn {
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.consent-btn-deny {
+  background: #fff;
+  border: 1px solid #fff;
+  color: #0f172a;
+}
+
+.consent-btn-accept {
+  background: var(--neutral-blue);
+  border: 1px solid var(--neutral-blue);
+  color: #fff;
+}
