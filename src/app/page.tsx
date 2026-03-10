@@ -32,6 +32,19 @@ function writeStore(data: ClickStore) {
 
 export default function HomePage() {
   const [data, setData] = useState<ClickStore>({ yes: [], no: [] });
+  const yesCount = data.yes.length;
+  const noCount = data.no.length;
+  const totalCount = yesCount + noCount;
+  const yesPercent = totalCount === 0 ? 50 : (yesCount / totalCount) * 100;
+  const noPercent = 100 - yesPercent;
+  const winnerText =
+    totalCount === 0
+      ? "Nincs még szavazat"
+      : yesCount === noCount
+        ? "Döntetlen"
+        : yesCount > noCount
+          ? "Az igen vezet"
+          : "A nem vezet";
 
   useEffect(() => {
     setData(readStore());
@@ -69,6 +82,17 @@ export default function HomePage() {
 
   return (
     <main className="app">
+      <section className="barometer" aria-label="Vezető opció">
+        <p className="barometer-label">{winnerText}</p>
+        <div className="bar-track" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
+          <div className="bar-yes" style={{ width: `${yesPercent}%` }} />
+          <div className="bar-no" style={{ width: `${noPercent}%` }} />
+        </div>
+        <p className="barometer-stats">
+          igen: {yesCount} | nem: {noCount}
+        </p>
+      </section>
+
       <h1>Váltani akarsz?</h1>
 
       <div className="buttons" aria-label="Válasz gombok">

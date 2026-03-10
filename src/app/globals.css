@@ -28,6 +28,40 @@ body {
   border-radius: 16px;
 }
 
+.barometer {
+  margin-bottom: 1rem;
+}
+
+.barometer-label {
+  margin: 0 0 0.45rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.bar-track {
+  height: 20px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  display: flex;
+}
+
+.bar-yes {
+  background: #15803d;
+  transition: width 220ms ease;
+}
+
+.bar-no {
+  background: #b91c1c;
+  transition: width 220ms ease;
+}
+
+.barometer-stats {
+  margin: 0.45rem 0 0;
+  text-align: center;
+  color: var(--muted);
+}
+
 h1 {
   text-align: center;
   margin-top: 0;
