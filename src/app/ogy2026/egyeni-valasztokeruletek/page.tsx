@@ -24,7 +24,7 @@ export default async function Ogy2026ConstituenciesPage() {
           const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
           const stat = counts[scope] ?? { yes: 0, no: 0, yesPercent: 50 };
           const yesPercent = Number(stat.yesPercent.toFixed(1));
-          const background = `linear-gradient(90deg, #15803d 0%, #15803d ${yesPercent}%, #b91c1c ${yesPercent}%, #b91c1c 100%)`;
+          const background = `linear-gradient(90deg, #ed4653 0%, #ed4653 ${yesPercent}%, #ff6f0f ${yesPercent}%, #ff6f0f 100%)`;
 
           return (
             <Link
