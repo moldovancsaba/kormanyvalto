@@ -45,11 +45,12 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {
-        // no-op
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      regs.forEach((reg) => {
+        reg.unregister();
       });
-    }
+    });
   }, []);
 
   useEffect(() => {

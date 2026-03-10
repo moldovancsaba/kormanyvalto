@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getMongoClient, getMongoDbName } from "../../../lib/mongodb";
+import { NO_CACHE_HEADERS } from "../../../lib/http";
 
 export async function GET() {
   try {
@@ -12,7 +13,7 @@ export async function GET() {
       status: "healthy",
       db: dbName,
       timestamp: new Date().toISOString(),
-    });
+    }, { headers: NO_CACHE_HEADERS });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
 
@@ -23,7 +24,7 @@ export async function GET() {
         error: message,
         timestamp: new Date().toISOString(),
       },
-      { status: 503 }
+      { status: 503, headers: NO_CACHE_HEADERS }
     );
   }
 }

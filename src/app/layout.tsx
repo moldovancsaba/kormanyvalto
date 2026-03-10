@@ -5,9 +5,6 @@ export const metadata: Metadata = {
   title: "Váltani akarsz?",
   description: "Egyszerű kérdés és időbélyeg napló",
   manifest: "/manifest.webmanifest",
-  icons: {
-    icon: "/icons/icon.svg",
-  },
 };
 
 export default function RootLayout({
