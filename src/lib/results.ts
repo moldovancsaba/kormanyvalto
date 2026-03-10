@@ -8,6 +8,7 @@ export type ClickStore = {
 };
 
 type VoteDoc = {
+  scope?: string;
   type: VoteType;
   timestamp: string;
 };
@@ -18,9 +19,14 @@ async function getVotesCollection() {
   return db.collection<VoteDoc>("votes");
 }
 
-export async function getResults(): Promise<ClickStore> {
+export async function getResults(scope = "main"): Promise<ClickStore> {
+  const filter =
+    scope === "main"
+      ? { $or: [{ scope: "main" }, { scope: { $exists: false } }] }
+      : { scope };
+
   const votes = await (await getVotesCollection())
-    .find({}, { projection: { _id: 0, type: 1, timestamp: 1 } })
+    .find(filter, { projection: { _id: 0, type: 1, timestamp: 1 } })
     .sort({ timestamp: -1 })
     .toArray();
 
@@ -38,11 +44,12 @@ export async function getResults(): Promise<ClickStore> {
   return { yes, no };
 }
 
-export async function addVote(type: VoteType): Promise<ClickStore> {
+export async function addVote(type: VoteType, scope = "main"): Promise<ClickStore> {
   await (await getVotesCollection()).insertOne({
+    scope,
     type,
     timestamp: new Date().toISOString(),
   });
 
-  return getResults();
+  return getResults(scope);
 }

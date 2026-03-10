@@ -1,0 +1,185 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
+type ClickStore = {
+  yes: string[];
+  no: string[];
+};
+
+type VoteWidgetProps = {
+  scope: string;
+};
+
+export default function VoteWidget({ scope }: VoteWidgetProps) {
+  const [data, setData] = useState<ClickStore>({ yes: [], no: [] });
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
+  const yesCount = data.yes.length;
+  const noCount = data.no.length;
+  const totalCount = yesCount + noCount;
+  const yesPercent = totalCount === 0 ? 50 : (yesCount / totalCount) * 100;
+  const noPercent = 100 - yesPercent;
+  const winnerText =
+    totalCount === 0
+      ? "Nincs még szavazat"
+      : yesCount === noCount
+        ? "Döntetlen"
+        : yesCount > noCount
+          ? "Az igen vezet"
+          : "A nem vezet";
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/results?scope=${encodeURIComponent(scope)}`, { cache: "no-store" });
+        if (!res.ok) throw new Error("Nem sikerült betölteni az adatokat.");
+        const next = (await res.json()) as ClickStore;
+        setData(next);
+      } catch {
+        setError("Nem sikerült betölteni az adatokat.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, [scope]);
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      regs.forEach((reg) => {
+        reg.unregister();
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (cooldownLeft <= 0) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setCooldownLeft((prev) => {
+        const next = Math.max(0, Number((prev - 0.1).toFixed(1)));
+        return next;
+      });
+    }, 100);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [cooldownLeft]);
+
+  const formatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat("hu-HU", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+    []
+  );
+
+  const addClick = async (type: "yes" | "no") => {
+    if (submitting || loading || cooldownLeft > 0) return;
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, scope }),
+      });
+
+      if (!res.ok) throw new Error("Nem sikerült menteni a szavazatot.");
+      const next = (await res.json()) as ClickStore;
+      setData(next);
+      setCooldownLeft(5);
+    } catch {
+      setError("Nem sikerült menteni a szavazatot.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <main className="app">
+      <div className="top-logo" aria-hidden="true">
+        🗳️
+      </div>
+
+      <section className="barometer" aria-label="Vezető opció">
+        <p className="barometer-label">{winnerText}</p>
+        <div className="bar-track" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
+          <div className="bar-yes" style={{ width: `${yesPercent}%` }} />
+          <div className="bar-no" style={{ width: `${noPercent}%` }} />
+        </div>
+        <p className="barometer-stats">
+          igen: {yesCount} | nem: {noCount}
+        </p>
+      </section>
+
+      <h1>Váltani akarsz?</h1>
+
+      {error ? <p className="error">{error}</p> : null}
+
+      <div className="buttons" aria-label="Válasz gombok">
+        <button
+          type="button"
+          onClick={() => addClick("yes")}
+          disabled={submitting || loading || cooldownLeft > 0}
+        >
+          {cooldownLeft > 0 ? `igen (${cooldownLeft.toFixed(1)}s)` : "igen"}
+        </button>
+        <button
+          type="button"
+          onClick={() => addClick("no")}
+          disabled={submitting || loading || cooldownLeft > 0}
+        >
+          {cooldownLeft > 0 ? `nem (${cooldownLeft.toFixed(1)}s)` : "nem"}
+        </button>
+      </div>
+
+      <section className="columns" aria-label="Kattintási időpontok">
+        <article className="column">
+          <h2>igen</h2>
+          <ul>
+            {loading ? (
+              <li className="empty">Betöltés...</li>
+            ) : data.yes.length === 0 ? (
+              <li className="empty">Nincs kattintás.</li>
+            ) : (
+              data.yes
+                .slice(0, 10)
+                .map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
+            )}
+          </ul>
+        </article>
+
+        <article className="column">
+          <h2>nem</h2>
+          <ul>
+            {loading ? (
+              <li className="empty">Betöltés...</li>
+            ) : data.no.length === 0 ? (
+              <li className="empty">Nincs kattintás.</li>
+            ) : (
+              data.no
+                .slice(0, 10)
+                .map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
+            )}
+          </ul>
+        </article>
+      </section>
+    </main>
+  );
+}
