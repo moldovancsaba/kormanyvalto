@@ -292,16 +292,18 @@ button:disabled {
   right: 1rem;
   bottom: 1rem;
   z-index: 1000;
-  background: #0f172a;
-  color: #fff;
+  background: #e8f0ff;
+  color: #102a56;
   border-radius: 12px;
   padding: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #b9cbef;
+  box-shadow: 0 8px 20px rgba(31, 78, 163, 0.15);
 }
 
 .consent-text {
   margin: 0 0 0.6rem;
   font-size: 0.92rem;
+  font-weight: 600;
 }
 
 .consent-actions {
@@ -319,8 +321,8 @@ button:disabled {
 
 .consent-btn-deny {
   background: #fff;
-  border: 1px solid #fff;
-  color: #0f172a;
+  border: 1px solid #8aa8df;
+  color: #1f4ea3;
 }
 
 .consent-btn-accept {
