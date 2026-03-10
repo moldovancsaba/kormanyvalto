@@ -22,6 +22,13 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
   const totalCount = yesCount + noCount;
   const yesPercent = totalCount === 0 ? 50 : (yesCount / totalCount) * 100;
   const noPercent = 100 - yesPercent;
+  const mergedVotes = useMemo(
+    () =>
+      [...data.yes.map((ts) => ({ type: "yes" as const, ts })), ...data.no.map((ts) => ({ type: "no" as const, ts }))]
+        .sort((a, b) => b.ts.localeCompare(a.ts))
+        .slice(0, 20),
+    [data]
+  );
   const winnerText =
     totalCount === 0
       ? "Nincs még szavazat"
@@ -134,6 +141,7 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
 
       <div className="buttons" aria-label="Válasz gombok">
         <button
+          className="vote-btn vote-btn-yes"
           type="button"
           onClick={() => addClick("yes")}
           disabled={submitting || loading || cooldownLeft > 0}
@@ -141,6 +149,7 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
           {cooldownLeft > 0 ? `igen (${cooldownLeft.toFixed(1)}s)` : "igen"}
         </button>
         <button
+          className="vote-btn vote-btn-no"
           type="button"
           onClick={() => addClick("no")}
           disabled={submitting || loading || cooldownLeft > 0}
@@ -149,36 +158,26 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
         </button>
       </div>
 
-      <section className="columns" aria-label="Kattintási időpontok">
-        <article className="column">
-          <h2>igen</h2>
-          <ul>
-            {loading ? (
-              <li className="empty">Betöltés...</li>
-            ) : data.yes.length === 0 ? (
-              <li className="empty">Nincs kattintás.</li>
-            ) : (
-              data.yes
-                .slice(0, 10)
-                .map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
-            )}
-          </ul>
-        </article>
-
-        <article className="column">
-          <h2>nem</h2>
-          <ul>
-            {loading ? (
-              <li className="empty">Betöltés...</li>
-            ) : data.no.length === 0 ? (
-              <li className="empty">Nincs kattintás.</li>
-            ) : (
-              data.no
-                .slice(0, 10)
-                .map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
-            )}
-          </ul>
-        </article>
+      <section className="timeline" aria-label="Kattintási időpontok">
+        <h2>Utolsó szavazatok</h2>
+        <ul>
+          {loading ? (
+            <li className="empty">Betöltés...</li>
+          ) : mergedVotes.length === 0 ? (
+            <li className="empty">Nincs kattintás.</li>
+          ) : (
+            mergedVotes.map((item, idx) => (
+              <li key={`${item.ts}-${idx}`} className="timeline-item">
+                <span
+                  className={`vote-pill ${item.type === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
+                >
+                  {item.type === "yes" ? "igen" : "nem"}
+                </span>
+                <span>{formatter.format(new Date(item.ts))}</span>
+              </li>
+            ))
+          )}
+        </ul>
       </section>
     </main>
   );

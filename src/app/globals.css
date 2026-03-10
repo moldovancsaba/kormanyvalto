@@ -5,6 +5,8 @@
   --muted: #64748b;
   --line: #cbd5e1;
   --accent: #0f172a;
+  --yes: #ff6f0f;
+  --no: #ed4653;
 }
 
 * {
@@ -54,12 +56,12 @@ body {
 }
 
 .bar-yes {
-  background: #15803d;
+  background: var(--yes);
   transition: width 220ms ease;
 }
 
 .bar-no {
-  background: #b91c1c;
+  background: var(--no);
   transition: width 220ms ease;
 }
 
@@ -92,28 +94,35 @@ button {
   cursor: pointer;
 }
 
+.vote-btn {
+  color: #fff;
+}
+
+.vote-btn-yes {
+  background: var(--yes);
+  border-color: var(--yes);
+}
+
+.vote-btn-no {
+  background: var(--no);
+  border-color: var(--no);
+}
+
 button:active {
   transform: translateY(1px);
 }
 
-.columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.column {
+.timeline {
   border: 1px solid var(--line);
   border-radius: 12px;
-  min-height: 280px;
+  min-height: 180px;
   padding: 0.75rem;
 }
 
-.column h2 {
+.timeline h2 {
   margin: 0 0 0.6rem;
   font-size: 1rem;
   color: var(--muted);
-  text-transform: lowercase;
   letter-spacing: 0.02em;
 }
 
@@ -132,6 +141,32 @@ li {
   border-radius: 8px;
   padding: 0.4rem 0.45rem;
   background: #f8fafc;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vote-pill {
+  display: inline-block;
+  min-width: 3.2rem;
+  text-align: center;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: lowercase;
+}
+
+.vote-pill-yes {
+  background: var(--yes);
+}
+
+.vote-pill-no {
+  background: var(--no);
 }
 
 .empty {
