@@ -1,4 +1,4 @@
-import { getMongoClient } from "./mongodb";
+import { getMongoClient, getMongoDbName } from "./mongodb";
 
 export type VoteType = "yes" | "no";
 
@@ -14,7 +14,7 @@ type VoteDoc = {
 
 async function getVotesCollection() {
   const client = await getMongoClient();
-  const db = client.db();
+  const db = client.db(getMongoDbName());
   return db.collection<VoteDoc>("votes");
 }
 
