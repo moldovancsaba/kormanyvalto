@@ -1,4 +1,4 @@
-import { kv } from "@vercel/kv";
+import { getMongoClient } from "./mongodb";
 
 export type VoteType = "yes" | "no";
 
@@ -7,23 +7,42 @@ export type ClickStore = {
   no: string[];
 };
 
-const KEY_YES = "votes:yes";
-const KEY_NO = "votes:no";
+type VoteDoc = {
+  type: VoteType;
+  timestamp: string;
+};
+
+async function getVotesCollection() {
+  const client = await getMongoClient();
+  const db = client.db();
+  return db.collection<VoteDoc>("votes");
+}
 
 export async function getResults(): Promise<ClickStore> {
-  const [yes, no] = await Promise.all([
-    kv.lrange<string>(KEY_YES, 0, -1),
-    kv.lrange<string>(KEY_NO, 0, -1),
-  ]);
+  const votes = await (await getVotesCollection())
+    .find({}, { projection: { _id: 0, type: 1, timestamp: 1 } })
+    .sort({ timestamp: -1 })
+    .toArray();
 
-  return {
-    yes: yes ?? [],
-    no: no ?? [],
-  };
+  const yes: string[] = [];
+  const no: string[] = [];
+
+  for (const vote of votes) {
+    if (vote.type === "yes") {
+      yes.push(vote.timestamp);
+    } else {
+      no.push(vote.timestamp);
+    }
+  }
+
+  return { yes, no };
 }
 
 export async function addVote(type: VoteType): Promise<ClickStore> {
-  const key = type === "yes" ? KEY_YES : KEY_NO;
-  await kv.lpush(key, new Date().toISOString());
+  await (await getVotesCollection()).insertOne({
+    type,
+    timestamp: new Date().toISOString(),
+  });
+
   return getResults();
 }
