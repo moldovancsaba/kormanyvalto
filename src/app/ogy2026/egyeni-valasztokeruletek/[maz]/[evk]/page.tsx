@@ -27,8 +27,8 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
         <h1>{item.evkNev}</h1>
         <p className="list-subtitle">{item.szekhely}</p>
         <div className="page-actions">
-          <Link href="/ogy2026/egyeni-valasztokeruletek" className="small-link-btn">
-            Vissza a listához
+          <Link href={`/ogy2026/egyeni-valasztokeruletek/${item.maz}`} className="small-link-btn">
+            Vissza a vármegyéhez
           </Link>
           <a href={item.sourceUrl} className="small-link-btn" target="_blank" rel="noreferrer">
             Forrás (NVI)

@@ -861,3 +861,17 @@ export const constituencies: Constituency[] = [
 export function findConstituency(maz: string, evk: string) {
   return constituencies.find((c) => c.maz === maz && c.evk === evk);
 }
+
+export function getConstituenciesByCounty(maz: string) {
+  return constituencies.filter((c) => c.maz === maz);
+}
+
+export function getCounties() {
+  const map = new Map<string, { maz: string; mazNev: string }>();
+  for (const c of constituencies) {
+    if (!map.has(c.maz)) {
+      map.set(c.maz, { maz: c.maz, mazNev: c.mazNev });
+    }
+  }
+  return [...map.values()].sort((a, b) => a.maz.localeCompare(b.maz));
+}
