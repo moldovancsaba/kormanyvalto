@@ -137,3 +137,14 @@ li {
     grid-template-columns: 1fr;
   }
 }
+
+.error {
+  color: #b91c1c;
+  text-align: center;
+  margin: 0 0 0.75rem;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

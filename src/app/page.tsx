@@ -7,31 +7,11 @@ type ClickStore = {
   no: string[];
 };
 
-const STORAGE_KEY = "valtani-clicks-v1";
-
-function readStore(): ClickStore {
-  if (typeof window === "undefined") {
-    return { yes: [], no: [] };
-  }
-
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? (JSON.parse(raw) as ClickStore) : null;
-    if (!parsed || !Array.isArray(parsed.yes) || !Array.isArray(parsed.no)) {
-      return { yes: [], no: [] };
-    }
-    return parsed;
-  } catch {
-    return { yes: [], no: [] };
-  }
-}
-
-function writeStore(data: ClickStore) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
 export default function HomePage() {
   const [data, setData] = useState<ClickStore>({ yes: [], no: [] });
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const yesCount = data.yes.length;
   const noCount = data.no.length;
   const totalCount = yesCount + noCount;
@@ -47,7 +27,20 @@ export default function HomePage() {
           : "A nem vezet";
 
   useEffect(() => {
-    setData(readStore());
+    const load = async () => {
+      try {
+        const res = await fetch("/api/results", { cache: "no-store" });
+        if (!res.ok) throw new Error("Nem sikerült betölteni az adatokat.");
+        const next = (await res.json()) as ClickStore;
+        setData(next);
+      } catch {
+        setError("Nem sikerült betölteni az adatokat.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
   useEffect(() => {
@@ -71,13 +64,27 @@ export default function HomePage() {
     []
   );
 
-  const addClick = (type: "yes" | "no") => {
-    const next = {
-      ...data,
-      [type]: [new Date().toISOString(), ...data[type]],
-    };
-    setData(next);
-    writeStore(next);
+  const addClick = async (type: "yes" | "no") => {
+    if (submitting) return;
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type }),
+      });
+
+      if (!res.ok) throw new Error("Nem sikerült menteni a szavazatot.");
+      const next = (await res.json()) as ClickStore;
+      setData(next);
+    } catch {
+      setError("Nem sikerült menteni a szavazatot.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -95,11 +102,13 @@ export default function HomePage() {
 
       <h1>Váltani akarsz?</h1>
 
+      {error ? <p className="error">{error}</p> : null}
+
       <div className="buttons" aria-label="Válasz gombok">
-        <button type="button" onClick={() => addClick("yes")}>
+        <button type="button" onClick={() => addClick("yes")} disabled={submitting || loading}>
           igen
         </button>
-        <button type="button" onClick={() => addClick("no")}>
+        <button type="button" onClick={() => addClick("no")} disabled={submitting || loading}>
           nem
         </button>
       </div>
@@ -108,7 +117,9 @@ export default function HomePage() {
         <article className="column">
           <h2>igen</h2>
           <ul>
-            {data.yes.length === 0 ? (
+            {loading ? (
+              <li className="empty">Betöltés...</li>
+            ) : data.yes.length === 0 ? (
               <li className="empty">Nincs kattintás.</li>
             ) : (
               data.yes.map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
@@ -119,7 +130,9 @@ export default function HomePage() {
         <article className="column">
           <h2>nem</h2>
           <ul>
-            {data.no.length === 0 ? (
+            {loading ? (
+              <li className="empty">Betöltés...</li>
+            ) : data.no.length === 0 ? (
               <li className="empty">Nincs kattintás.</li>
             ) : (
               data.no.map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
