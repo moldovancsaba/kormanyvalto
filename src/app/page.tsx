@@ -12,6 +12,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
   const yesCount = data.yes.length;
   const noCount = data.no.length;
   const totalCount = yesCount + noCount;
@@ -51,6 +52,23 @@ export default function HomePage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (cooldownLeft <= 0) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setCooldownLeft((prev) => {
+        const next = Math.max(0, Number((prev - 0.1).toFixed(1)));
+        return next;
+      });
+    }, 100);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [cooldownLeft]);
+
   const formatter = useMemo(
     () =>
       new Intl.DateTimeFormat("hu-HU", {
@@ -65,7 +83,7 @@ export default function HomePage() {
   );
 
   const addClick = async (type: "yes" | "no") => {
-    if (submitting) return;
+    if (submitting || loading || cooldownLeft > 0) return;
 
     setSubmitting(true);
     setError(null);
@@ -80,6 +98,7 @@ export default function HomePage() {
       if (!res.ok) throw new Error("Nem sikerült menteni a szavazatot.");
       const next = (await res.json()) as ClickStore;
       setData(next);
+      setCooldownLeft(5);
     } catch {
       setError("Nem sikerült menteni a szavazatot.");
     } finally {
@@ -105,11 +124,19 @@ export default function HomePage() {
       {error ? <p className="error">{error}</p> : null}
 
       <div className="buttons" aria-label="Válasz gombok">
-        <button type="button" onClick={() => addClick("yes")} disabled={submitting || loading}>
-          igen
+        <button
+          type="button"
+          onClick={() => addClick("yes")}
+          disabled={submitting || loading || cooldownLeft > 0}
+        >
+          {cooldownLeft > 0 ? `igen (${cooldownLeft.toFixed(1)}s)` : "igen"}
         </button>
-        <button type="button" onClick={() => addClick("no")} disabled={submitting || loading}>
-          nem
+        <button
+          type="button"
+          onClick={() => addClick("no")}
+          disabled={submitting || loading || cooldownLeft > 0}
+        >
+          {cooldownLeft > 0 ? `nem (${cooldownLeft.toFixed(1)}s)` : "nem"}
         </button>
       </div>
 
