@@ -108,6 +108,10 @@ export default function HomePage() {
 
   return (
     <main className="app">
+      <div className="top-logo" aria-hidden="true">
+        🗳️
+      </div>
+
       <section className="barometer" aria-label="Vezető opció">
         <p className="barometer-label">{winnerText}</p>
         <div className="bar-track" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
@@ -149,7 +153,9 @@ export default function HomePage() {
             ) : data.yes.length === 0 ? (
               <li className="empty">Nincs kattintás.</li>
             ) : (
-              data.yes.map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
+              data.yes
+                .slice(0, 10)
+                .map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
             )}
           </ul>
         </article>
@@ -162,7 +168,9 @@ export default function HomePage() {
             ) : data.no.length === 0 ? (
               <li className="empty">Nincs kattintás.</li>
             ) : (
-              data.no.map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
+              data.no
+                .slice(0, 10)
+                .map((ts, idx) => <li key={`${ts}-${idx}`}>{formatter.format(new Date(ts))}</li>)
             )}
           </ul>
         </article>
