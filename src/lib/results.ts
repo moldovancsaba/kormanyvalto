@@ -7,6 +7,13 @@ export type ClickStore = {
   no: string[];
 };
 
+export type ScopeVoteCount = {
+  yes: number;
+  no: number;
+  total: number;
+  yesPercent: number;
+};
+
 type VoteDoc = {
   scope?: string;
   type: VoteType;
@@ -52,4 +59,35 @@ export async function addVote(type: VoteType, scope = "main"): Promise<ClickStor
   });
 
   return getResults(scope);
+}
+
+export async function getScopeVoteCounts(scopes: string[]): Promise<Record<string, ScopeVoteCount>> {
+  if (scopes.length === 0) return {};
+
+  const rows = await (await getVotesCollection())
+    .aggregate<{ _id: { scope: string; type: VoteType }; count: number }>([
+      { $match: { scope: { $in: scopes } } },
+      { $group: { _id: { scope: "$scope", type: "$type" }, count: { $sum: 1 } } },
+    ])
+    .toArray();
+
+  const out: Record<string, ScopeVoteCount> = {};
+  for (const scope of scopes) {
+    out[scope] = { yes: 0, no: 0, total: 0, yesPercent: 50 };
+  }
+
+  for (const row of rows) {
+    const scope = row._id.scope;
+    if (!out[scope]) continue;
+    if (row._id.type === "yes") out[scope].yes = row.count;
+    if (row._id.type === "no") out[scope].no = row.count;
+  }
+
+  for (const scope of scopes) {
+    const item = out[scope];
+    item.total = item.yes + item.no;
+    item.yesPercent = item.total === 0 ? 50 : (item.yes / item.total) * 100;
+  }
+
+  return out;
 }
