@@ -10,6 +10,7 @@ function normalizeScope(raw: string | null) {
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const scope = normalizeScope(url.searchParams.get("scope"));
-  const data = await getResults(scope);
+  const aggregate = url.searchParams.get("aggregate") === "1";
+  const data = await getResults(scope, aggregate);
   return NextResponse.json(data, { headers: NO_CACHE_HEADERS });
 }

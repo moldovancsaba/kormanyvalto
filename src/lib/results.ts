@@ -1,10 +1,22 @@
 import { getMongoClient, getMongoDbName } from "./mongodb";
+import { findConstituency } from "./constituencies";
 
 export type VoteType = "yes" | "no";
 
 export type ClickStore = {
   yes: string[];
   no: string[];
+};
+
+export type VoteHistoryItem = {
+  type: VoteType;
+  timestamp: string;
+  scope: string;
+  sourceLabel: string;
+};
+
+export type ResultsResponse = ClickStore & {
+  history: VoteHistoryItem[];
 };
 
 export type ScopeVoteCount = {
@@ -26,14 +38,19 @@ async function getVotesCollection() {
   return db.collection<VoteDoc>("votes");
 }
 
-export async function getResults(scope = "main"): Promise<ClickStore> {
+export async function getResults(
+  scope = "main",
+  includeAllScopesForMain = false
+): Promise<ResultsResponse> {
   const filter =
-    scope === "main"
+    scope === "main" && includeAllScopesForMain
+      ? {}
+      : scope === "main"
       ? { $or: [{ scope: "main" }, { scope: { $exists: false } }] }
       : { scope };
 
   const votes = await (await getVotesCollection())
-    .find(filter, { projection: { _id: 0, type: 1, timestamp: 1 } })
+    .find(filter, { projection: { _id: 0, type: 1, timestamp: 1, scope: 1 } })
     .sort({ timestamp: -1 })
     .toArray();
 
@@ -48,17 +65,42 @@ export async function getResults(scope = "main"): Promise<ClickStore> {
     }
   }
 
-  return { yes, no };
+  const history = votes.slice(0, 30).map((vote) => {
+    const normalizedScope = vote.scope ?? "main";
+    return {
+      type: vote.type,
+      timestamp: vote.timestamp,
+      scope: normalizedScope,
+      sourceLabel: getScopeLabel(normalizedScope),
+    };
+  });
+
+  return { yes, no, history };
 }
 
-export async function addVote(type: VoteType, scope = "main"): Promise<ClickStore> {
+function getScopeLabel(scope: string) {
+  if (scope === "main") {
+    return "Országos";
+  }
+
+  const match = scope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})\/(\d{2})$/);
+  if (!match) {
+    return "Országos";
+  }
+
+  const [, maz, evk] = match;
+  const constituency = findConstituency(maz, evk);
+  return constituency?.mazNev ?? "Országos";
+}
+
+export async function addVote(type: VoteType, scope = "main"): Promise<ResultsResponse> {
   await (await getVotesCollection()).insertOne({
     scope,
     type,
     timestamp: new Date().toISOString(),
   });
 
-  return getResults(scope);
+  return getResults(scope, false);
 }
 
 export async function getScopeVoteCounts(scopes: string[]): Promise<Record<string, ScopeVoteCount>> {

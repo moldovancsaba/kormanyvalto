@@ -9,7 +9,7 @@ export default function HomePage() {
           OGY 2026 körzetek listája
         </Link>
       </div>
-      <VoteWidget scope="main" />
+      <VoteWidget scope="main" aggregateMain />
     </>
   );
 }

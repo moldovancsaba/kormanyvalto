@@ -5,13 +5,19 @@ import { useEffect, useMemo, useState } from "react";
 type ClickStore = {
   yes: string[];
   no: string[];
+  history?: {
+    type: "yes" | "no";
+    timestamp: string;
+    sourceLabel: string;
+  }[];
 };
 
 type VoteWidgetProps = {
   scope: string;
+  aggregateMain?: boolean;
 };
 
-export default function VoteWidget({ scope }: VoteWidgetProps) {
+export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetProps) {
   const [data, setData] = useState<ClickStore>({ yes: [], no: [] });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -22,13 +28,20 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
   const totalCount = yesCount + noCount;
   const yesPercent = totalCount === 0 ? 50 : (yesCount / totalCount) * 100;
   const noPercent = 100 - yesPercent;
-  const mergedVotes = useMemo(
-    () =>
-      [...data.yes.map((ts) => ({ type: "yes" as const, ts })), ...data.no.map((ts) => ({ type: "no" as const, ts }))]
-        .sort((a, b) => b.ts.localeCompare(a.ts))
-        .slice(0, 20),
-    [data]
-  );
+  const mergedVotes = useMemo(() => {
+    if (data.history && data.history.length > 0) {
+      return data.history.slice(0, 20).map((h) => ({
+        type: h.type,
+        ts: h.timestamp,
+        sourceLabel: h.sourceLabel,
+      }));
+    }
+
+    return [...data.yes.map((ts) => ({ type: "yes" as const, ts })), ...data.no.map((ts) => ({ type: "no" as const, ts }))]
+      .sort((a, b) => b.ts.localeCompare(a.ts))
+      .slice(0, 20)
+      .map((v) => ({ ...v, sourceLabel: "" }));
+  }, [data]);
   const winnerText =
     totalCount === 0
       ? "Nincs még szavazat"
@@ -41,7 +54,10 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(`/api/results?scope=${encodeURIComponent(scope)}`, { cache: "no-store" });
+        const res = await fetch(
+          `/api/results?scope=${encodeURIComponent(scope)}${aggregateMain ? "&aggregate=1" : ""}`,
+          { cache: "no-store" }
+        );
         if (!res.ok) throw new Error("Nem sikerült betölteni az adatokat.");
         const next = (await res.json()) as ClickStore;
         setData(next);
@@ -53,7 +69,7 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
     };
 
     load();
-  }, [scope]);
+  }, [scope, aggregateMain]);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -108,8 +124,17 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
       });
 
       if (!res.ok) throw new Error("Nem sikerült menteni a szavazatot.");
-      const next = (await res.json()) as ClickStore;
-      setData(next);
+      if (aggregateMain) {
+        const refresh = await fetch(`/api/results?scope=${encodeURIComponent(scope)}&aggregate=1`, {
+          cache: "no-store",
+        });
+        if (!refresh.ok) throw new Error("Nem sikerült frissíteni az adatokat.");
+        const next = (await refresh.json()) as ClickStore;
+        setData(next);
+      } else {
+        const next = (await res.json()) as ClickStore;
+        setData(next);
+      }
       setCooldownLeft(5);
     } catch {
       setError("Nem sikerült menteni a szavazatot.");
@@ -173,7 +198,10 @@ export default function VoteWidget({ scope }: VoteWidgetProps) {
                 >
                   {item.type === "yes" ? "igen" : "nem"}
                 </span>
-                <span>{formatter.format(new Date(item.ts))}</span>
+                <span>
+                  {formatter.format(new Date(item.ts))}
+                  {item.sourceLabel ? ` - ${item.sourceLabel}` : ""}
+                </span>
               </li>
             ))
           )}
