@@ -160,7 +160,11 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
         </p>
       </section>
 
-      <h1>Váltani akarsz?</h1>
+      <h1>
+        Váltani akarsz? Vagy nem?
+        <br />
+        Egyszerű kérdés. Egyszerű válasz?
+      </h1>
 
       {error ? <p className="error">{error}</p> : null}
 
