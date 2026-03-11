@@ -20,7 +20,7 @@ export default async function Ogy2026ConstituenciesPage() {
     <main className="list-page">
       <div className="top-logo">
         <Image
-          src="/images/hero.png"
+          src="/images/hero_vote.png"
           alt="Szavazás 2026 hero"
           width={1536}
           height={1024}
