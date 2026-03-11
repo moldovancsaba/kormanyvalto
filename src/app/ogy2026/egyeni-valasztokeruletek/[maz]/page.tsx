@@ -61,7 +61,7 @@ export default async function CountyPage({ params }: PageProps) {
           const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
           const stat = counts[scope] ?? { yes: 0, no: 0, yesPercent: 50 };
           const yesPercent = Number(stat.yesPercent.toFixed(1));
-          const background = `linear-gradient(90deg, #ed4653 0%, #ed4653 ${yesPercent}%, #ff6f0f ${yesPercent}%, #ff6f0f 100%)`;
+          const background = `linear-gradient(90deg, var(--yes) 0%, var(--yes) ${yesPercent}%, var(--no) ${yesPercent}%, var(--no) 100%)`;
 
           return (
             <Link

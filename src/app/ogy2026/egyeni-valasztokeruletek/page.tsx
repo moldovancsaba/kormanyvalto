@@ -49,7 +49,7 @@ export default async function Ogy2026ConstituenciesPage() {
           }, 0);
           const total = totalYes + totalNo;
           const yesPercent = total === 0 ? 50 : Number(((totalYes / total) * 100).toFixed(1));
-          const background = `linear-gradient(90deg, #ed4653 0%, #ed4653 ${yesPercent}%, #ff6f0f ${yesPercent}%, #ff6f0f 100%)`;
+          const background = `linear-gradient(90deg, var(--yes) 0%, var(--yes) ${yesPercent}%, var(--no) ${yesPercent}%, var(--no) 100%)`;
 
           return (
             <Link

@@ -1,8 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getMongoClient, getMongoDbName } from "../../../lib/mongodb";
 import { NO_CACHE_HEADERS } from "../../../lib/http";
+import { checkRateLimit } from "../../../lib/rateLimit";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const rate = checkRateLimit(req, "api-health", 60, 60_000);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429, headers: { ...NO_CACHE_HEADERS, "Retry-After": String(rate.retryAfterSec) } }
+    );
+  }
+
   try {
     const client = await getMongoClient();
     const dbName = getMongoDbName();
