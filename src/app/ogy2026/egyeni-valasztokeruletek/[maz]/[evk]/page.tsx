@@ -24,8 +24,10 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
   return (
     <>
       <main className="list-page list-page--narrow">
-        <h1>{item.evkNev}</h1>
-        <p className="list-subtitle">{item.szekhely}</p>
+        <h1>
+          {item.evkNev} - {item.szekhely}
+        </h1>
+        <p className="list-subtitle">{item.mazNev}</p>
         <div className="page-actions">
           <Link href="/" className="small-link-btn">
             Főoldal
