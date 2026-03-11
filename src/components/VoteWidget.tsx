@@ -52,6 +52,7 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
           ? "Az igen vezet"
           : "A nem vezet";
   const cooldownStorageKey = `kv-cooldown-until:${scope}`;
+  const cooldownCountKey = `kv-cooldown-count:${scope}`;
 
   useEffect(() => {
     const load = async () => {
@@ -160,13 +161,24 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
         const next = (await res.json()) as ClickStore;
         setData(next);
       }
-      const until = Date.now() + 5000;
+      let nextCount = 1;
+      try {
+        const rawCount = localStorage.getItem(cooldownCountKey);
+        const currentCount = rawCount ? Number(rawCount) : 0;
+        nextCount = Number.isNaN(currentCount) ? 1 : currentCount + 1;
+        localStorage.setItem(cooldownCountKey, String(nextCount));
+      } catch {
+        // ignore localStorage errors
+      }
+
+      const cooldownSec = 1 + (nextCount - 1) * 0.3;
+      const until = Date.now() + cooldownSec * 1000;
       try {
         localStorage.setItem(cooldownStorageKey, String(until));
       } catch {
         // ignore localStorage errors
       }
-      setCooldownLeft(5);
+      setCooldownLeft(Number(cooldownSec.toFixed(1)));
     } catch {
       setError("Nem sikerült menteni a szavazatot.");
     } finally {
