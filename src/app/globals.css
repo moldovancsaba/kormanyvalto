@@ -101,7 +101,7 @@ body {
 
 .bar-track {
   height: 34px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   overflow: hidden;
   border: 3px solid var(--barometer-shell);
   box-shadow:
@@ -328,7 +328,7 @@ button:disabled {
     0 3px 0 var(--shadow-dark-soft);
   background-size: 100% 100%;
   text-shadow: 0 1px 2px var(--shadow-text-strong);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
 }
 
 .route-button-title {
