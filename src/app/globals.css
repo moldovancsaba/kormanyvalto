@@ -33,6 +33,7 @@
   --shadow-text-strong: rgba(0, 0, 0, 0.55);
   --shadow-blue-soft: rgba(31, 78, 163, 0.15);
   --barometer-overlay-border: rgba(15, 23, 42, 0.4);
+  --barometer-shell: #111827;
   --container-top-gap: 2rem;
   --container-bottom-gap: 0.5rem;
   --container-inline: min(900px, 94vw);
@@ -99,20 +100,23 @@ body {
 }
 
 .bar-track {
-  height: 20px;
+  height: 34px;
   border-radius: var(--radius-pill);
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 3px solid var(--barometer-shell);
+  box-shadow:
+    inset 0 0 0 3px var(--inner-ring),
+    0 3px 0 var(--shadow-dark-soft);
   display: flex;
 }
 
 .bar-yes {
-  background: var(--yes);
+  background: linear-gradient(180deg, var(--yes-grad-top) 0%, var(--yes-grad-bottom) 100%);
   transition: width 220ms ease;
 }
 
 .bar-no {
-  background: var(--no);
+  background: linear-gradient(180deg, var(--no-grad-top) 0%, var(--no-grad-bottom) 100%);
   transition: width 220ms ease;
 }
 
@@ -318,9 +322,13 @@ button:disabled {
 
 .route-button--barometer {
   color: var(--on-dark);
-  border: 1px solid var(--barometer-overlay-border);
+  border: 3px solid var(--barometer-shell);
+  box-shadow:
+    inset 0 0 0 3px var(--inner-ring),
+    0 3px 0 var(--shadow-dark-soft);
   background-size: 100% 100%;
   text-shadow: 0 1px 2px var(--shadow-text-strong);
+  border-radius: var(--radius-pill);
 }
 
 .route-button-title {
