@@ -16,10 +16,11 @@ type ClickStore = {
 type VoteWidgetProps = {
   scope: string;
   aggregateMain?: boolean;
+  heroTitle?: ReactNode;
   topActions?: ReactNode;
 };
 
-export default function VoteWidget({ scope, aggregateMain = false, topActions }: VoteWidgetProps) {
+export default function VoteWidget({ scope, aggregateMain = false, heroTitle, topActions }: VoteWidgetProps) {
   const [data, setData] = useState<ClickStore>({ yes: [], no: [] });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -198,6 +199,7 @@ export default function VoteWidget({ scope, aggregateMain = false, topActions }:
           priority
         />
       </div>
+      {heroTitle ? <div className="hero-title">{heroTitle}</div> : null}
       {topActions ? <div className="hero-actions">{topActions}</div> : null}
 
       <section className="barometer" aria-label="Vezető opció">

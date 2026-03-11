@@ -23,15 +23,13 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
 
   return (
     <>
-      <main className="list-page list-page--narrow">
-        <h1>
-          {item.evkNev} - {item.szekhely}
-        </h1>
-        <p className="list-subtitle">{item.mazNev}</p>
-      </main>
-
       <VoteWidget
         scope={scope}
+        heroTitle={
+          <h1>
+            {item.evkNev} - {item.szekhely}
+          </h1>
+        }
         topActions={
           <>
             <Link href="/" className="nav-link-button nav-link-button-small">

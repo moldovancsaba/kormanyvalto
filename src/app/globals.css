@@ -52,6 +52,10 @@ body {
   margin: 0.25rem 0 1rem;
 }
 
+.hero-title {
+  margin-top: 0.7rem;
+}
+
 .barometer {
   margin-bottom: 1rem;
 }
