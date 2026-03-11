@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getConstituenciesByCounty, getCounties } from "../../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../../lib/results";
@@ -33,14 +34,24 @@ export default async function CountyPage({ params }: PageProps) {
 
   return (
     <main className="list-page">
+      <div className="top-logo">
+        <Image
+          src="/images/hero.png"
+          alt="Szavazás 2026 hero"
+          width={1536}
+          height={1024}
+          priority
+        />
+      </div>
+
       <h1>{countyName}</h1>
       <p className="list-subtitle">Válassz egyéni választókerületet.</p>
 
       <div className="page-actions">
-        <Link href="/" className="small-link-btn">
+        <Link href="/" className="nav-link-button nav-link-button-small">
           Főoldal
         </Link>
-        <Link href="/ogy2026/egyeni-valasztokeruletek" className="small-link-btn">
+        <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button nav-link-button-small">
           Vissza a vármegyékhez
         </Link>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 
 type ClickStore = {
   yes: string[];
@@ -16,9 +16,10 @@ type ClickStore = {
 type VoteWidgetProps = {
   scope: string;
   aggregateMain?: boolean;
+  topActions?: ReactNode;
 };
 
-export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetProps) {
+export default function VoteWidget({ scope, aggregateMain = false, topActions }: VoteWidgetProps) {
   const [data, setData] = useState<ClickStore>({ yes: [], no: [] });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -197,6 +198,7 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
           priority
         />
       </div>
+      {topActions ? <div className="hero-actions">{topActions}</div> : null}
 
       <section className="barometer" aria-label="Vezető opció">
         <p className="barometer-label">{winnerText}</p>

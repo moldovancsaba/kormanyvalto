@@ -28,20 +28,29 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
           {item.evkNev} - {item.szekhely}
         </h1>
         <p className="list-subtitle">{item.mazNev}</p>
-        <div className="page-actions">
-          <Link href="/" className="small-link-btn">
-            Főoldal
-          </Link>
-          <Link href={`/ogy2026/egyeni-valasztokeruletek/${item.maz}`} className="small-link-btn">
-            Vissza a vármegyéhez
-          </Link>
-          <a href={item.sourceUrl} className="small-link-btn small-link-btn-secondary" target="_blank" rel="noreferrer">
-            Forrás (NVI)
-          </a>
-        </div>
       </main>
 
-      <VoteWidget scope={scope} />
+      <VoteWidget
+        scope={scope}
+        topActions={
+          <>
+            <Link href="/" className="nav-link-button nav-link-button-small">
+              Főoldal
+            </Link>
+            <Link href={`/ogy2026/egyeni-valasztokeruletek/${item.maz}`} className="nav-link-button nav-link-button-small">
+              Vissza a vármegyéhez
+            </Link>
+            <a
+              href={item.sourceUrl}
+              className="nav-link-button nav-link-button-small nav-link-button-secondary"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Forrás (NVI)
+            </a>
+          </>
+        }
+      />
     </>
   );
 }

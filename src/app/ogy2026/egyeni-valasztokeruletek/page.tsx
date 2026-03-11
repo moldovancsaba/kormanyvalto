@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { constituencies, getCounties } from "../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../lib/results";
 
@@ -17,13 +18,23 @@ export default async function Ogy2026ConstituenciesPage() {
 
   return (
     <main className="list-page">
-      <h1>OGY 2026 vármegyei lista</h1>
-      <p className="list-subtitle">Frissítés 15 percenként. Válassz vármegyét.</p>
-      <div className="page-actions">
-        <Link href="/" className="small-link-btn">
+      <div className="top-logo">
+        <Image
+          src="/images/hero.png"
+          alt="Szavazás 2026 hero"
+          width={1536}
+          height={1024}
+          priority
+        />
+      </div>
+      <div className="hero-actions">
+        <Link href="/" className="nav-link-button nav-link-button-small">
           Főoldal
         </Link>
       </div>
+
+      <h1>OGY 2026 vármegyei lista</h1>
+      <p className="list-subtitle">Frissítés 15 percenként. Válassz vármegyét.</p>
 
       <section className="button-list" aria-label="Vármegyék listája">
         {counties.map((county) => {

@@ -3,13 +3,14 @@ import VoteWidget from "../components/VoteWidget";
 
 export default function HomePage() {
   return (
-    <>
-      <div className="nav-strip">
+    <VoteWidget
+      scope="main"
+      aggregateMain
+      topActions={
         <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button">
           OGY 2026 körzetek listája
         </Link>
-      </div>
-      <VoteWidget scope="main" aggregateMain />
-    </>
+      }
+    />
   );
 }
