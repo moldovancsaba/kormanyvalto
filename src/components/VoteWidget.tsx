@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
 type ClickStore = {
@@ -50,6 +51,7 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
         : yesCount > noCount
           ? "Az igen vezet"
           : "A nem vezet";
+  const cooldownStorageKey = `kv-cooldown-until:${scope}`;
 
   useEffect(() => {
     const load = async () => {
@@ -72,6 +74,22 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
   }, [scope, aggregateMain]);
 
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem(cooldownStorageKey);
+      const until = raw ? Number(raw) : 0;
+      if (!until || Number.isNaN(until)) return;
+
+      const remainingSec = Math.max(0, (until - Date.now()) / 1000);
+      setCooldownLeft(Number(remainingSec.toFixed(1)));
+      if (remainingSec <= 0) {
+        localStorage.removeItem(cooldownStorageKey);
+      }
+    } catch {
+      // ignore localStorage errors
+    }
+  }, [cooldownStorageKey]);
+
+  useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
     navigator.serviceWorker.getRegistrations().then((regs) => {
       regs.forEach((reg) => {
@@ -88,6 +106,13 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
     const timer = window.setInterval(() => {
       setCooldownLeft((prev) => {
         const next = Math.max(0, Number((prev - 0.1).toFixed(1)));
+        if (next <= 0) {
+          try {
+            localStorage.removeItem(cooldownStorageKey);
+          } catch {
+            // ignore localStorage errors
+          }
+        }
         return next;
       });
     }, 100);
@@ -135,6 +160,12 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
         const next = (await res.json()) as ClickStore;
         setData(next);
       }
+      const until = Date.now() + 5000;
+      try {
+        localStorage.setItem(cooldownStorageKey, String(until));
+      } catch {
+        // ignore localStorage errors
+      }
       setCooldownLeft(5);
     } catch {
       setError("Nem sikerült menteni a szavazatot.");
@@ -145,8 +176,14 @@ export default function VoteWidget({ scope, aggregateMain = false }: VoteWidgetP
 
   return (
     <main className="app">
-      <div className="top-logo" aria-hidden="true">
-        🗳️
+      <div className="top-logo">
+        <Image
+          src="/images/hero.png"
+          alt="Szavazás 2026 hero"
+          width={1536}
+          height={1024}
+          priority
+        />
       </div>
 
       <section className="barometer" aria-label="Vezető opció">
