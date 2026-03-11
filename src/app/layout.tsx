@@ -4,9 +4,30 @@ import ConsentBanner from "../components/ConsentBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.kormanyvalto.com"),
   title: "Váltani akarsz?",
   description: "Egyszerű kérdés és időbélyeg napló",
   manifest: "/manifest.webmanifest",
+  openGraph: {
+    title: "Váltani akarsz?",
+    description: "Egyszerű kérdés és időbélyeg napló",
+    type: "website",
+    url: "https://www.kormanyvalto.com",
+    images: [
+      {
+        url: "/social-share-2026.png",
+        width: 1536,
+        height: 1024,
+        alt: "Szavazás 2026",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Váltani akarsz?",
+    description: "Egyszerű kérdés és időbélyeg napló",
+    images: ["/social-share-2026.png"],
+  },
 };
 
 export default function RootLayout({
@@ -16,7 +37,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="hu">
+      <head>
+        <Script id="gtm-head" strategy="beforeInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-PM46B3TD');
+          `}
+        </Script>
+      </head>
       <body>
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-PM46B3TD"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <Script id="gtag-consent-default" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
