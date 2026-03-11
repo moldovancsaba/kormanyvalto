@@ -199,8 +199,8 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
           priority
         />
       </div>
-      {heroTitle ? <div className="hero-title">{heroTitle}</div> : null}
       {topActions ? <div className="hero-actions">{topActions}</div> : null}
+      {heroTitle ? <div className="hero-title">{heroTitle}</div> : null}
 
       <section className="barometer" aria-label="Vezető opció">
         <p className="barometer-label">{winnerText}</p>

@@ -43,11 +43,7 @@ export default async function CountyPage({ params }: PageProps) {
           priority
         />
       </div>
-
-      <h1>{countyName}</h1>
-      <p className="list-subtitle">Válassz egyéni választókerületet.</p>
-
-      <div className="page-actions">
+      <div className="hero-actions">
         <Link href="/" className="nav-link-button nav-link-button-small">
           Főoldal
         </Link>
@@ -55,6 +51,9 @@ export default async function CountyPage({ params }: PageProps) {
           Vissza a vármegyékhez
         </Link>
       </div>
+
+      <h1>{countyName}</h1>
+      <p className="list-subtitle">Válassz egyéni választókerületet.</p>
 
       <section className="button-list" aria-label="Körzetek listája">
         {countyConstituencies.map((c) => {
