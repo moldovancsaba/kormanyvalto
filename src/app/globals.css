@@ -112,11 +112,11 @@ button {
 }
 
 .vote-btn-yes {
-  background: linear-gradient(180deg, #f16069 0%, var(--yes) 100%);
+  background: linear-gradient(180deg, #ff4a5d 0%, #e11d48 100%);
 }
 
 .vote-btn-no {
-  background: linear-gradient(180deg, #ff9d3f 0%, var(--no) 100%);
+  background: linear-gradient(180deg, #ff8a1f 0%, #ff5e00 100%);
 }
 
 button:active {
