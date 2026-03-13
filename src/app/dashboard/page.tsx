@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buildPageMetadata } from "../../lib/siteMetadata";
+import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 import { CityVoteStat, DashboardSummary, getDashboardCityStats, getDashboardSummary } from "../../lib/results";
 
 export const revalidate = 120;
@@ -9,6 +9,7 @@ export const metadata: Metadata = buildPageMetadata({
   title: "Grafikon",
   description: "Kormanyvalto dashboard a legforróbb, legcsendesebb és legmegosztottabb városokkal.",
   path: "/dashboard",
+  socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
 });
 
 type ChartCardProps = {

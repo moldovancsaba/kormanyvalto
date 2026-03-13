@@ -7,7 +7,7 @@ import {
   getParliamentEstimate,
   type ParliamentEstimate,
 } from "../../lib/results";
-import { buildPageMetadata } from "../../lib/siteMetadata";
+import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 
 export const revalidate = 120;
 
@@ -15,6 +15,7 @@ export const metadata: Metadata = buildPageMetadata({
   title: "Váltani akarsz?",
   description: "Mandátumbecslés",
   path: "/mandatumbecsles",
+  socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
 });
 
 function formatNumber(value: number) {
