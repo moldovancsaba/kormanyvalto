@@ -7,9 +7,14 @@ export default function HomePage() {
       scope="main"
       aggregateMain
       topActions={
-        <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button">
-          OGY 2026 körzetek listája
-        </Link>
+        <>
+          <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button">
+            OGY 2026 körzetek listája
+          </Link>
+          <Link href="/dashboard" className="nav-link-button">
+            Grafikon
+          </Link>
+        </>
       }
     />
   );

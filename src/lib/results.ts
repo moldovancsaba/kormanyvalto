@@ -1,5 +1,5 @@
 import { getMongoClient, getMongoDbName } from "./mongodb";
-import { findConstituency } from "./constituencies";
+import { constituencies, findConstituency } from "./constituencies";
 import { VoteMode } from "./voteEngine";
 
 export type VoteType = "yes" | "no";
@@ -25,6 +25,15 @@ export type ScopeVoteCount = {
   no: number;
   total: number;
   yesPercent: number;
+};
+
+export type CityVoteStat = {
+  city: string;
+  county: string;
+  yes: number;
+  no: number;
+  total: number;
+  diff: number;
 };
 
 type VoteDoc = {
@@ -159,4 +168,63 @@ export async function getScopeVoteCounts(scopes: string[]): Promise<Record<strin
   }
 
   return out;
+}
+
+export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
+  const constituencyScopes = constituencies.map((c) => ({
+    scope: `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`,
+    city: c.szekhely,
+    county: c.mazNev,
+  }));
+
+  const scopeMap = new Map(
+    constituencyScopes.map((item) => [
+      item.scope,
+      {
+        city: item.city,
+        county: item.county,
+      },
+    ])
+  );
+
+  const rows = await (await getVotesCollection())
+    .aggregate<{ _id: { scope: string; type: VoteType }; count: number }>([
+      { $match: { scope: { $in: constituencyScopes.map((item) => item.scope) } } },
+      {
+        $group: {
+          _id: { scope: "$scope", type: "$type" },
+          count: { $sum: { $ifNull: ["$weight", 1] } },
+        },
+      },
+    ])
+    .toArray();
+
+  const cityMap = new Map<string, CityVoteStat>();
+
+  for (const row of rows) {
+    const meta = scopeMap.get(row._id.scope);
+    if (!meta) continue;
+
+    const key = meta.city;
+    const existing = cityMap.get(key) || {
+      city: meta.city,
+      county: meta.county,
+      yes: 0,
+      no: 0,
+      total: 0,
+      diff: 0,
+    };
+
+    if (row._id.type === "yes") {
+      existing.yes += row.count;
+    } else {
+      existing.no += row.count;
+    }
+
+    existing.total = existing.yes + existing.no;
+    existing.diff = existing.yes - existing.no;
+    cityMap.set(key, existing);
+  }
+
+  return [...cityMap.values()].sort((a, b) => b.total - a.total || a.city.localeCompare(b.city, "hu"));
 }

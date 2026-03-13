@@ -525,3 +525,153 @@ button:disabled {
   background: transparent;
   margin: 0 0 0.35rem;
 }
+
+.dashboard-page {
+  background:
+    radial-gradient(circle at top left, rgba(46, 103, 202, 0.15), transparent 28%),
+    radial-gradient(circle at top right, rgba(255, 94, 0, 0.14), transparent 26%),
+    linear-gradient(180deg, #fbfdff 0%, #eef4ff 100%);
+}
+
+.dashboard-hero {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-eyebrow {
+  margin: 0 0 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--neutral-blue);
+}
+
+.dashboard-intro {
+  max-width: 46rem;
+  margin: 0 auto;
+  color: var(--muted);
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.chart-card {
+  border-radius: 18px;
+  padding: 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+.chart-card-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.chart-card-head p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.chart-card-warm {
+  background: linear-gradient(180deg, #fff0e6 0%, #fffaf6 100%);
+}
+
+.chart-card-cool {
+  background: linear-gradient(180deg, #edf7ff 0%, #f9fcff 100%);
+}
+
+.chart-card-yes {
+  background: linear-gradient(180deg, rgba(116, 196, 216, 0.18) 0%, #fbfeff 100%);
+}
+
+.chart-card-no {
+  background: linear-gradient(180deg, rgba(255, 111, 15, 0.16) 0%, #fffaf6 100%);
+}
+
+.chart-card-neutral {
+  background: linear-gradient(180deg, rgba(31, 78, 163, 0.1) 0%, #fbfcff 100%);
+}
+
+.chart-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+  margin-top: 1rem;
+}
+
+.chart-column {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.chart-column-value {
+  text-align: center;
+  font-weight: 800;
+  color: var(--ink-strong);
+}
+
+.chart-column-plot {
+  height: 210px;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  padding: 0.35rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(226, 232, 240, 0.5) 100%);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.chart-column-bar {
+  width: 100%;
+  border-radius: 14px 14px 6px 6px;
+  border: 2px solid rgba(17, 24, 39, 0.86);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.74);
+}
+
+.chart-card-warm .chart-column-bar {
+  background: linear-gradient(180deg, #ffad6a 0%, #ff5e00 100%);
+}
+
+.chart-card-cool .chart-column-bar {
+  background: linear-gradient(180deg, #9fdef1 0%, #4baec7 100%);
+}
+
+.chart-card-yes .chart-column-bar {
+  background: linear-gradient(180deg, #8fd4e5 0%, #4daac2 100%);
+}
+
+.chart-card-no .chart-column-bar {
+  background: linear-gradient(180deg, #ff9d43 0%, #ff5e00 100%);
+}
+
+.chart-card-neutral .chart-column-bar {
+  background: linear-gradient(180deg, #6f97dd 0%, #1f4ea3 100%);
+}
+
+.chart-column-label {
+  text-align: center;
+  min-height: 4.5rem;
+}
+
+.chart-column-label strong {
+  display: block;
+  font-size: 0.88rem;
+  line-height: 1.15;
+}
+
+.chart-column-label span {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+.chart-empty {
+  margin: 1rem 0 0;
+  color: var(--muted);
+}
