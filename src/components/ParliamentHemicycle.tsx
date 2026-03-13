@@ -15,7 +15,7 @@ const VIEWBOX_WIDTH = 920;
 const VIEWBOX_HEIGHT = 560;
 const CENTER_X = VIEWBOX_WIDTH / 2;
 const CENTER_Y = 456;
-const SEAT_RADIUS = 5.8;
+const SEAT_RADIUS = 7.1;
 
 function getSeatCoords(rowIndex: number, seatIndex: number, seatCount: number) {
   const radius = ROW_RADII[rowIndex];
@@ -106,7 +106,7 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
           </defs>
 
           <path
-            d={`M 92 ${CENTER_Y} A 368 368 0 0 1 ${VIEWBOX_WIDTH - 92} ${CENTER_Y} L ${VIEWBOX_WIDTH - 148} ${CENTER_Y} A 312 312 0 0 0 148 ${CENTER_Y} Z`}
+            d={`M 78 ${CENTER_Y} A 382 382 0 0 1 ${VIEWBOX_WIDTH - 78} ${CENTER_Y} L ${VIEWBOX_WIDTH - 144} ${CENTER_Y} A 316 316 0 0 0 144 ${CENTER_Y} Z`}
             className="patko-floor"
           />
           <path

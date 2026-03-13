@@ -566,6 +566,9 @@ button:disabled {
 }
 
 .kpi-card {
+  display: grid;
+  grid-template-rows: minmax(3.1rem, auto) minmax(4.4rem, auto) minmax(4.5rem, auto);
+  align-items: start;
   padding: 1rem 1.1rem;
   border-radius: 18px;
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -588,11 +591,13 @@ button:disabled {
   font-weight: 900;
   line-height: 1;
   color: var(--ink-strong);
+  align-self: start;
 }
 
 .kpi-detail {
   margin: 0.45rem 0 0;
   color: var(--muted);
+  align-self: start;
 }
 
 .pie-grid {
@@ -868,6 +873,7 @@ button:disabled {
   min-width: 640px;
   height: auto;
   display: block;
+  overflow: visible;
 }
 
 .patko-floor {
@@ -907,7 +913,7 @@ button:disabled {
 
 .patko-seat {
   stroke: rgba(17, 24, 39, 0.9);
-  stroke-width: 1.7;
+  stroke-width: 1.9;
   transition:
     transform 160ms ease,
     stroke-width 160ms ease,
