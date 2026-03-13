@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import ConsentBanner from "../components/ConsentBanner";
+import SiteFooter from "../components/SiteFooter";
 import { buildPageMetadata, SITE_URL } from "../lib/siteMetadata";
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         {children}
+        <SiteFooter />
         <ConsentBanner />
       </body>
     </html>

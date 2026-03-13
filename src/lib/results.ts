@@ -1,22 +1,23 @@
 import { getMongoClient, getMongoDbName } from "./mongodb";
 import { findConstituency } from "./constituencies";
+import { VoteMode } from "./voteEngine";
 
 export type VoteType = "yes" | "no";
-
-export type ClickStore = {
-  yes: string[];
-  no: string[];
-};
 
 export type VoteHistoryItem = {
   type: VoteType;
   timestamp: string;
   scope: string;
   sourceLabel: string;
+  weight: number;
+  mode: VoteMode;
 };
 
-export type ResultsResponse = ClickStore & {
+export type ResultsResponse = {
+  yesCount: number;
+  noCount: number;
   history: VoteHistoryItem[];
+  cooldownSec?: number;
 };
 
 export type ScopeVoteCount = {
@@ -30,12 +31,18 @@ type VoteDoc = {
   scope?: string;
   type: VoteType;
   timestamp: string;
+  weight?: number;
+  mode?: VoteMode;
 };
 
 async function getVotesCollection() {
   const client = await getMongoClient();
   const db = client.db(getMongoDbName());
   return db.collection<VoteDoc>("votes");
+}
+
+function getVoteWeight(vote: VoteDoc) {
+  return typeof vote.weight === "number" && vote.weight > 0 ? vote.weight : 1;
 }
 
 export async function getResults(
@@ -46,22 +53,23 @@ export async function getResults(
     scope === "main" && includeAllScopesForMain
       ? {}
       : scope === "main"
-      ? { $or: [{ scope: "main" }, { scope: { $exists: false } }] }
-      : { scope };
+        ? { $or: [{ scope: "main" }, { scope: { $exists: false } }] }
+        : { scope };
 
   const votes = await (await getVotesCollection())
-    .find(filter, { projection: { _id: 0, type: 1, timestamp: 1, scope: 1 } })
+    .find(filter, { projection: { _id: 0, type: 1, timestamp: 1, scope: 1, weight: 1, mode: 1 } })
     .sort({ timestamp: -1 })
     .toArray();
 
-  const yes: string[] = [];
-  const no: string[] = [];
+  let yesCount = 0;
+  let noCount = 0;
 
   for (const vote of votes) {
+    const weight = getVoteWeight(vote);
     if (vote.type === "yes") {
-      yes.push(vote.timestamp);
+      yesCount += weight;
     } else {
-      no.push(vote.timestamp);
+      noCount += weight;
     }
   }
 
@@ -72,10 +80,12 @@ export async function getResults(
       timestamp: vote.timestamp,
       scope: normalizedScope,
       sourceLabel: getScopeLabel(normalizedScope),
+      weight: getVoteWeight(vote),
+      mode: (vote.mode === "google" ? "google" : "anonymous") as VoteMode,
     };
   });
 
-  return { yes, no, history };
+  return { yesCount, noCount, history };
 }
 
 function getScopeLabel(scope: string) {
@@ -93,10 +103,22 @@ function getScopeLabel(scope: string) {
   return constituency?.mazNev ?? "Országos";
 }
 
-export async function addVote(type: VoteType, scope = "main"): Promise<ResultsResponse> {
+export async function addVote({
+  type,
+  scope = "main",
+  weight,
+  mode,
+}: {
+  type: VoteType;
+  scope?: string;
+  weight: number;
+  mode: VoteMode;
+}): Promise<ResultsResponse> {
   await (await getVotesCollection()).insertOne({
     scope,
     type,
+    weight,
+    mode,
     timestamp: new Date().toISOString(),
   });
 
@@ -109,7 +131,12 @@ export async function getScopeVoteCounts(scopes: string[]): Promise<Record<strin
   const rows = await (await getVotesCollection())
     .aggregate<{ _id: { scope: string; type: VoteType }; count: number }>([
       { $match: { scope: { $in: scopes } } },
-      { $group: { _id: { scope: "$scope", type: "$type" }, count: { $sum: 1 } } },
+      {
+        $group: {
+          _id: { scope: "$scope", type: "$type" },
+          count: { $sum: { $ifNull: ["$weight", 1] } },
+        },
+      },
     ])
     .toArray();
 

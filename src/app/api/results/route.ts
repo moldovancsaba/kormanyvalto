@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getResults } from "../../../lib/results";
 import { NO_CACHE_HEADERS } from "../../../lib/http";
 import { checkRateLimit } from "../../../lib/rateLimit";
+import { getCooldownSec, getExistingVoteActor } from "../../../lib/voteEngine";
 
 function normalizeScope(raw: string | null) {
   const scope = raw?.trim() || "main";
@@ -21,5 +22,7 @@ export async function GET(req: NextRequest) {
   const scope = normalizeScope(url.searchParams.get("scope"));
   const aggregate = url.searchParams.get("aggregate") === "1";
   const data = await getResults(scope, aggregate);
-  return NextResponse.json(data, { headers: NO_CACHE_HEADERS });
+  const actor = await getExistingVoteActor(req);
+  const cooldownSec = actor ? await getCooldownSec(actor.actorId, scope) : 0;
+  return NextResponse.json({ ...data, cooldownSec }, { headers: NO_CACHE_HEADERS });
 }

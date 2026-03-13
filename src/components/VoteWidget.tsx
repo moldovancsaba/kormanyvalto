@@ -4,13 +4,27 @@ import Image from "next/image";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 
 type ClickStore = {
-  yes: string[];
-  no: string[];
+  yesCount: number;
+  noCount: number;
+  cooldownSec?: number;
   history?: {
     type: "yes" | "no";
     timestamp: string;
     sourceLabel: string;
+    weight: number;
   }[];
+};
+
+type AuthState = {
+  configured: boolean;
+  authenticated: boolean;
+  user: {
+    email: string;
+    name: string;
+    picture: string | null;
+    provider: "google";
+    multiplier: number;
+  } | null;
 };
 
 type VoteWidgetProps = {
@@ -20,31 +34,36 @@ type VoteWidgetProps = {
   topActions?: ReactNode;
 };
 
+const defaultAuthState: AuthState = {
+  configured: false,
+  authenticated: false,
+  user: null,
+};
+
 export default function VoteWidget({ scope, aggregateMain = false, heroTitle, topActions }: VoteWidgetProps) {
-  const [data, setData] = useState<ClickStore>({ yes: [], no: [] });
+  const [data, setData] = useState<ClickStore>({ yesCount: 0, noCount: 0, history: [] });
+  const [auth, setAuth] = useState<AuthState>(defaultAuthState);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cooldownLeft, setCooldownLeft] = useState(0);
-  const yesCount = data.yes.length;
-  const noCount = data.no.length;
+  const [returnTo, setReturnTo] = useState("/");
+  const yesCount = data.yesCount;
+  const noCount = data.noCount;
   const totalCount = yesCount + noCount;
   const yesPercent = totalCount === 0 ? 50 : (yesCount / totalCount) * 100;
   const noPercent = 100 - yesPercent;
-  const mergedVotes = useMemo(() => {
-    if (data.history && data.history.length > 0) {
-      return data.history.slice(0, 20).map((h) => ({
-        type: h.type,
-        ts: h.timestamp,
-        sourceLabel: h.sourceLabel,
-      }));
-    }
-
-    return [...data.yes.map((ts) => ({ type: "yes" as const, ts })), ...data.no.map((ts) => ({ type: "no" as const, ts }))]
-      .sort((a, b) => b.ts.localeCompare(a.ts))
-      .slice(0, 20)
-      .map((v) => ({ ...v, sourceLabel: "" }));
-  }, [data]);
+  const cooldownStorageKey = `kv-cooldown-until:${scope}`;
+  const mergedVotes = useMemo(
+    () =>
+      (data.history || []).slice(0, 20).map((item) => ({
+        type: item.type,
+        ts: item.timestamp,
+        sourceLabel: item.sourceLabel,
+        weight: item.weight,
+      })),
+    [data.history]
+  );
   const winnerText =
     totalCount === 0
       ? "Nincs még szavazat"
@@ -53,19 +72,80 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
         : yesCount > noCount
           ? "Az igen vezet"
           : "A nem vezet";
-  const cooldownStorageKey = `kv-cooldown-until:${scope}`;
-  const cooldownCountKey = `kv-cooldown-count:${scope}`;
+
+  const formatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat("hu-HU", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+    []
+  );
+
+  const applyCooldown = (seconds: number) => {
+    const normalized = Math.max(0, Number(seconds.toFixed(1)));
+    if (normalized <= 0) {
+      setCooldownLeft(0);
+      try {
+        localStorage.removeItem(cooldownStorageKey);
+      } catch {
+        // ignore localStorage errors
+      }
+      return;
+    }
+
+    const until = Date.now() + normalized * 1000;
+    try {
+      localStorage.setItem(cooldownStorageKey, String(until));
+    } catch {
+      // ignore localStorage errors
+    }
+    setCooldownLeft(normalized);
+  };
+
+  useEffect(() => {
+    setReturnTo(window.location.pathname + window.location.search + window.location.hash);
+
+    const authError = new URLSearchParams(window.location.search).get("authError");
+    if (authError) {
+      const authMessages: Record<string, string> = {
+        sso_not_configured: "A 3x VOTE belépés még nincs bekapcsolva.",
+        oauth_failed: "A Google belépés nem sikerült.",
+        invalid_state: "A belépési kérés lejárt vagy érvénytelen.",
+        auth_failed: "A Google belépés nem sikerült.",
+      };
+      setError(authMessages[authError] || "A Google belépés nem sikerült.");
+    }
+  }, []);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(
-          `/api/results?scope=${encodeURIComponent(scope)}${aggregateMain ? "&aggregate=1" : ""}`,
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error("Nem sikerült betölteni az adatokat.");
-        const next = (await res.json()) as ClickStore;
-        setData(next);
+        const [resultsRes, sessionRes] = await Promise.all([
+          fetch(`/api/results?scope=${encodeURIComponent(scope)}${aggregateMain ? "&aggregate=1" : ""}`, {
+            cache: "no-store",
+          }),
+          fetch("/api/auth/session", { cache: "no-store" }),
+        ]);
+
+        if (!resultsRes.ok) {
+          throw new Error("Nem sikerült betölteni az adatokat.");
+        }
+
+        const nextResults = (await resultsRes.json()) as ClickStore;
+        setData(nextResults);
+        if (typeof nextResults.cooldownSec === "number") {
+          applyCooldown(nextResults.cooldownSec);
+        }
+
+        if (sessionRes.ok) {
+          const nextSession = (await sessionRes.json()) as AuthState;
+          setAuth(nextSession);
+        }
       } catch {
         setError("Nem sikerült betölteni az adatokat.");
       } finally {
@@ -123,20 +203,21 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
     return () => {
       window.clearInterval(timer);
     };
-  }, [cooldownLeft]);
+  }, [cooldownLeft, cooldownStorageKey]);
 
-  const formatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat("hu-HU", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }),
-    []
-  );
+  const reloadResults = async () => {
+    const refresh = await fetch(`/api/results?scope=${encodeURIComponent(scope)}${aggregateMain ? "&aggregate=1" : ""}`, {
+      cache: "no-store",
+    });
+    if (!refresh.ok) {
+      throw new Error("Nem sikerült frissíteni az adatokat.");
+    }
+    const next = (await refresh.json()) as ClickStore;
+    setData(next);
+    if (typeof next.cooldownSec === "number") {
+      applyCooldown(next.cooldownSec);
+    }
+  };
 
   const addClick = async (type: "yes" | "no") => {
     if (submitting || loading || cooldownLeft > 0) return;
@@ -151,42 +232,33 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
         body: JSON.stringify({ type, scope }),
       });
 
-      if (!res.ok) throw new Error("Nem sikerült menteni a szavazatot.");
-      if (aggregateMain) {
-        const refresh = await fetch(`/api/results?scope=${encodeURIComponent(scope)}&aggregate=1`, {
-          cache: "no-store",
-        });
-        if (!refresh.ok) throw new Error("Nem sikerült frissíteni az adatokat.");
-        const next = (await refresh.json()) as ClickStore;
-        setData(next);
-      } else {
-        const next = (await res.json()) as ClickStore;
-        setData(next);
-      }
-      let nextCount = 1;
-      try {
-        const rawCount = localStorage.getItem(cooldownCountKey);
-        const currentCount = rawCount ? Number(rawCount) : 0;
-        nextCount = Number.isNaN(currentCount) ? 1 : currentCount + 1;
-        localStorage.setItem(cooldownCountKey, String(nextCount));
-      } catch {
-        // ignore localStorage errors
+      const payload = (await res.json().catch(() => null)) as (ClickStore & { error?: string }) | null;
+      if (!res.ok) {
+        if (typeof payload?.cooldownSec === "number") {
+          applyCooldown(payload.cooldownSec);
+        }
+        throw new Error(payload?.error || "Nem sikerült menteni a szavazatot.");
       }
 
-      const cooldownSec = 1 + (nextCount - 1) * 0.3;
-      const until = Date.now() + cooldownSec * 1000;
-      try {
-        localStorage.setItem(cooldownStorageKey, String(until));
-      } catch {
-        // ignore localStorage errors
+      if (aggregateMain) {
+        await reloadResults();
+      } else {
+        const next = payload as ClickStore;
+        setData(next);
+        if (typeof next.cooldownSec === "number") {
+          applyCooldown(next.cooldownSec);
+        }
       }
-      setCooldownLeft(Number(cooldownSec.toFixed(1)));
-    } catch {
-      setError("Nem sikerült menteni a szavazatot.");
+    } catch (voteError) {
+      setError(voteError instanceof Error ? voteError.message : "Nem sikerült menteni a szavazatot.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
+  const logoutHref = `/api/auth/logout?returnTo=${encodeURIComponent(returnTo)}`;
+  const voteSuffix = auth.authenticated ? " x3" : "";
 
   return (
     <main className="app">
@@ -228,7 +300,7 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
           onClick={() => addClick("yes")}
           disabled={submitting || loading || cooldownLeft > 0}
         >
-          {cooldownLeft > 0 ? `igen (${cooldownLeft.toFixed(1)}s)` : "igen"}
+          {cooldownLeft > 0 ? `igen${voteSuffix} (${cooldownLeft.toFixed(1)}s)` : `igen${voteSuffix}`}
         </button>
         <button
           className="vote-btn vote-btn-no"
@@ -236,9 +308,34 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
           onClick={() => addClick("no")}
           disabled={submitting || loading || cooldownLeft > 0}
         >
-          {cooldownLeft > 0 ? `nem (${cooldownLeft.toFixed(1)}s)` : "nem"}
+          {cooldownLeft > 0 ? `nem${voteSuffix} (${cooldownLeft.toFixed(1)}s)` : `nem${voteSuffix}`}
         </button>
       </div>
+
+      {auth.authenticated && auth.user ? (
+        <section className="boost-card" aria-label="3x vote állapot">
+          <p className="boost-card-title">3x VOTE aktív</p>
+          <p className="boost-card-copy">
+            Google belépéssel szavazol. Minden szavazat háromszor számít, és a várakozás csak +0.2 másodperccel nő.
+          </p>
+          <p className="boost-card-meta">{auth.user.name}</p>
+        </section>
+      ) : auth.configured ? (
+        <section className="boost-card" aria-label="3x vote belépés">
+          <p className="boost-card-title">3x VOTE</p>
+          <p className="boost-card-copy">
+            Lépj be Google fiókkal, és minden szavazatod 3x súllyal számít. A várakozás is lassabban nő.
+          </p>
+          <a href={loginHref} className="nav-link-button boost-login-button">
+            Google belépés a 3x VOTE-hoz
+          </a>
+        </section>
+      ) : (
+        <section className="boost-card boost-card-muted" aria-label="3x vote állapot">
+          <p className="boost-card-title">3x VOTE</p>
+          <p className="boost-card-copy">A Google belépés még nincs bekapcsolva ehhez az oldalhoz.</p>
+        </section>
+      )}
 
       <section className="timeline" aria-label="Kattintási időpontok">
         <h2>Utolsó szavazatok</h2>
@@ -250,11 +347,10 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
           ) : (
             mergedVotes.map((item, idx) => (
               <li key={`${item.ts}-${idx}`} className="timeline-item">
-                <span
-                  className={`vote-pill ${item.type === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
-                >
+                <span className={`vote-pill ${item.type === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}>
                   {item.type === "yes" ? "igen" : "nem"}
                 </span>
+                {item.weight > 1 ? <span className="weight-pill">x{item.weight}</span> : null}
                 <span>
                   {formatter.format(new Date(item.ts))}
                   {item.sourceLabel ? ` - ${item.sourceLabel}` : ""}
@@ -264,6 +360,14 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
           )}
         </ul>
       </section>
+
+      {auth.authenticated ? (
+        <div className="logout-strip">
+          <a href={logoutHref} className="nav-link-button nav-link-button-small nav-link-button-secondary">
+            kijelentkezés
+          </a>
+        </div>
+      ) : null}
     </main>
   );
 }

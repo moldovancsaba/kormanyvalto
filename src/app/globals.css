@@ -137,6 +137,40 @@ h1 {
   margin-bottom: 1.1rem;
 }
 
+.boost-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 0.9rem;
+  margin: 0 0 1rem;
+  background: linear-gradient(180deg, var(--neutral-blue-soft) 0%, var(--panel) 100%);
+  text-align: center;
+}
+
+.boost-card-muted {
+  background: linear-gradient(180deg, var(--surface-subtle) 0%, var(--panel) 100%);
+}
+
+.boost-card-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--neutral-blue-deep);
+}
+
+.boost-card-copy {
+  margin: 0;
+  color: var(--muted);
+}
+
+.boost-card-meta {
+  margin: 0.55rem 0 0;
+  font-weight: 700;
+}
+
+.boost-login-button {
+  margin-top: 0.9rem;
+}
+
 button {
   border: 3px solid var(--ink-strong);
   color: var(--on-dark);
@@ -227,6 +261,18 @@ li {
 
 .vote-pill-no {
   background: var(--no);
+}
+
+.weight-pill {
+  display: inline-block;
+  min-width: 2rem;
+  text-align: center;
+  border-radius: var(--radius-pill);
+  padding: 0.12rem 0.45rem;
+  background: var(--neutral-blue);
+  color: var(--on-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .empty {
@@ -409,4 +455,73 @@ button:disabled {
   background: var(--neutral-blue);
   border: 1px solid var(--neutral-blue);
   color: var(--on-dark);
+}
+
+.logout-strip {
+  margin: 1rem 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.site-footer {
+  width: var(--container-inline);
+  margin: 0 auto 2rem;
+  padding: 1rem 1.25rem 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.45rem;
+}
+
+.site-footer-links a {
+  color: var(--neutral-blue);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.site-footer-copy {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.legal-page h1 {
+  margin-bottom: 1rem;
+}
+
+.legal-copy {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.legal-copy h2 {
+  margin: 1.1rem 0 0.45rem;
+  font-size: 1.1rem;
+}
+
+.legal-copy p {
+  margin: 0 0 0.75rem;
+}
+
+.legal-copy ul {
+  list-style: disc;
+  display: block;
+  margin: 0 0 0.75rem 1.2rem;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 1rem;
+}
+
+.legal-copy li {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  margin: 0 0 0.35rem;
 }
