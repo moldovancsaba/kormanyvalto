@@ -39,6 +39,12 @@ export default async function Ogy2026ConstituenciesPage() {
         <Link href="/" className="nav-link-button nav-link-button-small">
           Főoldal
         </Link>
+        <Link href="/mandatumbecsles" className="nav-link-button nav-link-button-small">
+          Mandátumbecslés
+        </Link>
+        <Link href="/dashboard" className="nav-link-button nav-link-button-small">
+          Grafikon
+        </Link>
       </div>
 
       <h1>OGY 2026 vármegyei lista</h1>

@@ -201,6 +201,9 @@ export default async function DashboardPage() {
         <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button nav-link-button-small">
           OGY 2026 körzetek listája
         </Link>
+        <Link href="/mandatumbecsles" className="nav-link-button nav-link-button-small">
+          Mandátumbecslés
+        </Link>
       </div>
 
       <header className="dashboard-hero">

@@ -11,6 +11,9 @@ export default function HomePage() {
           <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button">
             OGY 2026 körzetek listája
           </Link>
+          <Link href="/mandatumbecsles" className="nav-link-button">
+            Mandátumbecslés
+          </Link>
           <Link href="/dashboard" className="nav-link-button">
             Grafikon
           </Link>

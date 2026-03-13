@@ -49,6 +49,46 @@ export type DashboardSummary = {
   regularVoteEvents: number;
 };
 
+export type ParliamentBloc = "yes" | "no" | "neutral";
+
+export type ParliamentSeatSource = "district" | "list";
+
+export type ParliamentSeat = {
+  id: string;
+  bloc: ParliamentBloc;
+  source: ParliamentSeatSource;
+  href?: string;
+  label: string;
+  detail: string;
+  county?: string;
+  city?: string;
+  yes: number;
+  no: number;
+  total: number;
+  margin: number;
+};
+
+export type ParliamentEstimate = {
+  seats: ParliamentSeat[];
+  districtYesSeats: number;
+  districtNoSeats: number;
+  unresolvedDistrictSeats: number;
+  listYesSeats: number;
+  listNoSeats: number;
+  unresolvedListSeats: number;
+  mainListYesVotes: number;
+  mainListNoVotes: number;
+  fragmentYesVotes: number;
+  fragmentNoVotes: number;
+  listBasisYes: number;
+  listBasisNo: number;
+  qualifiedYes: boolean;
+  qualifiedNo: boolean;
+  totalYesSeats: number;
+  totalNoSeats: number;
+  majorityTarget: number;
+};
+
 type VoteDoc = {
   scope?: string;
   type: VoteType;
@@ -71,6 +111,73 @@ async function getVoteSessionsCollection() {
 
 function getVoteWeight(vote: VoteDoc) {
   return typeof vote.weight === "number" && vote.weight > 0 ? vote.weight : 1;
+}
+
+function buildDistrictScope(maz: string, evk: string) {
+  return `ogy2026/egyeni-valasztokeruletek/${maz}/${evk}`;
+}
+
+function allocateDhondtSeats(
+  seatCount: number,
+  bases: Array<{ bloc: Exclude<ParliamentBloc, "neutral">; votes: number; qualified: boolean }>
+) {
+  const eligible = bases.filter((item) => item.qualified && item.votes > 0);
+  if (eligible.length === 0) {
+    return {
+      yes: 0,
+      no: 0,
+      unresolved: seatCount,
+    };
+  }
+
+  const quotients = eligible.flatMap((item) =>
+    Array.from({ length: seatCount }, (_, index) => ({
+      bloc: item.bloc,
+      quotient: item.votes / (index + 1),
+      votes: item.votes,
+      divisor: index + 1,
+    }))
+  );
+
+  quotients.sort((left, right) => {
+    if (right.quotient !== left.quotient) return right.quotient - left.quotient;
+    if (right.votes !== left.votes) return right.votes - left.votes;
+    if (left.divisor !== right.divisor) return left.divisor - right.divisor;
+    return left.bloc.localeCompare(right.bloc);
+  });
+
+  let yes = 0;
+  let no = 0;
+
+  for (const item of quotients.slice(0, seatCount)) {
+    if (item.bloc === "yes") {
+      yes += 1;
+    } else {
+      no += 1;
+    }
+  }
+
+  return {
+    yes,
+    no,
+    unresolved: Math.max(0, seatCount - yes - no),
+  };
+}
+
+function buildSeatOrder(seats: ParliamentSeat[]) {
+  const sortByStrength = (left: ParliamentSeat, right: ParliamentSeat) =>
+    right.margin - left.margin || right.total - left.total || left.label.localeCompare(right.label, "hu");
+
+  const yesDistrict = seats.filter((seat) => seat.bloc === "yes" && seat.source === "district").sort(sortByStrength);
+  const yesList = seats.filter((seat) => seat.bloc === "yes" && seat.source === "list");
+  const neutralDistrict = seats
+    .filter((seat) => seat.bloc === "neutral" && seat.source === "district")
+    .sort((left, right) => right.total - left.total || left.label.localeCompare(right.label, "hu"));
+  const neutralList = seats.filter((seat) => seat.bloc === "neutral" && seat.source === "list");
+  const noList = seats.filter((seat) => seat.bloc === "no" && seat.source === "list");
+  const noDistrict = seats.filter((seat) => seat.bloc === "no" && seat.source === "district").sort(sortByStrength);
+
+  return [...yesDistrict, ...yesList, ...neutralDistrict, ...neutralList, ...noList, ...noDistrict];
 }
 
 export async function getResults(
@@ -308,5 +415,165 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     weightedRegularVotes,
     tripleVoteEvents,
     regularVoteEvents,
+  };
+}
+
+export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
+  const districtScopes = constituencies.map((item) => buildDistrictScope(item.maz, item.evk));
+  const [districtCounts, mainResults] = await Promise.all([getScopeVoteCounts(districtScopes), getResults("main", false)]);
+
+  const seats: ParliamentSeat[] = [];
+  let districtYesSeats = 0;
+  let districtNoSeats = 0;
+  let unresolvedDistrictSeats = 0;
+  let fragmentYesVotes = 0;
+  let fragmentNoVotes = 0;
+
+  for (const constituency of constituencies) {
+    const scope = buildDistrictScope(constituency.maz, constituency.evk);
+    const stat = districtCounts[scope] ?? { yes: 0, no: 0, total: 0, yesPercent: 50 };
+    const label = `${constituency.evkNev} - ${constituency.szekhely}`;
+    const href = `/ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`;
+    const margin = Math.abs(stat.yes - stat.no);
+
+    if (stat.yes > stat.no) {
+      districtYesSeats += 1;
+      fragmentYesVotes += Math.max(0, stat.yes - (stat.no + 1));
+      fragmentNoVotes += stat.no;
+      seats.push({
+        id: `${scope}:district`,
+        bloc: "yes",
+        source: "district",
+        href,
+        label,
+        detail: `${constituency.mazNev}, ${constituency.szekhely}`,
+        county: constituency.mazNev,
+        city: constituency.szekhely,
+        yes: stat.yes,
+        no: stat.no,
+        total: stat.total,
+        margin,
+      });
+      continue;
+    }
+
+    if (stat.no > stat.yes) {
+      districtNoSeats += 1;
+      fragmentNoVotes += Math.max(0, stat.no - (stat.yes + 1));
+      fragmentYesVotes += stat.yes;
+      seats.push({
+        id: `${scope}:district`,
+        bloc: "no",
+        source: "district",
+        href,
+        label,
+        detail: `${constituency.mazNev}, ${constituency.szekhely}`,
+        county: constituency.mazNev,
+        city: constituency.szekhely,
+        yes: stat.yes,
+        no: stat.no,
+        total: stat.total,
+        margin,
+      });
+      continue;
+    }
+
+    unresolvedDistrictSeats += 1;
+    seats.push({
+      id: `${scope}:district`,
+      bloc: "neutral",
+      source: "district",
+      href,
+      label,
+      detail:
+        stat.total > 0
+          ? `${constituency.mazNev}, ${constituency.szekhely} - döntetlen`
+          : `${constituency.mazNev}, ${constituency.szekhely} - még nincs adat`,
+      county: constituency.mazNev,
+      city: constituency.szekhely,
+      yes: stat.yes,
+      no: stat.no,
+      total: stat.total,
+      margin,
+    });
+  }
+
+  const mainListYesVotes = mainResults.yesCount;
+  const mainListNoVotes = mainResults.noCount;
+  const mainListTotal = mainListYesVotes + mainListNoVotes;
+  const qualifiedYes = mainListTotal > 0 && mainListYesVotes / mainListTotal >= 0.05;
+  const qualifiedNo = mainListTotal > 0 && mainListNoVotes / mainListTotal >= 0.05;
+  const listBasisYes = mainListYesVotes + fragmentYesVotes;
+  const listBasisNo = mainListNoVotes + fragmentNoVotes;
+
+  const listAllocation = allocateDhondtSeats(93, [
+    { bloc: "yes", votes: listBasisYes, qualified: qualifiedYes },
+    { bloc: "no", votes: listBasisNo, qualified: qualifiedNo },
+  ]);
+
+  for (let index = 0; index < listAllocation.yes; index += 1) {
+    seats.push({
+      id: `list:yes:${index + 1}`,
+      bloc: "yes",
+      source: "list",
+      label: `Igen lista ${index + 1}. mandátum`,
+      detail: "Országos listás mandátum a listás és töredékszavazatok alapján",
+      yes: listBasisYes,
+      no: listBasisNo,
+      total: listBasisYes + listBasisNo,
+      margin: Math.abs(listBasisYes - listBasisNo),
+    });
+  }
+
+  for (let index = 0; index < listAllocation.no; index += 1) {
+    seats.push({
+      id: `list:no:${index + 1}`,
+      bloc: "no",
+      source: "list",
+      label: `Nem lista ${index + 1}. mandátum`,
+      detail: "Országos listás mandátum a listás és töredékszavazatok alapján",
+      yes: listBasisYes,
+      no: listBasisNo,
+      total: listBasisYes + listBasisNo,
+      margin: Math.abs(listBasisYes - listBasisNo),
+    });
+  }
+
+  for (let index = 0; index < listAllocation.unresolved; index += 1) {
+    seats.push({
+      id: `list:neutral:${index + 1}`,
+      bloc: "neutral",
+      source: "list",
+      label: `Nyitott listás mandátum ${index + 1}.`,
+      detail:
+        mainListTotal === 0
+          ? "Nincs még listás szavazat a 93 országos mandátum becsléséhez."
+          : "A listás küszöb vagy az adathiány miatt még nem osztható ki.",
+      yes: listBasisYes,
+      no: listBasisNo,
+      total: listBasisYes + listBasisNo,
+      margin: Math.abs(listBasisYes - listBasisNo),
+    });
+  }
+
+  return {
+    seats: buildSeatOrder(seats),
+    districtYesSeats,
+    districtNoSeats,
+    unresolvedDistrictSeats,
+    listYesSeats: listAllocation.yes,
+    listNoSeats: listAllocation.no,
+    unresolvedListSeats: listAllocation.unresolved,
+    mainListYesVotes,
+    mainListNoVotes,
+    fragmentYesVotes,
+    fragmentNoVotes,
+    listBasisYes,
+    listBasisNo,
+    qualifiedYes,
+    qualifiedNo,
+    totalYesSeats: districtYesSeats + listAllocation.yes,
+    totalNoSeats: districtNoSeats + listAllocation.no,
+    majorityTarget: 100,
   };
 }
