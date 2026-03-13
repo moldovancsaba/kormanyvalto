@@ -36,6 +36,18 @@ export type CityVoteStat = {
   diff: number;
 };
 
+export type DashboardSummary = {
+  totalWeightedVotes: number;
+  totalVoteEvents: number;
+  totalRegisteredPlayers: number;
+  weightedYes: number;
+  weightedNo: number;
+  weightedTripleVotes: number;
+  weightedRegularVotes: number;
+  tripleVoteEvents: number;
+  regularVoteEvents: number;
+};
+
 type VoteDoc = {
   scope?: string;
   type: VoteType;
@@ -48,6 +60,12 @@ async function getVotesCollection() {
   const client = await getMongoClient();
   const db = client.db(getMongoDbName());
   return db.collection<VoteDoc>("votes");
+}
+
+async function getVoteSessionsCollection() {
+  const client = await getMongoClient();
+  const db = client.db(getMongoDbName());
+  return db.collection<{ actorId?: string }>("vote_sessions");
 }
 
 function getVoteWeight(vote: VoteDoc) {
@@ -227,4 +245,64 @@ export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
   }
 
   return [...cityMap.values()].sort((a, b) => b.total - a.total || a.city.localeCompare(b.city, "hu"));
+}
+
+export async function getDashboardSummary(): Promise<DashboardSummary> {
+  const rows = await (await getVotesCollection())
+    .aggregate<{
+      _id: { mode: VoteMode; type: VoteType };
+      totalWeight: number;
+      voteEvents: number;
+    }>([
+      {
+        $group: {
+          _id: {
+            mode: { $ifNull: ["$mode", "anonymous"] },
+            type: "$type",
+          },
+          totalWeight: { $sum: { $ifNull: ["$weight", 1] } },
+          voteEvents: { $sum: 1 },
+        },
+      },
+    ])
+    .toArray();
+
+  let weightedYes = 0;
+  let weightedNo = 0;
+  let weightedTripleVotes = 0;
+  let weightedRegularVotes = 0;
+  let tripleVoteEvents = 0;
+  let regularVoteEvents = 0;
+
+  for (const row of rows) {
+    if (row._id.type === "yes") {
+      weightedYes += row.totalWeight;
+    } else {
+      weightedNo += row.totalWeight;
+    }
+
+    if (row._id.mode === "google") {
+      weightedTripleVotes += row.totalWeight;
+      tripleVoteEvents += row.voteEvents;
+    } else {
+      weightedRegularVotes += row.totalWeight;
+      regularVoteEvents += row.voteEvents;
+    }
+  }
+
+  const registeredActors = await (await getVoteSessionsCollection()).distinct("actorId", {
+    actorId: { $regex: /^user:/ },
+  });
+
+  return {
+    totalWeightedVotes: weightedYes + weightedNo,
+    totalVoteEvents: tripleVoteEvents + regularVoteEvents,
+    totalRegisteredPlayers: registeredActors.length,
+    weightedYes,
+    weightedNo,
+    weightedTripleVotes,
+    weightedRegularVotes,
+    tripleVoteEvents,
+    regularVoteEvents,
+  };
 }

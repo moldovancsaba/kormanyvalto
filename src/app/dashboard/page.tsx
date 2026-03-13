@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildPageMetadata } from "../../lib/siteMetadata";
-import { CityVoteStat, getDashboardCityStats } from "../../lib/results";
+import { CityVoteStat, DashboardSummary, getDashboardCityStats, getDashboardSummary } from "../../lib/results";
 
 export const revalidate = 300;
 
@@ -23,6 +23,87 @@ type ChartCardProps = {
 function formatSignedDiff(value: number) {
   if (value > 0) return `+${value}`;
   return String(value);
+}
+
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("hu-HU").format(value);
+}
+
+type KpiCardProps = {
+  label: string;
+  value: string;
+  detail: string;
+};
+
+function KpiCard({ label, value, detail }: KpiCardProps) {
+  return (
+    <article className="kpi-card">
+      <p className="kpi-label">{label}</p>
+      <p className="kpi-value">{value}</p>
+      <p className="kpi-detail">{detail}</p>
+    </article>
+  );
+}
+
+type PieCardProps = {
+  title: string;
+  subtitle: string;
+  leftLabel: string;
+  leftValue: number;
+  rightLabel: string;
+  rightValue: number;
+  leftTone: "yes" | "no" | "warm" | "cool";
+  rightTone: "yes" | "no" | "warm" | "cool";
+};
+
+function PieCard({
+  title,
+  subtitle,
+  leftLabel,
+  leftValue,
+  rightLabel,
+  rightValue,
+  leftTone,
+  rightTone,
+}: PieCardProps) {
+  const total = leftValue + rightValue;
+  const leftPercent = total === 0 ? 50 : (leftValue / total) * 100;
+  const chartStyle = {
+    background: `conic-gradient(var(--tone-${leftTone}) 0 ${leftPercent}%, var(--tone-${rightTone}) ${leftPercent}% 100%)`,
+  };
+
+  return (
+    <section className="pie-card">
+      <header className="chart-card-head">
+        <h2>{title}</h2>
+        <p>{subtitle}</p>
+      </header>
+      <div className="pie-layout">
+        <div className="pie-chart" style={chartStyle}>
+          <div className="pie-hole">
+            <strong>{formatNumber(total)}</strong>
+            <span>összesen</span>
+          </div>
+        </div>
+        <div className="pie-legend">
+          <article>
+            <span className={`pie-swatch pie-swatch-${leftTone}`} />
+            <div>
+              <strong>{leftLabel}</strong>
+              <span>{formatNumber(leftValue)}</span>
+            </div>
+          </article>
+          <article>
+            <span className={`pie-swatch pie-swatch-${rightTone}`} />
+            <div>
+              <strong>{rightLabel}</strong>
+              <span>{formatNumber(rightValue)}</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: ChartCardProps) {
@@ -62,10 +143,32 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
 
 export default async function DashboardPage() {
   let stats: CityVoteStat[] = [];
+  let summary: DashboardSummary = {
+    totalWeightedVotes: 0,
+    totalVoteEvents: 0,
+    totalRegisteredPlayers: 0,
+    weightedYes: 0,
+    weightedNo: 0,
+    weightedTripleVotes: 0,
+    weightedRegularVotes: 0,
+    tripleVoteEvents: 0,
+    regularVoteEvents: 0,
+  };
   try {
-    stats = await getDashboardCityStats();
+    [stats, summary] = await Promise.all([getDashboardCityStats(), getDashboardSummary()]);
   } catch {
     stats = [];
+    summary = {
+      totalWeightedVotes: 0,
+      totalVoteEvents: 0,
+      totalRegisteredPlayers: 0,
+      weightedYes: 0,
+      weightedNo: 0,
+      weightedTripleVotes: 0,
+      weightedRegularVotes: 0,
+      tripleVoteEvents: 0,
+      regularVoteEvents: 0,
+    };
   }
   const votedCities = stats.filter((item) => item.total > 0);
 
@@ -93,6 +196,42 @@ export default async function DashboardPage() {
           A legforróbb városok, a legcsendesebb körzetközpontok, és azok a helyek, ahol az igen és a nem fej fej mellett halad.
         </p>
       </header>
+
+      <section className="kpi-grid">
+        <KpiCard
+          label="Összes eddigi szavazat"
+          value={formatNumber(summary.totalWeightedVotes)}
+          detail={`${formatNumber(summary.totalVoteEvents)} leadott kattintás alapján`}
+        />
+        <KpiCard
+          label="Összes regisztrált játékos"
+          value={formatNumber(summary.totalRegisteredPlayers)}
+          detail="A 3x VOTE módot használó belépett játékosok"
+        />
+      </section>
+
+      <section className="pie-grid">
+        <PieCard
+          title="3x-os szavazatok vs sima szavazatok"
+          subtitle="Súlyozott összesítés a belépett és anonim játékmód között."
+          leftLabel="3x-os"
+          leftValue={summary.weightedTripleVotes}
+          rightLabel="sima"
+          rightValue={summary.weightedRegularVotes}
+          leftTone="warm"
+          rightTone="cool"
+        />
+        <PieCard
+          title="Összes igen vs összes nem"
+          subtitle="A teljes rendszer jelenlegi súlyozott állása."
+          leftLabel="igen"
+          leftValue={summary.weightedYes}
+          rightLabel="nem"
+          rightValue={summary.weightedNo}
+          leftTone="yes"
+          rightTone="no"
+        />
+      </section>
 
       <div className="dashboard-grid">
         <ChartCard
