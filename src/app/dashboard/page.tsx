@@ -191,7 +191,7 @@ export default async function DashboardPage() {
 
       <header className="dashboard-hero">
         <p className="dashboard-eyebrow">Grafikon</p>
-        <h1>Kormanyváltó dashboard</h1>
+        <h1>Általános hangulat</h1>
         <p className="dashboard-intro">
           A legforróbb városok, a legcsendesebb körzetközpontok, és azok a helyek, ahol az igen és a nem fej fej mellett halad.
         </p>
