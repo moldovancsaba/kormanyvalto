@@ -7,7 +7,7 @@ export const revalidate = 120;
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Grafikon",
-  description: "Kormanyvalto dashboard a legforróbb, legcsendesebb és legmegosztottabb városokkal.",
+  description: "Kormanyvalto dashboard a legforróbb, legcsendesebb és legmegosztottabb egyéni körzetekkel.",
   path: "/dashboard",
   socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
 });
@@ -131,10 +131,10 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
             const height = Math.max(12, Math.round((valueForBar(item) / maxValue) * 100));
             return (
               <Link
-                key={`${title}-${item.county}-${item.city}-${index}`}
+                key={`${title}-${item.county}-${item.city}-${item.districtLabel}-${index}`}
                 href={item.href}
                 className="chart-column chart-column-link"
-                title={`${item.county}, ${item.city}`}
+                title={`${item.county}, ${item.city}, ${item.districtLabel}`}
               >
                 <div className="chart-column-value">{valueLabel(item)}</div>
                 <div className="chart-column-plot">
@@ -143,9 +143,11 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
                     style={{ height: `${height}%` }}
                   />
                 </div>
-                <div className="chart-column-label" title={`${item.city} - ${item.county}`}>
+                <div className="chart-column-label" title={`${item.city} - ${item.county} - ${item.districtLabel}`}>
                   <strong>{item.city}</strong>
-                  <span>{item.county}</span>
+                  <span>
+                    {item.county} · {item.districtLabel}
+                  </span>
                 </div>
               </Link>
             );
@@ -211,7 +213,7 @@ export default async function DashboardPage() {
         <p className="dashboard-eyebrow">Grafikon</p>
         <h1>Általános hangulat</h1>
         <p className="dashboard-intro">
-          A legforróbb városok, a legcsendesebb körzetközpontok, és azok a helyek, ahol az igen és a nem fej fej mellett halad.
+          A legforróbb egyéni körzetek, a legcsendesebb körzetközpontok, és azok a helyek, ahol az igen és a nem fej fej mellett halad.
         </p>
       </header>
 
@@ -254,7 +256,7 @@ export default async function DashboardPage() {
       <div className="dashboard-grid">
         <ChartCard
           title="Top 5 háborús övezet"
-          subtitle="A legtöbb összesített szavazatot kapó városok."
+          subtitle="A legtöbb összesített szavazatot kapó EVK-k."
           tone="warm"
           items={warZone}
           valueLabel={(item) => `${item.total}`}
@@ -262,7 +264,7 @@ export default async function DashboardPage() {
         />
         <ChartCard
           title="Top 5 a béke szigetei"
-          subtitle="A legkevesebb, de már mért aktivitást mutató városok."
+          subtitle="A legkevesebb, de már mért aktivitást mutató EVK-k."
           tone="cool"
           items={peaceIslands}
           valueLabel={(item) => `${item.total}`}
@@ -270,7 +272,7 @@ export default async function DashboardPage() {
         />
         <ChartCard
           title="Top 5 az igen városok"
-          subtitle="Ahol az igen a legnagyobb különbséggel vezet."
+          subtitle="Ahol az igen a legnagyobb különbséggel vezet az EVK-ban."
           tone="yes"
           items={yesCities}
           valueLabel={(item) => formatSignedDiff(item.diff)}
@@ -278,7 +280,7 @@ export default async function DashboardPage() {
         />
         <ChartCard
           title="Top 5 a nem városok"
-          subtitle="Ahol a nem a legnagyobb különbséggel dominál."
+          subtitle="Ahol a nem a legnagyobb különbséggel dominál az EVK-ban."
           tone="no"
           items={noCities}
           valueLabel={(item) => formatSignedDiff(item.diff)}
@@ -286,7 +288,7 @@ export default async function DashboardPage() {
         />
         <ChartCard
           title="Top 5 senki nem tudja"
-          subtitle="A legszorosabb városok, ahol alig van különbség."
+          subtitle="A legszorosabb EVK-k, ahol alig van különbség."
           tone="neutral"
           items={nobodyKnows}
           valueLabel={(item) => `${Math.abs(item.diff)}`}
