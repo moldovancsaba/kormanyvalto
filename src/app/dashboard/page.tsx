@@ -172,11 +172,11 @@ export default async function DashboardPage() {
   }
   const votedCities = stats.filter((item) => item.total > 0);
 
-  const warZone = [...votedCities].sort((a, b) => b.total - a.total || a.city.localeCompare(b.city, "hu")).slice(0, 10);
-  const peaceIslands = [...votedCities].sort((a, b) => a.total - b.total || a.city.localeCompare(b.city, "hu")).slice(0, 10);
-  const yesCities = [...votedCities].filter((item) => item.diff > 0).sort((a, b) => b.diff - a.diff || b.total - a.total).slice(0, 10);
-  const noCities = [...votedCities].filter((item) => item.diff < 0).sort((a, b) => a.diff - b.diff || b.total - a.total).slice(0, 10);
-  const nobodyKnows = [...votedCities].sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff) || b.total - a.total).slice(0, 10);
+  const warZone = [...votedCities].sort((a, b) => b.total - a.total || a.city.localeCompare(b.city, "hu")).slice(0, 5);
+  const peaceIslands = [...votedCities].sort((a, b) => a.total - b.total || a.city.localeCompare(b.city, "hu")).slice(0, 5);
+  const yesCities = [...votedCities].filter((item) => item.diff > 0).sort((a, b) => b.diff - a.diff || b.total - a.total).slice(0, 5);
+  const noCities = [...votedCities].filter((item) => item.diff < 0).sort((a, b) => a.diff - b.diff || b.total - a.total).slice(0, 5);
+  const nobodyKnows = [...votedCities].sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff) || b.total - a.total).slice(0, 5);
 
   return (
     <main className="dashboard-page list-page">
@@ -235,7 +235,7 @@ export default async function DashboardPage() {
 
       <div className="dashboard-grid">
         <ChartCard
-          title="Top 10 háborús övezet"
+          title="Top 5 háborús övezet"
           subtitle="A legtöbb összesített szavazatot kapó városok."
           tone="warm"
           items={warZone}
@@ -243,7 +243,7 @@ export default async function DashboardPage() {
           valueForBar={(item) => item.total}
         />
         <ChartCard
-          title="Top 10 a béke szigetei"
+          title="Top 5 a béke szigetei"
           subtitle="A legkevesebb, de már mért aktivitást mutató városok."
           tone="cool"
           items={peaceIslands}
@@ -251,7 +251,7 @@ export default async function DashboardPage() {
           valueForBar={(item) => item.total}
         />
         <ChartCard
-          title="Top 10 az igen városok"
+          title="Top 5 az igen városok"
           subtitle="Ahol az igen a legnagyobb különbséggel vezet."
           tone="yes"
           items={yesCities}
@@ -259,7 +259,7 @@ export default async function DashboardPage() {
           valueForBar={(item) => item.diff}
         />
         <ChartCard
-          title="Top 10 a nem városok"
+          title="Top 5 a nem városok"
           subtitle="Ahol a nem a legnagyobb különbséggel dominál."
           tone="no"
           items={noCities}
@@ -267,7 +267,7 @@ export default async function DashboardPage() {
           valueForBar={(item) => Math.abs(item.diff)}
         />
         <ChartCard
-          title="Top 10 senki nem tudja"
+          title="Top 5 senki nem tudja"
           subtitle="A legszorosabb városok, ahol alig van különbség."
           tone="neutral"
           items={nobodyKnows}
