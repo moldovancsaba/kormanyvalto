@@ -100,7 +100,7 @@ function getScopeLabel(scope: string) {
 
   const [, maz, evk] = match;
   const constituency = findConstituency(maz, evk);
-  return constituency?.mazNev ?? "Országos";
+  return constituency ? `${constituency.mazNev}, ${constituency.szekhely}` : "Országos";
 }
 
 export async function addVote({
