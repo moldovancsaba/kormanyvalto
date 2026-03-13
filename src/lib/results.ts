@@ -30,6 +30,7 @@ export type ScopeVoteCount = {
 export type CityVoteStat = {
   city: string;
   county: string;
+  href: string;
   yes: number;
   no: number;
   total: number;
@@ -193,6 +194,7 @@ export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
     scope: `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`,
     city: c.szekhely,
     county: c.mazNev,
+    href: `/ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`,
   }));
 
   const scopeMap = new Map(
@@ -201,6 +203,7 @@ export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
       {
         city: item.city,
         county: item.county,
+        href: item.href,
       },
     ])
   );
@@ -223,10 +226,11 @@ export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
     const meta = scopeMap.get(row._id.scope);
     if (!meta) continue;
 
-    const key = meta.city;
+    const key = `${meta.county}::${meta.city}`;
     const existing = cityMap.get(key) || {
       city: meta.city,
       county: meta.county,
+      href: meta.href,
       yes: 0,
       no: 0,
       total: 0,

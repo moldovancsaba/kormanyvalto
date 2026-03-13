@@ -123,7 +123,12 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
           {items.map((item, index) => {
             const height = Math.max(12, Math.round((valueForBar(item) / maxValue) * 100));
             return (
-              <article key={`${title}-${item.city}-${index}`} className="chart-column">
+              <Link
+                key={`${title}-${item.county}-${item.city}-${index}`}
+                href={item.href}
+                className="chart-column chart-column-link"
+                title={`${item.county}, ${item.city}`}
+              >
                 <div className="chart-column-value">{valueLabel(item)}</div>
                 <div className="chart-column-plot">
                   <div className="chart-column-bar" style={{ height: `${height}%` }} />
@@ -132,7 +137,7 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
                   <strong>{item.city}</strong>
                   <span>{item.county}</span>
                 </div>
-              </article>
+              </Link>
             );
           })}
         </div>
