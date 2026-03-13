@@ -99,10 +99,6 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
               <stop offset="0%" stopColor="rgba(255,255,255,0.92)" />
               <stop offset="100%" stopColor="rgba(231,238,251,0.84)" />
             </linearGradient>
-            <linearGradient id="patkoPodium" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#2458b5" />
-              <stop offset="100%" stopColor="#16336b" />
-            </linearGradient>
           </defs>
 
           <path
@@ -113,15 +109,6 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
             d={`M 174 ${CENTER_Y} A 286 286 0 0 1 ${VIEWBOX_WIDTH - 174} ${CENTER_Y}`}
             className="patko-majority-line"
           />
-          <g className="patko-podium">
-            <rect x={CENTER_X - 76} y={CENTER_Y - 50} width={152} height={72} rx={22} />
-            <text x={CENTER_X} y={CENTER_Y - 8} textAnchor="middle">
-              {estimate.majorityTarget}
-            </text>
-            <text x={CENTER_X} y={CENTER_Y + 18} textAnchor="middle">
-              többség
-            </text>
-          </g>
 
           {rows.map(({ rowIndex, seatCount, rowSeats }) =>
             rowSeats.map((seat, seatIndex) => {

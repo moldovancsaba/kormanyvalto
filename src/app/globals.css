@@ -889,28 +889,6 @@ button:disabled {
   stroke-dasharray: 10 10;
 }
 
-.patko-podium rect {
-  fill: url(#patkoPodium);
-  stroke: rgba(17, 24, 39, 0.92);
-  stroke-width: 3;
-  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.7);
-}
-
-.patko-podium text {
-  fill: #ffffff;
-  font-weight: 900;
-}
-
-.patko-podium text:first-of-type {
-  font-size: 1.35rem;
-}
-
-.patko-podium text:last-of-type {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
 .patko-seat {
   stroke: rgba(17, 24, 39, 0.9);
   stroke-width: 1.9;
