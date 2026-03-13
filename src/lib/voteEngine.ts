@@ -32,7 +32,14 @@ async function getVoteSessionCollection(): Promise<Collection<VoteSessionDoc>> {
   const collection = client.db(getMongoDbName()).collection<VoteSessionDoc>("vote_sessions");
 
   if (!globalWithVoteIndexes._voteSessionIndexesReady) {
-    await collection.createIndex({ updatedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 90 });
+    try {
+      await collection.createIndex({ updatedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 90 });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      if (!message.includes("IndexOptionsConflict") && !message.includes("already exists")) {
+        throw error;
+      }
+    }
     globalWithVoteIndexes._voteSessionIndexesReady = true;
   }
 
