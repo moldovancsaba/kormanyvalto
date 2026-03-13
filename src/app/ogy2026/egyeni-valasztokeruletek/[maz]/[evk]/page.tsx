@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageActionLinks } from "../../../../../components/PageChrome";
 import VoteWidget from "../../../../../components/VoteWidget";
 import { constituencies, findConstituency } from "../../../../../lib/constituencies";
+import { getSectionNavItems } from "../../../../../lib/navigation";
 import { buildPageMetadata } from "../../../../../lib/siteMetadata";
 
 type PageProps = {
@@ -52,22 +53,14 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
           </h1>
         }
         topActions={
-          <>
-            <Link href="/" className="nav-link-button nav-link-button-small">
-              Főoldal
-            </Link>
-            <Link href={`/ogy2026/egyeni-valasztokeruletek/${item.maz}`} className="nav-link-button nav-link-button-small">
-              Vissza a vármegyéhez
-            </Link>
-            <a
-              href={item.sourceUrl}
-              className="nav-link-button nav-link-button-small nav-link-button-secondary"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Forrás (NVI)
-            </a>
-          </>
+          <PageActionLinks
+            items={[
+              ...getSectionNavItems("/ogy2026/egyeni-valasztokeruletek", [
+                { href: `/ogy2026/egyeni-valasztokeruletek/${item.maz}`, label: "Vissza a vármegyéhez" },
+              ]),
+              { href: item.sourceUrl, label: "Forrás (NVI)", secondary: true, external: true },
+            ]}
+          />
         }
       />
     </>

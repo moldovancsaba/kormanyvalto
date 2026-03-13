@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import { PageShell } from "../../../components/PageChrome";
 import { constituencies, getCounties } from "../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../lib/results";
+import { getSectionNavItems } from "../../../lib/navigation";
 import { buildPageMetadata } from "../../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -25,28 +26,7 @@ export default async function Ogy2026ConstituenciesPage() {
   }
 
   return (
-    <main className="list-page">
-      <div className="top-logo">
-        <Image
-          src="/images/hero_vote.png"
-          alt="Szavazás 2026 hero"
-          width={1536}
-          height={1024}
-          priority
-        />
-      </div>
-      <div className="hero-actions">
-        <Link href="/" className="nav-link-button nav-link-button-small">
-          Főoldal
-        </Link>
-        <Link href="/mandatumbecsles" className="nav-link-button nav-link-button-small">
-          Mandátumbecslés
-        </Link>
-        <Link href="/dashboard" className="nav-link-button nav-link-button-small">
-          Grafikon
-        </Link>
-      </div>
-
+    <PageShell navItems={getSectionNavItems("/ogy2026/egyeni-valasztokeruletek")}>
       <h1>OGY 2026 vármegyei lista</h1>
       <p className="list-subtitle">Frissítés 120 másodpercenként. Válassz vármegyét.</p>
 
@@ -80,6 +60,6 @@ export default async function Ogy2026ConstituenciesPage() {
           );
         })}
       </section>
-    </main>
+    </PageShell>
   );
 }

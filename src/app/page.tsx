@@ -1,24 +1,13 @@
-import Link from "next/link";
+import { PageActionLinks } from "../components/PageChrome";
 import VoteWidget from "../components/VoteWidget";
+import { getRootNavItems } from "../lib/navigation";
 
 export default function HomePage() {
   return (
     <VoteWidget
       scope="main"
       aggregateMain
-      topActions={
-        <>
-          <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button">
-            OGY 2026 körzetek listája
-          </Link>
-          <Link href="/mandatumbecsles" className="nav-link-button">
-            Mandátumbecslés
-          </Link>
-          <Link href="/dashboard" className="nav-link-button">
-            Grafikon
-          </Link>
-        </>
-      }
+      topActions={<PageActionLinks items={getRootNavItems()} small={false} />}
     />
   );
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageShell } from "../../components/PageChrome";
+import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 import { CityVoteStat, DashboardSummary, getDashboardCityStats, getDashboardSummary } from "../../lib/results";
 
@@ -196,19 +198,7 @@ export default async function DashboardPage() {
   const nobodyKnows = [...votedCities].sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff) || b.total - a.total).slice(0, 5);
 
   return (
-    <main className="dashboard-page list-page">
-      <div className="hero-actions">
-        <Link href="/" className="nav-link-button nav-link-button-small">
-          Főoldal
-        </Link>
-        <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button nav-link-button-small">
-          OGY 2026 körzetek listája
-        </Link>
-        <Link href="/mandatumbecsles" className="nav-link-button nav-link-button-small">
-          Mandátumbecslés
-        </Link>
-      </div>
-
+    <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
       <header className="dashboard-hero">
         <p className="dashboard-eyebrow">Grafikon</p>
         <h1>Általános hangulat</h1>
@@ -295,6 +285,6 @@ export default async function DashboardPage() {
           valueForBar={(item) => Math.max(1, item.total)}
         />
       </div>
-    </main>
+    </PageShell>
   );
 }

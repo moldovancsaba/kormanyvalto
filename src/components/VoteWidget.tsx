@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { ReactNode, useEffect, useMemo, useState } from "react";
+import { PageHero } from "./PageChrome";
 
 type ClickStore = {
   yesCount: number;
@@ -262,16 +262,8 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
 
   return (
     <main className="app">
-      <div className="top-logo">
-        <Image
-          src="/images/hero_vote.png"
-          alt="Szavazás 2026 hero"
-          width={1536}
-          height={1024}
-          priority
-        />
-      </div>
-      {topActions ? <div className="hero-actions">{topActions}</div> : null}
+      <PageHero />
+      {topActions}
       {heroTitle ? <div className="hero-title">{heroTitle}</div> : null}
 
       <section className="barometer" aria-label="Vezető opció">

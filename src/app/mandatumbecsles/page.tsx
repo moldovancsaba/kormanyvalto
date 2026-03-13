@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import { PageShell } from "../../components/PageChrome";
 import ParliamentHemicycle from "../../components/ParliamentHemicycle";
 import {
   createEmptyParliamentEstimate,
   getParliamentEstimate,
   type ParliamentEstimate,
 } from "../../lib/results";
+import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -81,23 +81,7 @@ export default async function ParliamentEstimatePage() {
   }
 
   return (
-    <main className="dashboard-page list-page">
-      <div className="top-logo">
-        <Image src="/images/hero_vote.png" alt="Szavazás 2026 hero" width={1536} height={1024} priority />
-      </div>
-
-      <div className="hero-actions">
-        <Link href="/" className="nav-link-button nav-link-button-small">
-          Főoldal
-        </Link>
-        <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button nav-link-button-small">
-          OGY 2026 körzetek listája
-        </Link>
-        <Link href="/dashboard" className="nav-link-button nav-link-button-small">
-          Grafikon
-        </Link>
-      </div>
-
+    <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/mandatumbecsles")}>
       <header className="dashboard-hero">
         <p className="dashboard-eyebrow">Mandátumbecslés</p>
         <h1>Parlamenti patkó</h1>
@@ -177,6 +161,6 @@ export default async function ParliamentEstimatePage() {
           </div>
         </article>
       </section>
-    </main>
+    </PageShell>
   );
 }

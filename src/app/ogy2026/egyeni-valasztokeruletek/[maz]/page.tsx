@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
+import { PageShell } from "../../../../components/PageChrome";
 import { getConstituenciesByCounty, getCounties } from "../../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../../lib/results";
+import { getSectionNavItems } from "../../../../lib/navigation";
 import { buildPageMetadata } from "../../../../lib/siteMetadata";
 
 type PageProps = {
@@ -54,25 +55,11 @@ export default async function CountyPage({ params }: PageProps) {
   }
 
   return (
-    <main className="list-page">
-      <div className="top-logo">
-        <Image
-          src="/images/hero_vote.png"
-          alt="Szavazás 2026 hero"
-          width={1536}
-          height={1024}
-          priority
-        />
-      </div>
-      <div className="hero-actions">
-        <Link href="/" className="nav-link-button nav-link-button-small">
-          Főoldal
-        </Link>
-        <Link href="/ogy2026/egyeni-valasztokeruletek" className="nav-link-button nav-link-button-small">
-          Vissza a vármegyékhez
-        </Link>
-      </div>
-
+    <PageShell
+      navItems={getSectionNavItems("/ogy2026/egyeni-valasztokeruletek", [
+        { href: "/ogy2026/egyeni-valasztokeruletek", label: "Vissza a vármegyékhez" },
+      ])}
+    >
       <h1>{countyName}</h1>
       <p className="list-subtitle">Válassz egyéni választókerületet.</p>
 
@@ -100,6 +87,6 @@ export default async function CountyPage({ params }: PageProps) {
           );
         })}
       </section>
-    </main>
+    </PageShell>
   );
 }

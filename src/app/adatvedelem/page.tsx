@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { PageShell } from "../../components/PageChrome";
+import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata } from "../../lib/siteMetadata";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -10,12 +11,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="legal-page list-page list-page--narrow">
-      <div className="hero-actions">
-        <Link href="/" className="nav-link-button nav-link-button-small">
-          Főoldal
-        </Link>
-      </div>
+    <PageShell pageClassName="legal-page" narrow navItems={getSectionNavItems()}>
       <h1>Adatvédelmi tájékoztató</h1>
       <div className="legal-copy">
         <p>
@@ -54,6 +50,6 @@ export default function PrivacyPolicyPage() {
           nyilvános, könnyed közösségi játékfelület.
         </p>
       </div>
-    </main>
+    </PageShell>
   );
 }
