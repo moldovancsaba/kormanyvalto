@@ -19,7 +19,7 @@ type VoteSessionDoc = {
   actorId: string;
   scope: string;
   voteCount: number;
-  cooldownUntil: Date;
+  cooldownUntil: Date | string | number;
   updatedAt: Date;
 };
 
@@ -105,7 +105,7 @@ export async function getCooldownSec(actorId: string, scope: string) {
     return 0;
   }
 
-  const remainingMs = session.cooldownUntil.getTime() - Date.now();
+  const remainingMs = toEpochMs(session.cooldownUntil) - Date.now();
   return remainingMs > 0 ? Number((remainingMs / 1000).toFixed(1)) : 0;
 }
 
@@ -114,11 +114,12 @@ export async function reserveVoteSlot(actor: VoteActor, scope: string) {
   const key = `${actor.actorId}:${scope}`;
   const existing = await collection.findOne({ _id: key });
   const now = Date.now();
+  const existingCooldownUntilMs = existing ? toEpochMs(existing.cooldownUntil) : 0;
 
-  if (existing && existing.cooldownUntil.getTime() > now) {
+  if (existing && existingCooldownUntilMs > now) {
     return {
       allowed: false,
-      cooldownSec: Number(((existing.cooldownUntil.getTime() - now) / 1000).toFixed(1)),
+      cooldownSec: Number(((existingCooldownUntilMs - now) / 1000).toFixed(1)),
       voteCount: existing.voteCount,
     };
   }
@@ -151,4 +152,13 @@ export async function reserveVoteSlot(actor: VoteActor, scope: string) {
     cooldownSec,
     voteCount: nextCount,
   };
+}
+
+function toEpochMs(value: Date | string | number) {
+  if (value instanceof Date) {
+    return value.getTime();
+  }
+
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
 }
