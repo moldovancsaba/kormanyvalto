@@ -802,23 +802,15 @@ button:disabled {
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.74);
 }
 
-.chart-card-warm .chart-column-bar {
-  background: linear-gradient(180deg, #ffad6a 0%, #ff5e00 100%);
-}
-
-.chart-card-cool .chart-column-bar {
-  background: linear-gradient(180deg, #9fdef1 0%, #4baec7 100%);
-}
-
-.chart-card-yes .chart-column-bar {
+.chart-column-bar-yes {
   background: linear-gradient(180deg, #8fd4e5 0%, #4daac2 100%);
 }
 
-.chart-card-no .chart-column-bar {
+.chart-column-bar-no {
   background: linear-gradient(180deg, #ff9d43 0%, #ff5e00 100%);
 }
 
-.chart-card-neutral .chart-column-bar {
+.chart-column-bar-neutral {
   background: linear-gradient(180deg, #6f97dd 0%, #1f4ea3 100%);
 }
 

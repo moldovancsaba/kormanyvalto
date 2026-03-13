@@ -29,6 +29,12 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("hu-HU").format(value);
 }
 
+function getCityTone(item: CityVoteStat): "yes" | "no" | "neutral" {
+  if (item.diff > 0) return "yes";
+  if (item.diff < 0) return "no";
+  return "neutral";
+}
+
 type KpiCardProps = {
   label: string;
   value: string;
@@ -131,7 +137,10 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
               >
                 <div className="chart-column-value">{valueLabel(item)}</div>
                 <div className="chart-column-plot">
-                  <div className="chart-column-bar" style={{ height: `${height}%` }} />
+                  <div
+                    className={`chart-column-bar chart-column-bar-${getCityTone(item)}`}
+                    style={{ height: `${height}%` }}
+                  />
                 </div>
                 <div className="chart-column-label" title={`${item.city} - ${item.county}`}>
                   <strong>{item.city}</strong>
