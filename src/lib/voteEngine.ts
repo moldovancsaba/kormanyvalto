@@ -137,9 +137,6 @@ export async function reserveVoteSlot(actor: VoteActor, scope: string) {
         cooldownUntil,
         updatedAt: new Date(now),
       },
-      $setOnInsert: {
-        voteCount: 0,
-      },
       $inc: {
         voteCount: 1,
       },
