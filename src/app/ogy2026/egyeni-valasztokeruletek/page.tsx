@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { constituencies, getCounties } from "../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../lib/results";
+import { buildPageMetadata } from "../../../lib/siteMetadata";
 
 export const revalidate = 900;
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Váltani akarsz?",
+  description: "OGY 2026 körzetek listája",
+  path: "/ogy2026/egyeni-valasztokeruletek",
+});
 
 export default async function Ogy2026ConstituenciesPage() {
   const counties = getCounties();

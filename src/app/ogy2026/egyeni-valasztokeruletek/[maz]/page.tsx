@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getConstituenciesByCounty, getCounties } from "../../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../../lib/results";
+import { buildPageMetadata } from "../../../../lib/siteMetadata";
 
 type PageProps = {
   params: Promise<{ maz: string }>;
@@ -12,6 +14,25 @@ export const revalidate = 900;
 
 export function generateStaticParams() {
   return getCounties().map((c) => ({ maz: c.maz }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { maz } = await params;
+  const countyConstituencies = getConstituenciesByCounty(maz);
+
+  if (countyConstituencies.length === 0) {
+    return buildPageMetadata({
+      title: "Váltani akarsz?",
+      description: "A keresett vármegyei lista nem érhető el.",
+      path: `/ogy2026/egyeni-valasztokeruletek/${maz}`,
+    });
+  }
+
+  return buildPageMetadata({
+    title: "Váltani akarsz?",
+    description: countyConstituencies[0].mazNev,
+    path: `/ogy2026/egyeni-valasztokeruletek/${maz}`,
+  });
 }
 
 export default async function CountyPage({ params }: PageProps) {

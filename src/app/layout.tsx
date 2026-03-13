@@ -1,35 +1,17 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import ConsentBanner from "../components/ConsentBanner";
+import { buildPageMetadata, SITE_URL } from "../lib/siteMetadata";
 import "./globals.css";
 
-const SOCIAL_IMAGE_URL = "/social-share-2026.png?v=2026-03-13-1";
-
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.kormanyvalto.com"),
-  title: "Váltani akarsz?",
-  description: "Egyszerű kérdés és időbélyeg napló",
+  metadataBase: new URL(SITE_URL),
   manifest: "/manifest.webmanifest",
-  openGraph: {
+  ...buildPageMetadata({
     title: "Váltani akarsz?",
-    description: "Egyszerű kérdés és időbélyeg napló",
-    type: "website",
-    url: "https://www.kormanyvalto.com",
-    images: [
-      {
-        url: SOCIAL_IMAGE_URL,
-        width: 1536,
-        height: 1024,
-        alt: "Szavazás 2026",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Váltani akarsz?",
-    description: "Egyszerű kérdés és időbélyeg napló",
-    images: [SOCIAL_IMAGE_URL],
-  },
+    description: "Országos",
+    path: "/",
+  }),
 };
 
 export default function RootLayout({
