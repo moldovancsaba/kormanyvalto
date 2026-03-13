@@ -53,6 +53,8 @@ export type ParliamentBloc = "yes" | "no" | "neutral";
 
 export type ParliamentSeatSource = "district" | "list";
 
+export type ParliamentEstimateMode = "strict" | "projection";
+
 export type ParliamentSeat = {
   id: string;
   bloc: ParliamentBloc;
@@ -69,6 +71,7 @@ export type ParliamentSeat = {
 };
 
 export type ParliamentEstimate = {
+  mode: ParliamentEstimateMode;
   seats: ParliamentSeat[];
   districtYesSeats: number;
   districtNoSeats: number;
@@ -161,6 +164,30 @@ function allocateDhondtSeats(
     yes,
     no,
     unresolved: Math.max(0, seatCount - yes - no),
+  };
+}
+
+export function createEmptyParliamentEstimate(mode: ParliamentEstimateMode = "strict"): ParliamentEstimate {
+  return {
+    mode,
+    seats: [],
+    districtYesSeats: 0,
+    districtNoSeats: 0,
+    unresolvedDistrictSeats: 106,
+    listYesSeats: 0,
+    listNoSeats: 0,
+    unresolvedListSeats: 93,
+    mainListYesVotes: 0,
+    mainListNoVotes: 0,
+    fragmentYesVotes: 0,
+    fragmentNoVotes: 0,
+    listBasisYes: 0,
+    listBasisNo: 0,
+    qualifiedYes: false,
+    qualifiedNo: false,
+    totalYesSeats: 0,
+    totalNoSeats: 0,
+    majorityTarget: 100,
   };
 }
 
@@ -418,7 +445,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
   };
 }
 
-export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
+export async function getParliamentEstimate(mode: ParliamentEstimateMode = "strict"): Promise<ParliamentEstimate> {
   const districtScopes = constituencies.map((item) => buildDistrictScope(item.maz, item.evk));
   const [districtCounts, mainResults] = await Promise.all([getScopeVoteCounts(districtScopes), getResults("main", false)]);
 
@@ -428,6 +455,10 @@ export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
   let unresolvedDistrictSeats = 0;
   let fragmentYesVotes = 0;
   let fragmentNoVotes = 0;
+  const mainListYesVotes = mainResults.yesCount;
+  const mainListNoVotes = mainResults.noCount;
+  const mainListTotal = mainListYesVotes + mainListNoVotes;
+  const projectionLeader: Exclude<ParliamentBloc, "neutral"> = mainListYesVotes >= mainListNoVotes ? "yes" : "no";
 
   for (const constituency of constituencies) {
     const scope = buildDistrictScope(constituency.maz, constituency.evk);
@@ -435,8 +466,12 @@ export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
     const label = `${constituency.evkNev} - ${constituency.szekhely}`;
     const href = `/ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`;
     const margin = Math.abs(stat.yes - stat.no);
+    const resolvedBloc =
+      stat.yes > stat.no ? "yes" : stat.no > stat.yes ? "no" : mode === "projection" ? projectionLeader : "neutral";
+    const projectedDetailSuffix =
+      stat.yes === stat.no && mode === "projection" ? " - projekcióban kiosztva országos vezetés alapján" : "";
 
-    if (stat.yes > stat.no) {
+    if (resolvedBloc === "yes") {
       districtYesSeats += 1;
       fragmentYesVotes += Math.max(0, stat.yes - (stat.no + 1));
       fragmentNoVotes += stat.no;
@@ -446,7 +481,7 @@ export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
         source: "district",
         href,
         label,
-        detail: `${constituency.mazNev}, ${constituency.szekhely}`,
+        detail: `${constituency.mazNev}, ${constituency.szekhely}${projectedDetailSuffix}`,
         county: constituency.mazNev,
         city: constituency.szekhely,
         yes: stat.yes,
@@ -457,7 +492,7 @@ export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
       continue;
     }
 
-    if (stat.no > stat.yes) {
+    if (resolvedBloc === "no") {
       districtNoSeats += 1;
       fragmentNoVotes += Math.max(0, stat.no - (stat.yes + 1));
       fragmentYesVotes += stat.yes;
@@ -467,7 +502,7 @@ export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
         source: "district",
         href,
         label,
-        detail: `${constituency.mazNev}, ${constituency.szekhely}`,
+        detail: `${constituency.mazNev}, ${constituency.szekhely}${projectedDetailSuffix}`,
         county: constituency.mazNev,
         city: constituency.szekhely,
         yes: stat.yes,
@@ -498,9 +533,6 @@ export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
     });
   }
 
-  const mainListYesVotes = mainResults.yesCount;
-  const mainListNoVotes = mainResults.noCount;
-  const mainListTotal = mainListYesVotes + mainListNoVotes;
   const qualifiedYes = mainListTotal > 0 && mainListYesVotes / mainListTotal >= 0.05;
   const qualifiedNo = mainListTotal > 0 && mainListNoVotes / mainListTotal >= 0.05;
   const listBasisYes = mainListYesVotes + fragmentYesVotes;
@@ -557,6 +589,7 @@ export async function getParliamentEstimate(): Promise<ParliamentEstimate> {
   }
 
   return {
+    mode,
     seats: buildSeatOrder(seats),
     districtYesSeats,
     districtNoSeats,

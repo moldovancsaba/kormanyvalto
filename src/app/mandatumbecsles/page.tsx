@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ParliamentHemicycle from "../../components/ParliamentHemicycle";
-import { getParliamentEstimate, type ParliamentEstimate } from "../../lib/results";
+import {
+  createEmptyParliamentEstimate,
+  getParliamentEstimate,
+  type ParliamentEstimate,
+} from "../../lib/results";
 import { buildPageMetadata } from "../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -17,31 +21,62 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("hu-HU").format(value);
 }
 
+type BreakdownCardProps = {
+  title: string;
+  estimate: ParliamentEstimate;
+};
+
+function BreakdownCard({ title, estimate }: BreakdownCardProps) {
+  return (
+    <article className="pie-card">
+      <header className="chart-card-head">
+        <h2>{title}</h2>
+        <p>106 egyéni, 93 listás. A listás mandátumok az országos és a töredékszavazatokból számolódnak.</p>
+      </header>
+      <div className="mandate-breakdown">
+        <article className="mandate-breakdown-row">
+          <strong>106 egyéni</strong>
+          <span>
+            igen {formatNumber(estimate.districtYesSeats)} | nem {formatNumber(estimate.districtNoSeats)} | nyitott{" "}
+            {formatNumber(estimate.unresolvedDistrictSeats)}
+          </span>
+        </article>
+        <article className="mandate-breakdown-row">
+          <strong>93 listás</strong>
+          <span>
+            igen {formatNumber(estimate.listYesSeats)} | nem {formatNumber(estimate.listNoSeats)} | nyitott{" "}
+            {formatNumber(estimate.unresolvedListSeats)}
+          </span>
+        </article>
+        <article className="mandate-breakdown-row">
+          <strong>országos listás szavazat</strong>
+          <span>
+            igen {formatNumber(estimate.mainListYesVotes)} | nem {formatNumber(estimate.mainListNoVotes)}
+          </span>
+        </article>
+        <article className="mandate-breakdown-row">
+          <strong>töredékszavazat</strong>
+          <span>
+            igen {formatNumber(estimate.fragmentYesVotes)} | nem {formatNumber(estimate.fragmentNoVotes)}
+          </span>
+        </article>
+      </div>
+    </article>
+  );
+}
+
 export default async function ParliamentEstimatePage() {
-  let estimate: ParliamentEstimate;
+  let currentEstimate = createEmptyParliamentEstimate("strict");
+  let projectedEstimate = createEmptyParliamentEstimate("projection");
+
   try {
-    estimate = await getParliamentEstimate();
+    [projectedEstimate, currentEstimate] = await Promise.all([
+      getParliamentEstimate("projection"),
+      getParliamentEstimate("strict"),
+    ]);
   } catch {
-    estimate = {
-      seats: [],
-      districtYesSeats: 0,
-      districtNoSeats: 0,
-      unresolvedDistrictSeats: 106,
-      listYesSeats: 0,
-      listNoSeats: 0,
-      unresolvedListSeats: 93,
-      mainListYesVotes: 0,
-      mainListNoVotes: 0,
-      fragmentYesVotes: 0,
-      fragmentNoVotes: 0,
-      listBasisYes: 0,
-      listBasisNo: 0,
-      qualifiedYes: false,
-      qualifiedNo: false,
-      totalYesSeats: 0,
-      totalNoSeats: 0,
-      majorityTarget: 100,
-    };
+    currentEstimate = createEmptyParliamentEstimate("strict");
+    projectedEstimate = createEmptyParliamentEstimate("projection");
   }
 
   return (
@@ -64,84 +99,70 @@ export default async function ParliamentEstimatePage() {
 
       <header className="dashboard-hero">
         <p className="dashboard-eyebrow">Mandátumbecslés</p>
-        <h1>199 fős parlamenti patkó</h1>
+        <h1>Parlamenti patkó</h1>
         <p className="dashboard-intro">
-          Az egyéni mandátumok az EVK-vezetésből jönnek, a listás mandátumok az országos listás szavazatból és a
-          töredékszavazatokból, d&apos;Hondt kiosztással.
+          Két nézet ugyanarra az adatra: az első azt mutatja, mi történne, ha most zárna le a játék, a második pedig
+          a jelenlegi szigorú állást hagyja nyitottnak, ahol még döntetlen vagy adat nélküli körzet van.
         </p>
       </header>
 
       <section className="kpi-grid">
         <article className="kpi-card">
-          <p className="kpi-label">106 egyéni mandátum</p>
-          <p className="kpi-value">{formatNumber(estimate.districtYesSeats + estimate.districtNoSeats)}</p>
+          <p className="kpi-label">Ha most vége lenne</p>
+          <p className="kpi-value">
+            {formatNumber(projectedEstimate.totalYesSeats)} : {formatNumber(projectedEstimate.totalNoSeats)}
+          </p>
+          <p className="kpi-detail">A teljes 199 mandátum kiosztva a jelenlegi vezetés alapján.</p>
+        </article>
+        <article className="kpi-card">
+          <p className="kpi-label">Jelenlegi hivatalos állás</p>
+          <p className="kpi-value">
+            {formatNumber(currentEstimate.totalYesSeats)} : {formatNumber(currentEstimate.totalNoSeats)}
+          </p>
           <p className="kpi-detail">
-            igen: {formatNumber(estimate.districtYesSeats)} | nem: {formatNumber(estimate.districtNoSeats)} | nyitott:{" "}
-            {formatNumber(estimate.unresolvedDistrictSeats)}
+            Nyitott helyek: {formatNumber(currentEstimate.unresolvedDistrictSeats + currentEstimate.unresolvedListSeats)}
           </p>
         </article>
         <article className="kpi-card">
-          <p className="kpi-label">93 listás mandátum</p>
-          <p className="kpi-value">{formatNumber(estimate.listYesSeats + estimate.listNoSeats)}</p>
+          <p className="kpi-label">Listaalap most</p>
+          <p className="kpi-value">{formatNumber(projectedEstimate.listBasisYes + projectedEstimate.listBasisNo)}</p>
           <p className="kpi-detail">
-            igen: {formatNumber(estimate.listYesSeats)} | nem: {formatNumber(estimate.listNoSeats)} | nyitott:{" "}
-            {formatNumber(estimate.unresolvedListSeats)}
-          </p>
-        </article>
-        <article className="kpi-card">
-          <p className="kpi-label">Listás szavazás</p>
-          <p className="kpi-value">{formatNumber(estimate.mainListYesVotes + estimate.mainListNoVotes)}</p>
-          <p className="kpi-detail">
-            igen: {formatNumber(estimate.mainListYesVotes)} | nem: {formatNumber(estimate.mainListNoVotes)}
-          </p>
-        </article>
-        <article className="kpi-card">
-          <p className="kpi-label">Töredékszavazatok</p>
-          <p className="kpi-value">{formatNumber(estimate.fragmentYesVotes + estimate.fragmentNoVotes)}</p>
-          <p className="kpi-detail">
-            igen: {formatNumber(estimate.fragmentYesVotes)} | nem: {formatNumber(estimate.fragmentNoVotes)}
+            országos és töredékszavazatok összesen a 93 listás mandátumhoz
           </p>
         </article>
       </section>
 
-      <ParliamentHemicycle estimate={estimate} />
+      <div className="patko-grid">
+        <ParliamentHemicycle
+          estimate={projectedEstimate}
+          eyebrow="1. nézet"
+          title="Ha most vége lenne"
+          subtitle="A még döntetlen vagy adat nélküli EVK-kat a pillanatnyi országos vezetés irányába zárjuk le, hogy teljes 199 fős képet kapjunk."
+        />
+        <ParliamentHemicycle
+          estimate={currentEstimate}
+          eyebrow="2. nézet"
+          title="Jelenlegi hivatalos állás"
+          subtitle="Csak a ténylegesen vezetett EVK-k és a hivatalos logikával kiosztható listás mandátumok kerülnek be, a nyitott helyek szürkén maradnak."
+        />
+      </div>
+
+      <section className="pie-grid">
+        <BreakdownCard title="Ha most vége lenne - bontás" estimate={projectedEstimate} />
+        <BreakdownCard title="Jelenlegi hivatalos állás - bontás" estimate={currentEstimate} />
+      </section>
 
       <section className="pie-grid">
         <article className="pie-card">
           <header className="chart-card-head">
-            <h2>Listás alap</h2>
-            <p>Az országos listás szavazat és a töredékszavazat összege, amelyből a 93 mandátum kiosztása történik.</p>
-          </header>
-          <div className="mandate-breakdown">
-            <article className="mandate-breakdown-row">
-              <strong>igen listaalap</strong>
-              <span>{formatNumber(estimate.listBasisYes)}</span>
-            </article>
-            <article className="mandate-breakdown-row">
-              <strong>nem listaalap</strong>
-              <span>{formatNumber(estimate.listBasisNo)}</span>
-            </article>
-            <article className="mandate-breakdown-row">
-              <strong>igen küszöb</strong>
-              <span>{estimate.qualifiedYes ? "átlépte" : "nem lépte át"}</span>
-            </article>
-            <article className="mandate-breakdown-row">
-              <strong>nem küszöb</strong>
-              <span>{estimate.qualifiedNo ? "átlépte" : "nem lépte át"}</span>
-            </article>
-          </div>
-        </article>
-
-        <article className="pie-card">
-          <header className="chart-card-head">
             <h2>Módszertan</h2>
-            <p>A magyar választási rendszer logikáját követő becslés, két listára egyszerűsítve.</p>
+            <p>Az NVI országgyűlési logikáját követő becslés, két oldalra egyszerűsítve.</p>
           </header>
           <div className="mandate-notes">
-            <p>1. Az EVK mandátumot a vezető oldal kapja meg mind a 106 körzetben.</p>
-            <p>2. A töredékszavazat a vesztes összes szavazata és a győztes fölös szavazata: győztes mínusz második plusz egy.</p>
-            <p>3. A 93 listás mandátum d&apos;Hondt módszerrel oszlik ki az országos listás és töredékszavazatok alapján.</p>
-            <p>4. Az 5%-os listás küszöb a főoldali országos listás szavazás arányából számolódik.</p>
+            <p>1. 106 egyéni mandátum: az EVK-ban vezető oldal kapja a helyet.</p>
+            <p>2. Töredékszavazat: a vesztes összes szavazata és a győztes fölös szavazata, vagyis győztes mínusz második plusz egy.</p>
+            <p>3. 93 listás mandátum: d&apos;Hondt kiosztás az országos listás és töredékszavazatok együtteséből.</p>
+            <p>4. A 2. nézet nyitva hagyja a döntetlen / adat nélküli körzeteket, az 1. nézet lezárja őket a pillanatnyi országos vezetés szerint.</p>
             <p>
               <a
                 href="https://www.valasztas.hu/ogy-alt-taj"
