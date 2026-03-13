@@ -10,7 +10,7 @@ type PageProps = {
   params: Promise<{ maz: string }>;
 };
 
-export const revalidate = 900;
+export const revalidate = 120;
 
 export function generateStaticParams() {
   return getCounties().map((c) => ({ maz: c.maz }));

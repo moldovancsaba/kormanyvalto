@@ -146,6 +146,5 @@ To adapt this for your own election/campaign:
 ## Project Notes
 
 - Pages use shared design tokens from `src/app/globals.css`
-- County and district selector pages use ISR refresh (`15 minutes`)
+- County, district selector, and dashboard pages use ISR refresh (`120 seconds`)
 - Voting pages are scope-aware and share one backend collection
-

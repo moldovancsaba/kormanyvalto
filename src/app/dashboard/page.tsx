@@ -3,7 +3,7 @@ import Link from "next/link";
 import { buildPageMetadata } from "../../lib/siteMetadata";
 import { CityVoteStat, DashboardSummary, getDashboardCityStats, getDashboardSummary } from "../../lib/results";
 
-export const revalidate = 300;
+export const revalidate = 120;
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Grafikon",

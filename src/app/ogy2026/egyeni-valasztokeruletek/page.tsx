@@ -5,7 +5,7 @@ import { constituencies, getCounties } from "../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../lib/results";
 import { buildPageMetadata } from "../../../lib/siteMetadata";
 
-export const revalidate = 900;
+export const revalidate = 120;
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Váltani akarsz?",
@@ -42,7 +42,7 @@ export default async function Ogy2026ConstituenciesPage() {
       </div>
 
       <h1>OGY 2026 vármegyei lista</h1>
-      <p className="list-subtitle">Frissítés 15 percenként. Válassz vármegyét.</p>
+      <p className="list-subtitle">Frissítés 120 másodpercenként. Válassz vármegyét.</p>
 
       <section className="button-list" aria-label="Vármegyék listája">
         {counties.map((county) => {
