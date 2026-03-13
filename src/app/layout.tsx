@@ -3,6 +3,8 @@ import Script from "next/script";
 import ConsentBanner from "../components/ConsentBanner";
 import "./globals.css";
 
+const SOCIAL_IMAGE_URL = "/social-share-2026.png?v=2026-03-13-1";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.kormanyvalto.com"),
   title: "Váltani akarsz?",
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
     url: "https://www.kormanyvalto.com",
     images: [
       {
-        url: "/social-share-2026.png",
+        url: SOCIAL_IMAGE_URL,
         width: 1536,
         height: 1024,
         alt: "Szavazás 2026",
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Váltani akarsz?",
     description: "Egyszerű kérdés és időbélyeg napló",
-    images: ["/social-share-2026.png"],
+    images: [SOCIAL_IMAGE_URL],
   },
 };
 
