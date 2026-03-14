@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageShell } from "../../../../components/PageChrome";
-import { getConstituenciesByCounty, getCounties } from "../../../../lib/constituencies";
+import { getConstituenciesByCounty, getCounties, getSeatLabel } from "../../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../../lib/results";
 import { getSectionNavItems } from "../../../../lib/navigation";
 import { buildPageMetadata } from "../../../../lib/siteMetadata";
@@ -78,7 +78,7 @@ export default async function CountyPage({ params }: PageProps) {
               style={{ backgroundImage: background }}
             >
               <span className="route-button-title">
-                {c.evkNev} - {c.szekhely}
+                {c.evkNev} - {getSeatLabel(c.szekhely)}
               </span>
               <span className="route-button-meta">
                 igen: {stat.yes} | nem: {stat.no}

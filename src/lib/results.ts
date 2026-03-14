@@ -1,5 +1,5 @@
 import { getMongoClient, getMongoDbName } from "./mongodb";
-import { constituencies, findConstituency } from "./constituencies";
+import { constituencies, findConstituency, getSeatLabel } from "./constituencies";
 import { VoteMode } from "./voteEngine";
 
 export type VoteType = "yes" | "no";
@@ -263,7 +263,7 @@ function getScopeLabel(scope: string) {
 
   const [, maz, evk] = match;
   const constituency = findConstituency(maz, evk);
-  return constituency ? `${constituency.mazNev}, ${constituency.szekhely}` : "Országos";
+  return constituency ? `${constituency.mazNev}, ${getSeatLabel(constituency.szekhely)}` : "Országos";
 }
 
 export async function addVote({
@@ -327,7 +327,7 @@ export async function getScopeVoteCounts(scopes: string[]): Promise<Record<strin
 export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
   const constituencyScopes = constituencies.map((c) => ({
     scope: `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`,
-    city: c.szekhely,
+    city: getSeatLabel(c.szekhely),
     county: c.mazNev,
     districtLabel: `${c.evk}. EVK`,
     href: `/ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`,
@@ -472,7 +472,8 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
   for (const constituency of constituencies) {
     const scope = buildDistrictScope(constituency.maz, constituency.evk);
     const stat = districtCounts[scope] ?? { yes: 0, no: 0, total: 0, yesPercent: 50 };
-    const label = `${constituency.evkNev} - ${constituency.szekhely}`;
+    const seatLabel = getSeatLabel(constituency.szekhely);
+    const label = `${constituency.evkNev} - ${seatLabel}`;
     const href = `/ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`;
     const margin = Math.abs(stat.yes - stat.no);
     const resolvedBloc =
@@ -490,9 +491,9 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
         source: "district",
         href,
         label,
-        detail: `${constituency.mazNev}, ${constituency.szekhely}${projectedDetailSuffix}`,
+        detail: `${constituency.mazNev}, ${seatLabel}${projectedDetailSuffix}`,
         county: constituency.mazNev,
-        city: constituency.szekhely,
+        city: seatLabel,
         yes: stat.yes,
         no: stat.no,
         total: stat.total,
@@ -511,9 +512,9 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
         source: "district",
         href,
         label,
-        detail: `${constituency.mazNev}, ${constituency.szekhely}${projectedDetailSuffix}`,
+        detail: `${constituency.mazNev}, ${seatLabel}${projectedDetailSuffix}`,
         county: constituency.mazNev,
-        city: constituency.szekhely,
+        city: seatLabel,
         yes: stat.yes,
         no: stat.no,
         total: stat.total,
@@ -531,10 +532,10 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
       label,
       detail:
         stat.total > 0
-          ? `${constituency.mazNev}, ${constituency.szekhely} - döntetlen`
-          : `${constituency.mazNev}, ${constituency.szekhely} - még nincs adat`,
+          ? `${constituency.mazNev}, ${seatLabel} - döntetlen`
+          : `${constituency.mazNev}, ${seatLabel} - még nincs adat`,
       county: constituency.mazNev,
-      city: constituency.szekhely,
+      city: seatLabel,
       yes: stat.yes,
       no: stat.no,
       total: stat.total,

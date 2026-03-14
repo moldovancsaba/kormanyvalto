@@ -7,6 +7,11 @@ export type Constituency = {
   sourceUrl: string;
 };
 
+export function getSeatLabel(szekhely: string) {
+  const budapestMatch = szekhely.match(/^Budapest\s+(.+ kerület)$/);
+  return budapestMatch ? budapestMatch[1] : szekhely;
+}
+
 export const constituencies: Constituency[] = [
   {
     "maz": "01",

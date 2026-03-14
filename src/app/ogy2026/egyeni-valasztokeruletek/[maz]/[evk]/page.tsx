@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageActionLinks } from "../../../../../components/PageChrome";
 import VoteWidget from "../../../../../components/VoteWidget";
-import { constituencies, findConstituency } from "../../../../../lib/constituencies";
+import { constituencies, findConstituency, getSeatLabel } from "../../../../../lib/constituencies";
 import { getSectionNavItems } from "../../../../../lib/navigation";
 import { buildPageMetadata } from "../../../../../lib/siteMetadata";
 
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return buildPageMetadata({
     title: "Váltani akarsz?",
-    description: `${item.mazNev}, ${item.szekhely}`,
+    description: `${item.mazNev}, ${getSeatLabel(item.szekhely)}`,
     path: `/ogy2026/egyeni-valasztokeruletek/${item.maz}/${item.evk}`,
   });
 }
@@ -49,7 +49,7 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
         scope={scope}
         heroTitle={
           <h1>
-            {item.evkNev} - {item.szekhely}
+            {item.evkNev} - {getSeatLabel(item.szekhely)}
           </h1>
         }
         topActions={
