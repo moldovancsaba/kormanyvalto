@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { PageShell } from "../../components/PageChrome";
 import { constituencies, getCounties } from "../../lib/constituencies";
+import { getHungaryCountyPaths } from "../../lib/hungaryCountyMap";
 import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 import {
@@ -41,28 +42,7 @@ type CountyMapStat = {
   leadBloc: "yes" | "no" | "neutral";
 };
 
-const COUNTY_SHAPES: Record<string, string> = {
-  "20": "40,480 120,430 205,440 220,520 145,565 70,555",
-  "19": "110,380 190,335 275,345 295,430 205,440 120,430",
-  "18": "260,285 350,248 430,275 420,355 330,365 275,345",
-  "08": "160,245 255,212 350,248 260,285 190,335 120,325",
-  "14": "350,220 415,195 470,220 430,275 350,248",
-  "17": "430,275 470,220 565,205 625,245 595,330 500,345 420,355",
-  "16": "625,245 710,228 775,260 745,335 675,355 595,330",
-  "06": "710,228 790,195 860,220 845,290 775,260",
-  "11": "845,290 930,250 980,300 955,370 885,390 815,350",
-  "03": "675,355 745,335 815,350 885,390 870,455 810,500 725,495 655,430",
-  "04": "810,500 870,455 940,470 980,535 920,590 845,575",
-  "10": "655,430 725,495 845,575 760,635 680,600 615,540",
-  "13": "530,355 595,330 675,355 655,430 615,540 530,520 485,445",
-  "12": "430,355 500,345 530,355 485,445 420,455 385,395",
-  "09": "345,365 420,355 385,395 420,455 360,500 300,470 285,405",
-  "15": "200,380 285,405 300,470 240,520 170,500 160,430",
-  "05": "530,520 615,540 680,600 640,690 560,700 495,645",
-  "07": "420,455 485,445 530,520 495,645 410,640 360,560",
-  "01": "485,360 525,345 560,370 550,405 510,415 480,390",
-  "02": "240,520 300,470 360,560 410,640 345,710 250,705 190,640",
-};
+
 
 function formatSignedDiff(value: number) {
   if (value > 0) return `+${value}`;
@@ -208,6 +188,7 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
 
 function CountyMapCard({ items }: { items: CountyMapStat[] }) {
   const byMaz = new Map(items.map((item) => [item.maz, item]));
+  const countyPaths = new Map(getHungaryCountyPaths().map((item) => [item.maz, item]));
 
   return (
     <section className="chart-card chart-card-neutral county-map-card">
@@ -219,15 +200,15 @@ function CountyMapCard({ items }: { items: CountyMapStat[] }) {
         <svg viewBox="0 0 1020 760" className="county-map-svg" role="img" aria-label="Magyarország vármegyei térkép">
           {getCounties().map((county) => {
             const stat = byMaz.get(county.maz) ?? { maz: county.maz, name: county.mazNev, yes: 0, no: 0, total: 0, leadBloc: "neutral" as const };
-            const points = COUNTY_SHAPES[county.maz];
-            if (!points) return null;
+            const countyPath = countyPaths.get(county.maz);
+            if (!countyPath) return null;
             return (
               <a key={county.maz} href={`/ogy2026/egyeni-valasztokeruletek/${county.maz}`}>
-                <polygon points={points} className={`county-shape county-shape-${stat.leadBloc}`}>
+                <path d={countyPath.d} className={`county-shape county-shape-${stat.leadBloc}`}>
                   <title>
                     {stat.name} · igen: {stat.yes} · nem: {stat.no}
                   </title>
-                </polygon>
+                </path>
               </a>
             );
           })}
