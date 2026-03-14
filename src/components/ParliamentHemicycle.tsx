@@ -1,4 +1,5 @@
 import { ParliamentEstimate, ParliamentSeat } from "../lib/results";
+import { PARLIAMENT_TEMPLATE_SEATS } from "../lib/parliamentTemplateSeats";
 
 type ParliamentHemicycleProps = {
   estimate: ParliamentEstimate;
@@ -7,30 +8,16 @@ type ParliamentHemicycleProps = {
   eyebrow: string;
 };
 
-const ROW_COUNTS = [23, 31, 39, 49, 57];
-const START_ANGLE = 173;
-const END_ANGLE = 7;
 const VIEWBOX_WIDTH = 1100;
-const VIEWBOX_HEIGHT = 700;
-const CENTER_X = VIEWBOX_WIDTH / 2;
-const CENTER_Y = 610;
-const INNER_RADIUS = 170;
-const RADIUS_STEP = 56;
-const PERSON_ASPECT_RATIO = 2.5;
-const ARC_RADIANS = ((START_ANGLE - END_ANGLE) * Math.PI) / 180;
-
-function getSeatCoords(rowIndex: number, seatIndex: number, seatCount: number) {
-  const radius = INNER_RADIUS + rowIndex * RADIUS_STEP;
-  const angleStep = seatCount === 1 ? 0 : (START_ANGLE - END_ANGLE) / (seatCount - 1);
-  const angleDeg = START_ANGLE - angleStep * seatIndex;
-  const angleRad = (angleDeg * Math.PI) / 180;
-
-  return {
-    x: CENTER_X + radius * Math.cos(angleRad),
-    y: CENTER_Y - radius * Math.sin(angleRad),
-    radius,
-  };
-}
+const VIEWBOX_HEIGHT = 760;
+const TEMPLATE_STEP_X = 100;
+const TEMPLATE_STEP_Y = 220;
+const TEMPLATE_PERSON_W = 80;
+const TEMPLATE_PERSON_H = 200;
+const SCALE_X = 0.49;
+const SCALE_Y = 0.24;
+const OFFSET_X = 40;
+const OFFSET_Y = 58;
 
 function getSeatAriaLabel(seat: ParliamentSeat) {
   const blocLabel = seat.bloc === "yes" ? "igen" : seat.bloc === "no" ? "nem" : "nyitott";
@@ -43,21 +30,9 @@ function getBlocLeadLabel(estimate: ParliamentEstimate) {
   return estimate.totalYesSeats > estimate.totalNoSeats ? "Igen vezetés" : "Nem vezetés";
 }
 
-function getSeatWidth(radius: number, seatCount: number) {
-  const arcLengthPerSeat = (radius * ARC_RADIANS) / seatCount;
-  return Math.max(16, Math.min(28, arcLengthPerSeat * 0.76));
-}
-
 export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow }: ParliamentHemicycleProps) {
-  const rows = [];
-  let seatCursor = 0;
-
-  for (let rowIndex = 0; rowIndex < ROW_COUNTS.length; rowIndex += 1) {
-    const seatCount = ROW_COUNTS[rowIndex];
-    const rowSeats = estimate.seats.slice(seatCursor, seatCursor + seatCount);
-    seatCursor += seatCount;
-    rows.push({ rowIndex, seatCount, rowSeats });
-  }
+  const sizedSeatWidth = TEMPLATE_PERSON_W * SCALE_X;
+  const sizedSeatHeight = TEMPLATE_PERSON_H * SCALE_Y;
 
   return (
     <section className="patko-card">
@@ -113,42 +88,34 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
             </symbol>
           </defs>
 
-          <path
-            d={`M 86 ${CENTER_Y} A 468 468 0 0 1 ${VIEWBOX_WIDTH - 86} ${CENTER_Y} L ${VIEWBOX_WIDTH - 164} ${CENTER_Y} A 390 390 0 0 0 164 ${CENTER_Y} Z`}
-            className="patko-floor"
-          />
-          <path
-            d={`M 216 ${CENTER_Y} A 332 332 0 0 1 ${VIEWBOX_WIDTH - 216} ${CENTER_Y}`}
-            className="patko-majority-line"
-          />
+          <path d="M 88 672 A 468 468 0 0 1 1012 672 L 938 672 A 394 394 0 0 0 162 672 Z" className="patko-floor" />
+          <path d="M 214 672 A 332 332 0 0 1 886 672" className="patko-majority-line" />
 
-          {rows.map(({ rowIndex, seatCount, rowSeats }) =>
-            rowSeats.map((seat, seatIndex) => {
-              const { x, y, radius } = getSeatCoords(rowIndex, seatIndex, seatCount);
-              const seatWidth = getSeatWidth(radius, seatCount);
-              const seatHeight = seatWidth * PERSON_ASPECT_RATIO;
-              const seatX = x - seatWidth / 2;
-              const seatY = y - seatHeight;
-              const seatClass = `patko-seat patko-seat-${seat.bloc} patko-seat-${seat.source}`;
+          {estimate.seats.map((seat, index) => {
+            const templatePoint = PARLIAMENT_TEMPLATE_SEATS[index];
+            if (!templatePoint) return null;
 
-              const content = (
-                <>
-                  <title>{getSeatAriaLabel(seat)}</title>
-                  <use href="#patkoPerson" x={seatX} y={seatY} width={seatWidth} height={seatHeight} className={seatClass} />
-                </>
+            const seatX = OFFSET_X + (templatePoint.x / TEMPLATE_STEP_X) * (TEMPLATE_STEP_X * SCALE_X);
+            const seatY = OFFSET_Y + (templatePoint.y / TEMPLATE_STEP_Y) * (TEMPLATE_STEP_Y * SCALE_Y);
+            const seatClass = `patko-seat patko-seat-${seat.bloc} patko-seat-${seat.source}`;
+
+            const content = (
+              <>
+                <title>{getSeatAriaLabel(seat)}</title>
+                <use href="#patkoPerson" x={seatX} y={seatY} width={sizedSeatWidth} height={sizedSeatHeight} className={seatClass} />
+              </>
+            );
+
+            if (seat.href) {
+              return (
+                <a key={seat.id} href={seat.href} aria-label={getSeatAriaLabel(seat)}>
+                  {content}
+                </a>
               );
+            }
 
-              if (seat.href) {
-                return (
-                  <a key={seat.id} href={seat.href} aria-label={getSeatAriaLabel(seat)}>
-                    {content}
-                  </a>
-                );
-              }
-
-              return <g key={seat.id}>{content}</g>;
-            })
-          )}
+            return <g key={seat.id}>{content}</g>;
+          })}
         </svg>
       </div>
     </section>
