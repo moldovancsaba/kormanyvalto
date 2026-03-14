@@ -7,15 +7,15 @@ type ParliamentHemicycleProps = {
   eyebrow: string;
 };
 
-const ROW_COUNTS = [14, 22, 30, 38, 44, 51];
+const ROW_COUNTS = [23, 31, 39, 49, 57];
 const START_ANGLE = 173;
 const END_ANGLE = 7;
 const VIEWBOX_WIDTH = 1100;
-const VIEWBOX_HEIGHT = 760;
+const VIEWBOX_HEIGHT = 700;
 const CENTER_X = VIEWBOX_WIDTH / 2;
-const CENTER_Y = 662;
-const INNER_RADIUS = 168;
-const RADIUS_STEP = 62;
+const CENTER_Y = 610;
+const INNER_RADIUS = 170;
+const RADIUS_STEP = 56;
 const PERSON_ASPECT_RATIO = 2.5;
 const ARC_RADIANS = ((START_ANGLE - END_ANGLE) * Math.PI) / 180;
 
@@ -45,7 +45,7 @@ function getBlocLeadLabel(estimate: ParliamentEstimate) {
 
 function getSeatWidth(radius: number, seatCount: number) {
   const arcLengthPerSeat = (radius * ARC_RADIANS) / seatCount;
-  return Math.max(15, Math.min(30, arcLengthPerSeat * 0.8));
+  return Math.max(16, Math.min(28, arcLengthPerSeat * 0.76));
 }
 
 export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow }: ParliamentHemicycleProps) {
@@ -114,11 +114,11 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
           </defs>
 
           <path
-            d={`M 72 ${CENTER_Y} A 492 492 0 0 1 ${VIEWBOX_WIDTH - 72} ${CENTER_Y} L ${VIEWBOX_WIDTH - 156} ${CENTER_Y} A 408 408 0 0 0 156 ${CENTER_Y} Z`}
+            d={`M 86 ${CENTER_Y} A 468 468 0 0 1 ${VIEWBOX_WIDTH - 86} ${CENTER_Y} L ${VIEWBOX_WIDTH - 164} ${CENTER_Y} A 390 390 0 0 0 164 ${CENTER_Y} Z`}
             className="patko-floor"
           />
           <path
-            d={`M 196 ${CENTER_Y} A 352 352 0 0 1 ${VIEWBOX_WIDTH - 196} ${CENTER_Y}`}
+            d={`M 216 ${CENTER_Y} A 332 332 0 0 1 ${VIEWBOX_WIDTH - 216} ${CENTER_Y}`}
             className="patko-majority-line"
           />
 
