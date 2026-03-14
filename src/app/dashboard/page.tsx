@@ -194,7 +194,7 @@ function CountyMapCard({ items }: { items: CountyMapStat[] }) {
     <section className="chart-card chart-card-neutral county-map-card">
       <header className="chart-card-head">
         <h2>Vármegye térkép</h2>
-        <p>Aktuális állás vármegyei összesítésben (igen / nem / tie).</p>
+        <p>Aktuális állás vármegyénként (igen / nem / döntetlen).</p>
       </header>
       <div className="county-map-wrap">
         <svg viewBox="0 0 1020 760" className="county-map-svg" role="img" aria-label="Magyarország vármegyei térkép">
