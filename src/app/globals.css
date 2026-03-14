@@ -1105,7 +1105,8 @@ button:disabled {
 
 .chart-column-label {
   text-align: center;
-  min-height: 4.5rem;
+  min-height: 4.7rem;
+  overflow: hidden;
 }
 
 .chart-column-label strong {
@@ -1113,6 +1114,9 @@ button:disabled {
   font-size: 0.88rem;
   line-height: 1.15;
   transition: color 160ms ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chart-column-label span {
@@ -1121,6 +1125,9 @@ button:disabled {
   font-size: 0.74rem;
   color: var(--muted);
   line-height: 1.2;
+  max-height: 2.4em;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chart-column-link:hover .chart-column-plot,
