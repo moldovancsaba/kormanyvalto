@@ -8,14 +8,16 @@ type ParliamentHemicycleProps = {
 };
 
 const ROW_COUNTS = [14, 22, 30, 38, 44, 51];
-const ROW_RADII = [104, 144, 184, 224, 264, 304];
-const START_ANGLE = 171.5;
-const END_ANGLE = 8.5;
-const VIEWBOX_WIDTH = 920;
-const VIEWBOX_HEIGHT = 560;
+const ROW_RADII = [118, 168, 218, 268, 318, 368];
+const ROW_SCALES = [0.82, 0.88, 0.94, 1, 1.04, 1.08];
+const START_ANGLE = 173;
+const END_ANGLE = 7;
+const VIEWBOX_WIDTH = 1000;
+const VIEWBOX_HEIGHT = 650;
 const CENTER_X = VIEWBOX_WIDTH / 2;
-const CENTER_Y = 456;
-const SEAT_RADIUS = 7.1;
+const CENTER_Y = 526;
+const SEAT_BASE_WIDTH = 21;
+const SEAT_ASPECT_RATIO = 2.5;
 
 function getSeatCoords(rowIndex: number, seatIndex: number, seatCount: number) {
   const radius = ROW_RADII[rowIndex];
@@ -99,32 +101,35 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
               <stop offset="0%" stopColor="rgba(255,255,255,0.92)" />
               <stop offset="100%" stopColor="rgba(231,238,251,0.84)" />
             </linearGradient>
+            <symbol id="patkoPerson" viewBox="0 0 80 200">
+              <path d="M0 130C0 107.909 17.9086 90 40 90C62.0914 90 80 107.909 80 130V185C80 193.284 73.2843 200 65 200H15C6.71573 200 0 193.284 0 185V130Z" />
+              <path d="M80 40C80 62.0914 62.0914 80 40 80C17.9086 80 0 62.0914 0 40C0 17.9086 17.9086 0 40 0C62.0914 0 80 17.9086 80 40Z" />
+            </symbol>
           </defs>
 
           <path
-            d={`M 78 ${CENTER_Y} A 382 382 0 0 1 ${VIEWBOX_WIDTH - 78} ${CENTER_Y} L ${VIEWBOX_WIDTH - 144} ${CENTER_Y} A 316 316 0 0 0 144 ${CENTER_Y} Z`}
+            d={`M 74 ${CENTER_Y} A 430 430 0 0 1 ${VIEWBOX_WIDTH - 74} ${CENTER_Y} L ${VIEWBOX_WIDTH - 150} ${CENTER_Y} A 354 354 0 0 0 150 ${CENTER_Y} Z`}
             className="patko-floor"
           />
           <path
-            d={`M 174 ${CENTER_Y} A 286 286 0 0 1 ${VIEWBOX_WIDTH - 174} ${CENTER_Y}`}
+            d={`M 178 ${CENTER_Y} A 324 324 0 0 1 ${VIEWBOX_WIDTH - 178} ${CENTER_Y}`}
             className="patko-majority-line"
           />
 
           {rows.map(({ rowIndex, seatCount, rowSeats }) =>
             rowSeats.map((seat, seatIndex) => {
               const { x, y } = getSeatCoords(rowIndex, seatIndex, seatCount);
+              const seatScale = ROW_SCALES[rowIndex];
+              const seatWidth = SEAT_BASE_WIDTH * seatScale;
+              const seatHeight = seatWidth * SEAT_ASPECT_RATIO;
+              const seatX = x - seatWidth / 2;
+              const seatY = y - seatHeight * 0.84;
+              const seatClass = `patko-seat patko-seat-${seat.bloc} patko-seat-${seat.source}`;
+
               const content = (
                 <>
                   <title>{getSeatAriaLabel(seat)}</title>
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={SEAT_RADIUS}
-                    className={`patko-seat patko-seat-${seat.bloc} patko-seat-${seat.source}`}
-                  />
-                  {seat.source === "list" ? (
-                    <circle cx={x} cy={y} r={SEAT_RADIUS * 0.48} className="patko-seat-inner" />
-                  ) : null}
+                  <use href="#patkoPerson" x={seatX} y={seatY} width={seatWidth} height={seatHeight} className={seatClass} />
                 </>
               );
 

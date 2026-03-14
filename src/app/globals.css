@@ -894,12 +894,11 @@ button:disabled {
 
 .patko-visual {
   margin-top: 0.4rem;
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 .patko-svg {
   width: 100%;
-  min-width: 640px;
   height: auto;
   display: block;
   overflow: visible;
@@ -920,7 +919,7 @@ button:disabled {
 
 .patko-seat {
   stroke: rgba(17, 24, 39, 0.9);
-  stroke-width: 1.9;
+  stroke-width: 1.8;
   transition:
     transform 160ms ease,
     stroke-width 160ms ease,
@@ -941,19 +940,15 @@ button:disabled {
   fill: #8aa8df;
 }
 
-.patko-seat-inner {
-  fill: rgba(255, 255, 255, 0.92);
-  pointer-events: none;
-}
-
 .patko-seat-list {
-  opacity: 0.94;
+  opacity: 0.9;
+  stroke-width: 1.6;
 }
 
 .patko-svg a:hover .patko-seat,
 .patko-svg a:focus-visible .patko-seat {
-  transform: scale(1.18);
-  stroke-width: 2.2;
+  transform: scale(1.12);
+  stroke-width: 2.05;
   filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.2));
 }
 
@@ -1005,6 +1000,10 @@ button:disabled {
   .patko-majority-chip {
     width: 100%;
     max-width: 240px;
+  }
+
+  .patko-card {
+    padding: 0.85rem;
   }
 }
 
