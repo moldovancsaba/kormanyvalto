@@ -8,6 +8,10 @@ type ClickStore = {
   yesCount: number;
   noCount: number;
   cooldownSec?: number;
+  matrixStatus?: {
+    code: "YY" | "YN" | "NY" | "NN" | "TT";
+    text: string;
+  };
   history?: {
     type: "yes" | "no";
     timestamp: string;
@@ -66,13 +70,15 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
     [data.history]
   );
   const winnerText =
-    totalCount === 0
-      ? "Nincs még szavazat"
-      : yesCount === noCount
-        ? "Döntetlen"
-        : yesCount > noCount
-          ? "Az igen vezet"
-          : "A nem vezet";
+    aggregateMain && data.matrixStatus
+      ? data.matrixStatus.text
+      : totalCount === 0
+        ? "Nincs még szavazat"
+        : yesCount === noCount
+          ? "Döntetlen"
+          : yesCount > noCount
+            ? "Az igen vezet"
+            : "A nem vezet";
 
   const formatter = useMemo(
     () =>
