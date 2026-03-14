@@ -1178,6 +1178,52 @@ button:disabled {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(231, 238, 251, 0.78) 100%);
 }
 
+.county-map-card {
+  margin-bottom: 1rem;
+}
+
+.county-map-wrap {
+  margin-top: 0.8rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(231, 238, 251, 0.74) 100%);
+  padding: 0.7rem;
+}
+
+.county-map-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.county-shape {
+  stroke: rgba(15, 23, 42, 0.85);
+  stroke-width: 4;
+  transition: transform 140ms ease, filter 140ms ease;
+  transform-origin: center;
+  transform-box: fill-box;
+  cursor: pointer;
+}
+
+.county-shape-yes {
+  fill: linear-gradient(180deg, #8fd4e5 0%, #5ab5cd 100%);
+  fill: var(--yes-grad-bottom);
+}
+
+.county-shape-no {
+  fill: var(--no-grad-bottom);
+}
+
+.county-shape-neutral {
+  fill: var(--patko-seat-neutral);
+}
+
+.county-map-svg a:hover .county-shape,
+.county-map-svg a:focus-visible .county-shape {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.2));
+}
+
 .chart-column-link:hover .chart-column-label strong,
 .chart-column-link:focus-visible .chart-column-label strong {
   color: var(--neutral-blue);

@@ -2,9 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { PageShell } from "../../components/PageChrome";
+import { constituencies, getCounties } from "../../lib/constituencies";
 import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
-import { CityVoteStat, DashboardSummary, getDashboardCityStats, getDashboardSummary } from "../../lib/results";
+import {
+  CityVoteStat,
+  DashboardSummary,
+  getDashboardCityStats,
+  getDashboardSummary,
+  getLeadBlocFromCounts,
+  getScopeVoteCounts,
+} from "../../lib/results";
 
 export const revalidate = 120;
 
@@ -22,6 +30,38 @@ type ChartCardProps = {
   items: CityVoteStat[];
   valueLabel: (item: CityVoteStat) => string;
   valueForBar: (item: CityVoteStat) => number;
+};
+
+type CountyMapStat = {
+  maz: string;
+  name: string;
+  yes: number;
+  no: number;
+  total: number;
+  leadBloc: "yes" | "no" | "neutral";
+};
+
+const COUNTY_SHAPES: Record<string, string> = {
+  "20": "40,480 120,430 205,440 220,520 145,565 70,555",
+  "19": "110,380 190,335 275,345 295,430 205,440 120,430",
+  "18": "260,285 350,248 430,275 420,355 330,365 275,345",
+  "08": "160,245 255,212 350,248 260,285 190,335 120,325",
+  "14": "350,220 415,195 470,220 430,275 350,248",
+  "17": "430,275 470,220 565,205 625,245 595,330 500,345 420,355",
+  "16": "625,245 710,228 775,260 745,335 675,355 595,330",
+  "06": "710,228 790,195 860,220 845,290 775,260",
+  "11": "845,290 930,250 980,300 955,370 885,390 815,350",
+  "03": "675,355 745,335 815,350 885,390 870,455 810,500 725,495 655,430",
+  "04": "810,500 870,455 940,470 980,535 920,590 845,575",
+  "10": "655,430 725,495 845,575 760,635 680,600 615,540",
+  "13": "530,355 595,330 675,355 655,430 615,540 530,520 485,445",
+  "12": "430,355 500,345 530,355 485,445 420,455 385,395",
+  "09": "345,365 420,355 385,395 420,455 360,500 300,470 285,405",
+  "15": "200,380 285,405 300,470 240,520 170,500 160,430",
+  "05": "530,520 615,540 680,600 640,690 560,700 495,645",
+  "07": "420,455 485,445 530,520 495,645 410,640 360,560",
+  "01": "485,360 525,345 560,370 550,405 510,415 480,390",
+  "02": "240,520 300,470 360,560 410,640 345,710 250,705 190,640",
 };
 
 function formatSignedDiff(value: number) {
@@ -166,8 +206,40 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
   );
 }
 
+function CountyMapCard({ items }: { items: CountyMapStat[] }) {
+  const byMaz = new Map(items.map((item) => [item.maz, item]));
+
+  return (
+    <section className="chart-card chart-card-neutral county-map-card">
+      <header className="chart-card-head">
+        <h2>Vármegye térkép</h2>
+        <p>Aktuális állás vármegyei összesítésben (igen / nem / tie).</p>
+      </header>
+      <div className="county-map-wrap">
+        <svg viewBox="0 0 1020 760" className="county-map-svg" role="img" aria-label="Magyarország vármegyei térkép">
+          {getCounties().map((county) => {
+            const stat = byMaz.get(county.maz) ?? { maz: county.maz, name: county.mazNev, yes: 0, no: 0, total: 0, leadBloc: "neutral" as const };
+            const points = COUNTY_SHAPES[county.maz];
+            if (!points) return null;
+            return (
+              <a key={county.maz} href={`/ogy2026/egyeni-valasztokeruletek/${county.maz}`}>
+                <polygon points={points} className={`county-shape county-shape-${stat.leadBloc}`}>
+                  <title>
+                    {stat.name} · igen: {stat.yes} · nem: {stat.no}
+                  </title>
+                </polygon>
+              </a>
+            );
+          })}
+        </svg>
+      </div>
+    </section>
+  );
+}
+
 export default async function DashboardPage() {
   let stats: CityVoteStat[] = [];
+  let countyStats: CountyMapStat[] = [];
   let summary: DashboardSummary = {
     totalWeightedVotes: 0,
     totalVoteEvents: 0,
@@ -180,9 +252,36 @@ export default async function DashboardPage() {
     regularVoteEvents: 0,
   };
   try {
-    [stats, summary] = await Promise.all([getDashboardCityStats(), getDashboardSummary()]);
+    const scopes = constituencies.map((c) => `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`);
+    const [cityStats, summaryStats, scopeCounts] = await Promise.all([
+      getDashboardCityStats(),
+      getDashboardSummary(),
+      getScopeVoteCounts(scopes),
+    ]);
+    stats = cityStats;
+    summary = summaryStats;
+    countyStats = getCounties().map((county) => {
+      const countyConstituencies = constituencies.filter((c) => c.maz === county.maz);
+      const yes = countyConstituencies.reduce((sum, c) => {
+        const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
+        return sum + (scopeCounts[scope]?.yes ?? 0);
+      }, 0);
+      const no = countyConstituencies.reduce((sum, c) => {
+        const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
+        return sum + (scopeCounts[scope]?.no ?? 0);
+      }, 0);
+      return {
+        maz: county.maz,
+        name: county.mazNev,
+        yes,
+        no,
+        total: yes + no,
+        leadBloc: getLeadBlocFromCounts(yes, no),
+      };
+    });
   } catch {
     stats = [];
+    countyStats = [];
     summary = {
       totalWeightedVotes: 0,
       totalVoteEvents: 0,
@@ -242,6 +341,8 @@ export default async function DashboardPage() {
           rightTone="no"
         />
       </section>
+
+      <CountyMapCard items={countyStats} />
 
       <div className="dashboard-grid">
         <ChartCard
