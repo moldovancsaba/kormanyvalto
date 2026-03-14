@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { PageHero } from "./PageChrome";
 
 type ClickStore = {
@@ -259,6 +260,10 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
   const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
   const logoutHref = `/api/auth/logout?returnTo=${encodeURIComponent(returnTo)}`;
   const voteSuffix = auth.authenticated ? " x3" : "";
+  const barTrackStyle = {
+    "--yes-width": `${yesPercent}%`,
+    "--no-width": `${noPercent}%`,
+  } as CSSProperties;
 
   return (
     <main className="app">
@@ -268,9 +273,9 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
 
       <section className="barometer" aria-label="Vezető opció">
         <p className="barometer-label">{winnerText}</p>
-        <div className="bar-track" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
-          <div className="bar-yes" style={{ width: `${yesPercent}%` }} />
-          <div className="bar-no" style={{ width: `${noPercent}%` }} />
+        <div className="bar-track" style={barTrackStyle} role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
+          <div className="bar-yes" />
+          <div className="bar-no" />
         </div>
         <p className="barometer-stats">
           igen: {yesCount} | nem: {noCount}

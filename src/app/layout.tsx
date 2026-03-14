@@ -39,7 +39,7 @@ export default function RootLayout({
             src="https://www.googletagmanager.com/ns.html?id=GTM-PM46B3TD"
             height="0"
             width="0"
-            style={{ display: "none", visibility: "hidden" }}
+            className="gtm-noscript-frame"
           />
         </noscript>
         <Script id="gtag-consent-default" strategy="beforeInteractive">

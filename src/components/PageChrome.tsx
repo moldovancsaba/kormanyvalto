@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
+import { HERO_IMAGE_ALT, HERO_IMAGE_SRC } from "../lib/assets";
 import type { NavItem } from "../lib/navigation";
 
 type PageHeroProps = {
@@ -27,7 +28,7 @@ export function PageHero({ showHero = true }: PageHeroProps) {
 
   return (
     <div className="top-logo">
-      <Image src="/images/hero_vote.png" alt="Szavazás 2026 hero" width={1536} height={1024} priority />
+      <Image src={HERO_IMAGE_SRC} alt={HERO_IMAGE_ALT} width={1536} height={1024} priority />
     </div>
   );
 }

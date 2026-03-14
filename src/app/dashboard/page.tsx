@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { PageShell } from "../../components/PageChrome";
 import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
@@ -78,7 +79,9 @@ function PieCard({
   const total = leftValue + rightValue;
   const leftPercent = total === 0 ? 50 : (leftValue / total) * 100;
   const chartStyle = {
-    background: `conic-gradient(var(--tone-${leftTone}) 0 ${leftPercent}%, var(--tone-${rightTone}) ${leftPercent}% 100%)`,
+    "--pie-left-percent": `${leftPercent}%`,
+    "--pie-left-tone": `var(--tone-${leftTone})`,
+    "--pie-right-tone": `var(--tone-${rightTone})`,
   };
 
   return (
@@ -88,7 +91,7 @@ function PieCard({
         <p>{subtitle}</p>
       </header>
       <div className="pie-layout">
-        <div className="pie-chart" style={chartStyle}>
+        <div className="pie-chart" style={chartStyle as CSSProperties}>
           <div className="pie-hole">
             <strong>{formatNumber(total)}</strong>
             <span>összesen</span>
@@ -142,7 +145,7 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
                 <div className="chart-column-plot">
                   <div
                     className={`chart-column-bar chart-column-bar-${getCityTone(item)}`}
-                    style={{ height: `${height}%` }}
+                    style={{ "--bar-height": `${height}%` } as CSSProperties}
                   />
                 </div>
                 <div className="chart-column-label" title={`${item.city} - ${item.county} - ${item.districtLabel}`}>

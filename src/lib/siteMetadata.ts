@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import { DASHBOARD_SOCIAL_IMAGE_URL, SOCIAL_IMAGE_URL } from "./assets";
 
 export const SITE_URL = "https://www.kormanyvalto.com";
-export const SOCIAL_IMAGE_URL = "/social-share-2026.png?v=2026-03-13-2";
-export const DASHBOARD_SOCIAL_IMAGE_URL = "/social-share-dashboard-2026.png?v=2026-03-13-1";
+export { DASHBOARD_SOCIAL_IMAGE_URL, SOCIAL_IMAGE_URL };
 
 type MetadataInput = {
   title: string;

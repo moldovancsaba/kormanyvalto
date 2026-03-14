@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { PageShell } from "../../../components/PageChrome";
 import { constituencies, getCounties } from "../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../lib/results";
@@ -43,14 +44,16 @@ export default async function Ogy2026ConstituenciesPage() {
           }, 0);
           const total = totalYes + totalNo;
           const yesPercent = total === 0 ? 50 : Number(((totalYes / total) * 100).toFixed(1));
-          const background = `linear-gradient(90deg, var(--yes) 0%, var(--yes) ${yesPercent}%, var(--no) ${yesPercent}%, var(--no) 100%)`;
+          const buttonStyle = {
+            "--yes-percent": `${yesPercent}%`,
+          } as CSSProperties;
 
           return (
             <Link
               key={county.maz}
               href={`/ogy2026/egyeni-valasztokeruletek/${county.maz}`}
               className="route-button route-button--barometer"
-              style={{ backgroundImage: background }}
+              style={buttonStyle}
             >
               <span className="route-button-title">{county.mazNev}</span>
               <span className="route-button-meta">

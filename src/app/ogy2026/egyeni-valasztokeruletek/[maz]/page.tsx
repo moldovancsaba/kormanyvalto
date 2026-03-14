@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { PageShell } from "../../../../components/PageChrome";
 import { getConstituenciesByCounty, getCounties, getSeatLabel } from "../../../../lib/constituencies";
@@ -68,14 +69,16 @@ export default async function CountyPage({ params }: PageProps) {
           const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
           const stat = counts[scope] ?? { yes: 0, no: 0, yesPercent: 50 };
           const yesPercent = Number(stat.yesPercent.toFixed(1));
-          const background = `linear-gradient(90deg, var(--yes) 0%, var(--yes) ${yesPercent}%, var(--no) ${yesPercent}%, var(--no) 100%)`;
+          const buttonStyle = {
+            "--yes-percent": `${yesPercent}%`,
+          } as CSSProperties;
 
           return (
             <Link
               key={`${c.maz}-${c.evk}`}
               href={`/ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`}
               className="route-button route-button--barometer"
-              style={{ backgroundImage: background }}
+              style={buttonStyle}
             >
               <span className="route-button-title">
                 {c.evkNev} - {getSeatLabel(c.szekhely)}
