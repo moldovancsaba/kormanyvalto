@@ -16,6 +16,10 @@ type ClickStore = {
     type: "yes" | "no";
     timestamp: string;
     sourceLabel: string;
+    sourceCounty?: string;
+    sourceCity?: string;
+    sourceHref?: string;
+    sourceTone?: "yes" | "no" | "neutral";
     weight: number;
   }[];
 };
@@ -65,6 +69,10 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
         type: item.type,
         ts: item.timestamp,
         sourceLabel: item.sourceLabel,
+        sourceCounty: item.sourceCounty,
+        sourceCity: item.sourceCity,
+        sourceHref: item.sourceHref,
+        sourceTone: item.sourceTone ?? "neutral",
         weight: item.weight,
       })),
     [data.history]
@@ -356,7 +364,37 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
                 {item.weight > 1 ? <span className="weight-pill">x{item.weight}</span> : null}
                 <span>
                   {formatter.format(new Date(item.ts))}
-                  {item.sourceLabel ? ` - ${item.sourceLabel}` : ""}
+                  {item.sourceCounty ? " - " : ""}
+                  {item.sourceCounty ? (
+                    item.sourceHref ? (
+                      <a
+                        href={item.sourceHref}
+                        className={`history-chip history-chip-${item.sourceTone}`}
+                        aria-label={`${item.sourceCounty} oldal`}
+                      >
+                        {item.sourceCounty}
+                      </a>
+                    ) : (
+                      <span className={`history-chip history-chip-${item.sourceTone}`}>{item.sourceCounty}</span>
+                    )
+                  ) : null}
+                  {item.sourceCity ? (
+                    <>
+                      {" "}
+                      {item.sourceHref ? (
+                        <a
+                          href={item.sourceHref}
+                          className={`history-chip history-chip-${item.sourceTone}`}
+                          aria-label={`${item.sourceCity} oldal`}
+                        >
+                          {item.sourceCity}
+                        </a>
+                      ) : (
+                        <span className={`history-chip history-chip-${item.sourceTone}`}>{item.sourceCity}</span>
+                      )}
+                    </>
+                  ) : null}
+                  {!item.sourceCounty && item.sourceLabel ? ` - ${item.sourceLabel}` : ""}
                 </span>
               </li>
             ))

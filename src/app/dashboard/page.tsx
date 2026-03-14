@@ -34,9 +34,7 @@ function formatNumber(value: number) {
 }
 
 function getCityTone(item: CityVoteStat): "yes" | "no" | "neutral" {
-  if (item.diff > 0) return "yes";
-  if (item.diff < 0) return "no";
-  return "neutral";
+  return item.leadBloc;
 }
 
 type KpiCardProps = {
@@ -196,9 +194,17 @@ export default async function DashboardPage() {
 
   const warZone = [...votedCities].sort((a, b) => b.total - a.total || a.city.localeCompare(b.city, "hu")).slice(0, 5);
   const peaceIslands = [...votedCities].sort((a, b) => a.total - b.total || a.city.localeCompare(b.city, "hu")).slice(0, 5);
-  const yesCities = [...votedCities].filter((item) => item.diff > 0).sort((a, b) => b.diff - a.diff || b.total - a.total).slice(0, 5);
-  const noCities = [...votedCities].filter((item) => item.diff < 0).sort((a, b) => a.diff - b.diff || b.total - a.total).slice(0, 5);
-  const nobodyKnows = [...votedCities].sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff) || b.total - a.total).slice(0, 5);
+  const yesCities = [...votedCities]
+    .filter((item) => item.leadBloc === "yes")
+    .sort((a, b) => b.diff - a.diff || b.total - a.total)
+    .slice(0, 5);
+  const noCities = [...votedCities]
+    .filter((item) => item.leadBloc === "no")
+    .sort((a, b) => a.diff - b.diff || b.total - a.total)
+    .slice(0, 5);
+  const nobodyKnows = [...votedCities]
+    .sort((a, b) => Math.abs(a.diffPercent) - Math.abs(b.diffPercent) || b.total - a.total)
+    .slice(0, 5);
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>

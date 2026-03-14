@@ -9,6 +9,10 @@ export type VoteHistoryItem = {
   timestamp: string;
   scope: string;
   sourceLabel: string;
+  sourceCounty?: string;
+  sourceCity?: string;
+  sourceHref?: string;
+  sourceTone?: ParliamentBloc;
   weight: number;
   mode: VoteMode;
 };
@@ -36,6 +40,8 @@ export type CityVoteStat = {
   no: number;
   total: number;
   diff: number;
+  diffPercent: number;
+  leadBloc: ParliamentBloc;
 };
 
 export type DashboardSummary = {
@@ -100,6 +106,16 @@ type VoteDoc = {
   weight?: number;
   mode?: VoteMode;
 };
+
+export const TIE_THRESHOLD_RATIO = 0.03;
+
+export function getLeadBlocFromCounts(yes: number, no: number, tieThresholdRatio = TIE_THRESHOLD_RATIO): ParliamentBloc {
+  const total = yes + no;
+  if (total <= 0) return "neutral";
+  const diffRatio = Math.abs(yes - no) / total;
+  if (diffRatio < tieThresholdRatio) return "neutral";
+  return yes > no ? "yes" : "no";
+}
 
 async function getVotesCollection() {
   const client = await getMongoClient();
@@ -236,13 +252,29 @@ export async function getResults(
     }
   }
 
+  const scopeTally = new Map<string, { yes: number; no: number }>();
+  for (const vote of votes) {
+    const voteScope = vote.scope ?? "main";
+    const current = scopeTally.get(voteScope) || { yes: 0, no: 0 };
+    const weight = getVoteWeight(vote);
+    if (vote.type === "yes") current.yes += weight;
+    else current.no += weight;
+    scopeTally.set(voteScope, current);
+  }
+
   const history = votes.slice(0, 30).map((vote) => {
     const normalizedScope = vote.scope ?? "main";
+    const meta = getScopeMeta(normalizedScope);
+    const tally = scopeTally.get(normalizedScope) || { yes: 0, no: 0 };
     return {
       type: vote.type,
       timestamp: vote.timestamp,
       scope: normalizedScope,
-      sourceLabel: getScopeLabel(normalizedScope),
+      sourceLabel: meta.sourceLabel,
+      sourceCounty: meta.sourceCounty,
+      sourceCity: meta.sourceCity,
+      sourceHref: meta.sourceHref,
+      sourceTone: getLeadBlocFromCounts(tally.yes, tally.no),
       weight: getVoteWeight(vote),
       mode: (vote.mode === "google" ? "google" : "anonymous") as VoteMode,
     };
@@ -256,14 +288,71 @@ function getScopeLabel(scope: string) {
     return "Országos";
   }
 
-  const match = scope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})\/(\d{2})$/);
-  if (!match) {
-    return "Országos";
+  const districtMatch = scope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})\/(\d{2})$/);
+  if (districtMatch) {
+    const [, maz, evk] = districtMatch;
+    const constituency = findConstituency(maz, evk);
+    return constituency ? `${constituency.mazNev}, ${getSeatLabel(constituency.szekhely)}` : "Országos";
   }
 
-  const [, maz, evk] = match;
-  const constituency = findConstituency(maz, evk);
-  return constituency ? `${constituency.mazNev}, ${getSeatLabel(constituency.szekhely)}` : "Országos";
+  const countyMatch = scope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})$/);
+  if (countyMatch) {
+    const [, maz] = countyMatch;
+    return constituencies.find((item) => item.maz === maz)?.mazNev || "Országos";
+  }
+
+  return "Országos";
+}
+
+function getScopeMeta(scope: string) {
+  if (scope === "main") {
+    return {
+      sourceLabel: "Országos",
+      sourceCounty: "Országos",
+      sourceCity: undefined,
+      sourceHref: "/",
+    };
+  }
+
+  const districtMatch = scope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})\/(\d{2})$/);
+  if (districtMatch) {
+    const [, maz, evk] = districtMatch;
+    const constituency = findConstituency(maz, evk);
+    if (!constituency) {
+      return {
+        sourceLabel: "Országos",
+        sourceCounty: "Országos",
+        sourceCity: undefined,
+        sourceHref: "/",
+      };
+    }
+    const city = getSeatLabel(constituency.szekhely);
+    return {
+      sourceLabel: `${constituency.mazNev}, ${city}`,
+      sourceCounty: constituency.mazNev,
+      sourceCity: city,
+      sourceHref: `/ogy2026/egyeni-valasztokeruletek/${maz}/${evk}`,
+    };
+  }
+
+  const countyMatch = scope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})$/);
+  if (countyMatch) {
+    const [, maz] = countyMatch;
+    const county = constituencies.find((item) => item.maz === maz)?.mazNev || "Országos";
+    return {
+      sourceLabel: county,
+      sourceCounty: county,
+      sourceCity: undefined,
+      sourceHref: `/ogy2026/egyeni-valasztokeruletek/${maz}`,
+    };
+  }
+
+  return {
+    sourceLabel: getScopeLabel(scope),
+    sourceCounty: "Országos",
+    sourceCity: undefined,
+    sourceHref: "/",
+  };
 }
 
 export async function addVote({
@@ -373,6 +462,8 @@ export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
       no: 0,
       total: 0,
       diff: 0,
+      diffPercent: 0,
+      leadBloc: "neutral" as ParliamentBloc,
     };
 
     if (row._id.type === "yes") {
@@ -383,6 +474,8 @@ export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
 
     existing.total = existing.yes + existing.no;
     existing.diff = existing.yes - existing.no;
+    existing.diffPercent = existing.total > 0 ? (existing.diff / existing.total) * 100 : 0;
+    existing.leadBloc = getLeadBlocFromCounts(existing.yes, existing.no);
     cityMap.set(key, existing);
   }
 
@@ -467,7 +560,6 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
   const mainListYesVotes = mainResults.yesCount;
   const mainListNoVotes = mainResults.noCount;
   const mainListTotal = mainListYesVotes + mainListNoVotes;
-  const projectionLeader: Exclude<ParliamentBloc, "neutral"> = mainListYesVotes >= mainListNoVotes ? "yes" : "no";
 
   for (const constituency of constituencies) {
     const scope = buildDistrictScope(constituency.maz, constituency.evk);
@@ -476,10 +568,9 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
     const label = `${constituency.evkNev} - ${seatLabel}`;
     const href = `/ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`;
     const margin = Math.abs(stat.yes - stat.no);
-    const resolvedBloc =
-      stat.yes > stat.no ? "yes" : stat.no > stat.yes ? "no" : mode === "projection" ? projectionLeader : "neutral";
-    const projectedDetailSuffix =
-      stat.yes === stat.no && mode === "projection" ? " - projekcióban kiosztva országos vezetés alapján" : "";
+    const resolvedBloc = getLeadBlocFromCounts(stat.yes, stat.no);
+    const tieDetailSuffix =
+      stat.total > 0 && resolvedBloc === "neutral" ? " - 3% alatti különbség (döntetlen zóna)" : "";
 
     if (resolvedBloc === "yes") {
       districtYesSeats += 1;
@@ -491,7 +582,7 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
         source: "district",
         href,
         label,
-        detail: `${constituency.mazNev}, ${seatLabel}${projectedDetailSuffix}`,
+        detail: `${constituency.mazNev}, ${seatLabel}${tieDetailSuffix}`,
         county: constituency.mazNev,
         city: seatLabel,
         yes: stat.yes,
@@ -512,7 +603,7 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
         source: "district",
         href,
         label,
-        detail: `${constituency.mazNev}, ${seatLabel}${projectedDetailSuffix}`,
+        detail: `${constituency.mazNev}, ${seatLabel}${tieDetailSuffix}`,
         county: constituency.mazNev,
         city: seatLabel,
         yes: stat.yes,

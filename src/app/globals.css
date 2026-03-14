@@ -34,6 +34,10 @@
   --shadow-blue-soft: rgba(31, 78, 163, 0.15);
   --barometer-overlay-border: rgba(15, 23, 42, 0.4);
   --barometer-shell: #111827;
+  --patko-seat-stroke-width: 5px;
+  --patko-seat-neutral: #8aa8df;
+  --patko-seat-fill-list: #ffffff;
+  --patko-seat-stroke-evk: #ffffff;
   --container-top-gap: 2rem;
   --container-bottom-gap: 0.5rem;
   --container-inline: min(900px, 94vw);
@@ -250,6 +254,34 @@ li {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.history-chip {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  text-decoration: none;
+  color: var(--ink-strong);
+  font-weight: 700;
+  font-size: 0.82rem;
+  line-height: 1.2;
+}
+
+.history-chip-yes {
+  background: linear-gradient(180deg, var(--yes-grad-top) 0%, var(--yes-grad-bottom) 100%);
+  color: var(--on-dark);
+}
+
+.history-chip-no {
+  background: linear-gradient(180deg, var(--no-grad-top) 0%, var(--no-grad-bottom) 100%);
+  color: var(--on-dark);
+}
+
+.history-chip-neutral {
+  background: linear-gradient(180deg, #9cb5e6 0%, var(--patko-seat-neutral) 100%);
+  color: var(--on-dark);
 }
 
 .vote-pill {
@@ -904,53 +936,43 @@ button:disabled {
   overflow: visible;
 }
 
-.patko-floor {
-  fill: url(#patkoFloor);
-  stroke: rgba(15, 23, 42, 0.08);
-  stroke-width: 2;
-}
-
-.patko-majority-line {
-  fill: none;
-  stroke: rgba(31, 78, 163, 0.28);
-  stroke-width: 4;
-  stroke-dasharray: 10 10;
-}
-
 .patko-seat {
-  stroke-width: 5;
+  stroke-width: var(--patko-seat-stroke-width);
   transition: opacity 120ms ease;
 }
 
 .patko-seat-yes.patko-seat-district {
   fill: var(--yes-grad-bottom);
-  stroke: #ffffff;
+  stroke: var(--patko-seat-stroke-evk);
 }
 
 .patko-seat-no.patko-seat-district {
   fill: var(--no-grad-bottom);
-  stroke: #ffffff;
+  stroke: var(--patko-seat-stroke-evk);
 }
 
 .patko-seat-neutral.patko-seat-district {
-  fill: #8aa8df;
-  stroke: #ffffff;
+  fill: var(--patko-seat-neutral);
+  stroke: var(--patko-seat-stroke-evk);
 }
 
 .patko-seat-list {
-  fill: #ffffff;
+  fill: var(--patko-seat-fill-list);
 }
 
 .patko-seat-yes.patko-seat-list {
+  fill: url(#patkoListYesGradient);
   stroke: var(--yes-grad-bottom);
 }
 
 .patko-seat-no.patko-seat-list {
+  fill: url(#patkoListNoGradient);
   stroke: var(--no-grad-bottom);
 }
 
 .patko-seat-neutral.patko-seat-list {
-  stroke: #8aa8df;
+  fill: url(#patkoListNeutralGradient);
+  stroke: var(--patko-seat-neutral);
 }
 
 .patko-svg a:hover .patko-seat,
