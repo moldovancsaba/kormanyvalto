@@ -12,10 +12,9 @@ const VIEWBOX_WIDTH = 1100;
 const VIEWBOX_HEIGHT = 760;
 const TEMPLATE_STEP_X = 100;
 const TEMPLATE_STEP_Y = 220;
-const POSITION_SCALE_X = 0.33;
-const POSITION_SCALE_Y = 0.235;
-const SEAT_WIDTH = 58;
-const SEAT_HEIGHT = 73;
+const SEAT_WIDTH = 46;
+const SEAT_HEIGHT = 63.25;
+const SEAT_GAP = 6;
 
 function getSeatAriaLabel(seat: ParliamentSeat) {
   const blocLabel = seat.bloc === "yes" ? "igen" : seat.bloc === "no" ? "nem" : "nyitott";
@@ -36,8 +35,8 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
 
       return {
         seat,
-        x: (templatePoint.x / TEMPLATE_STEP_X) * (TEMPLATE_STEP_X * POSITION_SCALE_X),
-        y: (templatePoint.y / TEMPLATE_STEP_Y) * (TEMPLATE_STEP_Y * POSITION_SCALE_Y),
+        x: (templatePoint.x / TEMPLATE_STEP_X) * (SEAT_WIDTH + SEAT_GAP),
+        y: (templatePoint.y / TEMPLATE_STEP_Y) * (SEAT_HEIGHT + SEAT_GAP),
       };
     })
     .filter((value): value is { seat: ParliamentSeat; x: number; y: number } => value !== null);
@@ -98,9 +97,8 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
               <stop offset="0%" stopColor="rgba(255,255,255,0.92)" />
               <stop offset="100%" stopColor="rgba(231,238,251,0.84)" />
             </linearGradient>
-            <symbol id="patkoPerson" viewBox="0 0 80 200">
-              <path d="M0 130C0 107.909 17.9086 90 40 90C62.0914 90 80 107.909 80 130V185C80 193.284 73.2843 200 65 200H15C6.71573 200 0 193.284 0 185V130Z" />
-              <path d="M80 40C80 62.0914 62.0914 80 40 80C17.9086 80 0 62.0914 0 40C0 17.9086 17.9086 0 40 0C62.0914 0 80 17.9086 80 40Z" />
+            <symbol id="patkoPerson" viewBox="0 0 80 110">
+              <path d="M0 40C0 17.9086 17.9086 0 40 0C62.0914 0 80 17.9086 80 40V95C80 103.284 73.2843 110 65 110H15C6.71573 110 0 103.284 0 95V40Z" />
             </symbol>
           </defs>
 
