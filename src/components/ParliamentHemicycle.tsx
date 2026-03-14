@@ -12,12 +12,10 @@ const VIEWBOX_WIDTH = 1100;
 const VIEWBOX_HEIGHT = 760;
 const TEMPLATE_STEP_X = 100;
 const TEMPLATE_STEP_Y = 220;
-const TEMPLATE_PERSON_W = 80;
-const TEMPLATE_PERSON_H = 200;
-const SCALE_X = 0.49;
-const SCALE_Y = 0.24;
-const OFFSET_X = 40;
-const OFFSET_Y = 58;
+const POSITION_SCALE_X = 0.33;
+const POSITION_SCALE_Y = 0.235;
+const SEAT_WIDTH = 58;
+const SEAT_HEIGHT = 73;
 
 function getSeatAriaLabel(seat: ParliamentSeat) {
   const blocLabel = seat.bloc === "yes" ? "igen" : seat.bloc === "no" ? "nem" : "nyitott";
@@ -31,8 +29,26 @@ function getBlocLeadLabel(estimate: ParliamentEstimate) {
 }
 
 export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow }: ParliamentHemicycleProps) {
-  const sizedSeatWidth = TEMPLATE_PERSON_W * SCALE_X;
-  const sizedSeatHeight = TEMPLATE_PERSON_H * SCALE_Y;
+  const mappedSeats = estimate.seats
+    .map((seat, index) => {
+      const templatePoint = PARLIAMENT_TEMPLATE_SEATS[index];
+      if (!templatePoint) return null;
+
+      return {
+        seat,
+        x: (templatePoint.x / TEMPLATE_STEP_X) * (TEMPLATE_STEP_X * POSITION_SCALE_X),
+        y: (templatePoint.y / TEMPLATE_STEP_Y) * (TEMPLATE_STEP_Y * POSITION_SCALE_Y),
+      };
+    })
+    .filter((value): value is { seat: ParliamentSeat; x: number; y: number } => value !== null);
+
+  const minX = Math.min(...mappedSeats.map((point) => point.x));
+  const minY = Math.min(...mappedSeats.map((point) => point.y));
+  const maxX = Math.max(...mappedSeats.map((point) => point.x + SEAT_WIDTH));
+  const maxY = Math.max(...mappedSeats.map((point) => point.y + SEAT_HEIGHT));
+
+  const offsetX = (VIEWBOX_WIDTH - (maxX - minX)) / 2 - minX;
+  const offsetY = VIEWBOX_HEIGHT - maxY - 24;
 
   return (
     <section className="patko-card">
@@ -88,21 +104,15 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
             </symbol>
           </defs>
 
-          <path d="M 88 672 A 468 468 0 0 1 1012 672 L 938 672 A 394 394 0 0 0 162 672 Z" className="patko-floor" />
-          <path d="M 214 672 A 332 332 0 0 1 886 672" className="patko-majority-line" />
-
-          {estimate.seats.map((seat, index) => {
-            const templatePoint = PARLIAMENT_TEMPLATE_SEATS[index];
-            if (!templatePoint) return null;
-
-            const seatX = OFFSET_X + (templatePoint.x / TEMPLATE_STEP_X) * (TEMPLATE_STEP_X * SCALE_X);
-            const seatY = OFFSET_Y + (templatePoint.y / TEMPLATE_STEP_Y) * (TEMPLATE_STEP_Y * SCALE_Y);
+          {mappedSeats.map(({ seat, x, y }) => {
+            const seatX = x + offsetX;
+            const seatY = y + offsetY;
             const seatClass = `patko-seat patko-seat-${seat.bloc} patko-seat-${seat.source}`;
 
             const content = (
               <>
                 <title>{getSeatAriaLabel(seat)}</title>
-                <use href="#patkoPerson" x={seatX} y={seatY} width={sizedSeatWidth} height={sizedSeatHeight} className={seatClass} />
+                <use href="#patkoPerson" x={seatX} y={seatY} width={SEAT_WIDTH} height={SEAT_HEIGHT} className={seatClass} />
               </>
             );
 
