@@ -284,12 +284,50 @@ export async function getResults(
     }
   }
 
-  const history = votes.slice(0, 30).map((vote) => {
+  const historyItems = votes.slice(0, 30).map((vote) => {
     const normalizedScope = vote.scope ?? "main";
-    const meta = getScopeMeta(normalizedScope);
+    return {
+      vote,
+      normalizedScope,
+      meta: getScopeMeta(normalizedScope),
+    };
+  });
+
+  const historyCountyMaz = [...new Set(historyItems.map((item) => item.meta.maz).filter((value): value is string => Boolean(value)))];
+  const historyDistrictScopes = [
+    ...new Set(
+      historyItems
+        .filter((item) => item.meta.maz && item.meta.evk)
+        .map((item) => `ogy2026/egyeni-valasztokeruletek/${item.meta.maz}/${item.meta.evk}`)
+    ),
+  ];
+
+  const countyDistrictScopes = constituencies
+    .filter((item) => historyCountyMaz.includes(item.maz))
+    .map((item) => `ogy2026/egyeni-valasztokeruletek/${item.maz}/${item.evk}`);
+
+  const [districtGlobalCounts] = await Promise.all([getScopeVoteCounts([...new Set([...countyDistrictScopes, ...historyDistrictScopes])])]);
+  const countyGlobalTotals = new Map<string, { yes: number; no: number }>();
+  for (const maz of historyCountyMaz) {
+    const scopesForCounty = constituencies.filter((item) => item.maz === maz).map((item) => `ogy2026/egyeni-valasztokeruletek/${item.maz}/${item.evk}`);
+    const total = scopesForCounty.reduce(
+      (acc, scopeKey) => {
+        const stat = districtGlobalCounts[scopeKey] ?? { yes: 0, no: 0, total: 0, yesPercent: 50 };
+        acc.yes += stat.yes;
+        acc.no += stat.no;
+        return acc;
+      },
+      { yes: 0, no: 0 }
+    );
+    countyGlobalTotals.set(maz, total);
+  }
+
+  const history = historyItems.map(({ vote, normalizedScope, meta }) => {
     const tally = scopeTally.get(normalizedScope) || { yes: 0, no: 0 };
     const countyAggregate = meta.maz ? countyTally.get(meta.maz) : undefined;
     const districtAggregate = meta.maz && meta.evk ? districtTally.get(normalizedScope) : undefined;
+    const countyGlobal = meta.maz ? countyGlobalTotals.get(meta.maz) : undefined;
+    const districtGlobal = meta.maz && meta.evk ? districtGlobalCounts[normalizedScope] : undefined;
     return {
       type: vote.type,
       timestamp: vote.timestamp,
@@ -299,8 +337,15 @@ export async function getResults(
       sourceCity: meta.sourceCity,
       sourceCountyHref: meta.sourceCountyHref,
       sourceCityHref: meta.sourceCityHref,
-      sourceCountyTone: getLeadBlocFromCounts(countyAggregate?.yes ?? tally.yes, countyAggregate?.no ?? tally.no),
-      sourceCityTone: districtAggregate ? getLeadBlocFromCounts(districtAggregate.yes, districtAggregate.no) : undefined,
+      sourceCountyTone: getLeadBlocFromCounts(
+        countyGlobal?.yes ?? countyAggregate?.yes ?? tally.yes,
+        countyGlobal?.no ?? countyAggregate?.no ?? tally.no
+      ),
+      sourceCityTone: districtGlobal
+        ? getLeadBlocFromCounts(districtGlobal.yes, districtGlobal.no)
+        : districtAggregate
+          ? getLeadBlocFromCounts(districtAggregate.yes, districtAggregate.no)
+          : undefined,
       weight: getVoteWeight(vote),
       mode: (vote.mode === "google" ? "google" : "anonymous") as VoteMode,
     };
