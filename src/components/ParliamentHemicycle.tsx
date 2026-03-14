@@ -8,19 +8,19 @@ type ParliamentHemicycleProps = {
 };
 
 const ROW_COUNTS = [14, 22, 30, 38, 44, 51];
-const ROW_RADII = [118, 168, 218, 268, 318, 368];
-const ROW_SCALES = [0.82, 0.88, 0.94, 1, 1.04, 1.08];
 const START_ANGLE = 173;
 const END_ANGLE = 7;
-const VIEWBOX_WIDTH = 1000;
-const VIEWBOX_HEIGHT = 650;
+const VIEWBOX_WIDTH = 1100;
+const VIEWBOX_HEIGHT = 760;
 const CENTER_X = VIEWBOX_WIDTH / 2;
-const CENTER_Y = 526;
-const SEAT_BASE_WIDTH = 21;
-const SEAT_ASPECT_RATIO = 2.5;
+const CENTER_Y = 662;
+const INNER_RADIUS = 168;
+const RADIUS_STEP = 62;
+const PERSON_ASPECT_RATIO = 2.5;
+const ARC_RADIANS = ((START_ANGLE - END_ANGLE) * Math.PI) / 180;
 
 function getSeatCoords(rowIndex: number, seatIndex: number, seatCount: number) {
-  const radius = ROW_RADII[rowIndex];
+  const radius = INNER_RADIUS + rowIndex * RADIUS_STEP;
   const angleStep = seatCount === 1 ? 0 : (START_ANGLE - END_ANGLE) / (seatCount - 1);
   const angleDeg = START_ANGLE - angleStep * seatIndex;
   const angleRad = (angleDeg * Math.PI) / 180;
@@ -28,6 +28,7 @@ function getSeatCoords(rowIndex: number, seatIndex: number, seatCount: number) {
   return {
     x: CENTER_X + radius * Math.cos(angleRad),
     y: CENTER_Y - radius * Math.sin(angleRad),
+    radius,
   };
 }
 
@@ -40,6 +41,11 @@ function getSeatAriaLabel(seat: ParliamentSeat) {
 function getBlocLeadLabel(estimate: ParliamentEstimate) {
   if (estimate.totalYesSeats === estimate.totalNoSeats) return "Fej fej mellett";
   return estimate.totalYesSeats > estimate.totalNoSeats ? "Igen vezetés" : "Nem vezetés";
+}
+
+function getSeatWidth(radius: number, seatCount: number) {
+  const arcLengthPerSeat = (radius * ARC_RADIANS) / seatCount;
+  return Math.max(15, Math.min(30, arcLengthPerSeat * 0.8));
 }
 
 export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow }: ParliamentHemicycleProps) {
@@ -108,22 +114,21 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
           </defs>
 
           <path
-            d={`M 74 ${CENTER_Y} A 430 430 0 0 1 ${VIEWBOX_WIDTH - 74} ${CENTER_Y} L ${VIEWBOX_WIDTH - 150} ${CENTER_Y} A 354 354 0 0 0 150 ${CENTER_Y} Z`}
+            d={`M 72 ${CENTER_Y} A 492 492 0 0 1 ${VIEWBOX_WIDTH - 72} ${CENTER_Y} L ${VIEWBOX_WIDTH - 156} ${CENTER_Y} A 408 408 0 0 0 156 ${CENTER_Y} Z`}
             className="patko-floor"
           />
           <path
-            d={`M 178 ${CENTER_Y} A 324 324 0 0 1 ${VIEWBOX_WIDTH - 178} ${CENTER_Y}`}
+            d={`M 196 ${CENTER_Y} A 352 352 0 0 1 ${VIEWBOX_WIDTH - 196} ${CENTER_Y}`}
             className="patko-majority-line"
           />
 
           {rows.map(({ rowIndex, seatCount, rowSeats }) =>
             rowSeats.map((seat, seatIndex) => {
-              const { x, y } = getSeatCoords(rowIndex, seatIndex, seatCount);
-              const seatScale = ROW_SCALES[rowIndex];
-              const seatWidth = SEAT_BASE_WIDTH * seatScale;
-              const seatHeight = seatWidth * SEAT_ASPECT_RATIO;
+              const { x, y, radius } = getSeatCoords(rowIndex, seatIndex, seatCount);
+              const seatWidth = getSeatWidth(radius, seatCount);
+              const seatHeight = seatWidth * PERSON_ASPECT_RATIO;
               const seatX = x - seatWidth / 2;
-              const seatY = y - seatHeight * 0.84;
+              const seatY = y - seatHeight;
               const seatClass = `patko-seat patko-seat-${seat.bloc} patko-seat-${seat.source}`;
 
               const content = (
