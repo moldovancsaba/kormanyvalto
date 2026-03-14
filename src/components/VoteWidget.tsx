@@ -18,8 +18,10 @@ type ClickStore = {
     sourceLabel: string;
     sourceCounty?: string;
     sourceCity?: string;
-    sourceHref?: string;
-    sourceTone?: "yes" | "no" | "neutral";
+    sourceCountyHref?: string;
+    sourceCityHref?: string;
+    sourceCountyTone?: "yes" | "no" | "neutral";
+    sourceCityTone?: "yes" | "no" | "neutral";
     weight: number;
   }[];
 };
@@ -71,8 +73,10 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
         sourceLabel: item.sourceLabel,
         sourceCounty: item.sourceCounty,
         sourceCity: item.sourceCity,
-        sourceHref: item.sourceHref,
-        sourceTone: item.sourceTone ?? "neutral",
+        sourceCountyHref: item.sourceCountyHref,
+        sourceCityHref: item.sourceCityHref,
+        sourceCountyTone: item.sourceCountyTone ?? "neutral",
+        sourceCityTone: item.sourceCityTone ?? "neutral",
         weight: item.weight,
       })),
     [data.history]
@@ -366,31 +370,31 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
                   {formatter.format(new Date(item.ts))}
                   {item.sourceCounty ? " - " : ""}
                   {item.sourceCounty ? (
-                    item.sourceHref ? (
+                    item.sourceCountyHref ? (
                       <a
-                        href={item.sourceHref}
-                        className={`history-chip history-chip-${item.sourceTone}`}
+                        href={item.sourceCountyHref}
+                        className={`history-chip history-chip-${item.sourceCountyTone}`}
                         aria-label={`${item.sourceCounty} oldal`}
                       >
                         {item.sourceCounty}
                       </a>
                     ) : (
-                      <span className={`history-chip history-chip-${item.sourceTone}`}>{item.sourceCounty}</span>
+                      <span className={`history-chip history-chip-${item.sourceCountyTone}`}>{item.sourceCounty}</span>
                     )
                   ) : null}
                   {item.sourceCity ? (
                     <>
                       {" "}
-                      {item.sourceHref ? (
+                      {item.sourceCityHref ? (
                         <a
-                          href={item.sourceHref}
-                          className={`history-chip history-chip-${item.sourceTone}`}
+                          href={item.sourceCityHref}
+                          className={`history-chip history-chip-${item.sourceCityTone}`}
                           aria-label={`${item.sourceCity} oldal`}
                         >
                           {item.sourceCity}
                         </a>
                       ) : (
-                        <span className={`history-chip history-chip-${item.sourceTone}`}>{item.sourceCity}</span>
+                        <span className={`history-chip history-chip-${item.sourceCityTone}`}>{item.sourceCity}</span>
                       )}
                     </>
                   ) : null}

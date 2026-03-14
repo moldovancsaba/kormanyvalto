@@ -11,8 +11,10 @@ export type VoteHistoryItem = {
   sourceLabel: string;
   sourceCounty?: string;
   sourceCity?: string;
-  sourceHref?: string;
-  sourceTone?: ParliamentBloc;
+  sourceCountyHref?: string;
+  sourceCityHref?: string;
+  sourceCountyTone?: ParliamentBloc;
+  sourceCityTone?: ParliamentBloc;
   weight: number;
   mode: VoteMode;
 };
@@ -253,19 +255,41 @@ export async function getResults(
   }
 
   const scopeTally = new Map<string, { yes: number; no: number }>();
+  const countyTally = new Map<string, { yes: number; no: number }>();
+  const districtTally = new Map<string, { yes: number; no: number }>();
+  const addTally = (map: Map<string, { yes: number; no: number }>, key: string, type: VoteType, weight: number) => {
+    const current = map.get(key) || { yes: 0, no: 0 };
+    if (type === "yes") current.yes += weight;
+    else current.no += weight;
+    map.set(key, current);
+  };
+
   for (const vote of votes) {
     const voteScope = vote.scope ?? "main";
-    const current = scopeTally.get(voteScope) || { yes: 0, no: 0 };
     const weight = getVoteWeight(vote);
-    if (vote.type === "yes") current.yes += weight;
-    else current.no += weight;
-    scopeTally.set(voteScope, current);
+    addTally(scopeTally, voteScope, vote.type, weight);
+
+    const districtMatch = voteScope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})\/(\d{2})$/);
+    if (districtMatch) {
+      const [, maz] = districtMatch;
+      addTally(districtTally, voteScope, vote.type, weight);
+      addTally(countyTally, maz, vote.type, weight);
+      continue;
+    }
+
+    const countyMatch = voteScope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})$/);
+    if (countyMatch) {
+      const [, maz] = countyMatch;
+      addTally(countyTally, maz, vote.type, weight);
+    }
   }
 
   const history = votes.slice(0, 30).map((vote) => {
     const normalizedScope = vote.scope ?? "main";
     const meta = getScopeMeta(normalizedScope);
     const tally = scopeTally.get(normalizedScope) || { yes: 0, no: 0 };
+    const countyAggregate = meta.maz ? countyTally.get(meta.maz) : undefined;
+    const districtAggregate = meta.maz && meta.evk ? districtTally.get(normalizedScope) : undefined;
     return {
       type: vote.type,
       timestamp: vote.timestamp,
@@ -273,8 +297,10 @@ export async function getResults(
       sourceLabel: meta.sourceLabel,
       sourceCounty: meta.sourceCounty,
       sourceCity: meta.sourceCity,
-      sourceHref: meta.sourceHref,
-      sourceTone: getLeadBlocFromCounts(tally.yes, tally.no),
+      sourceCountyHref: meta.sourceCountyHref,
+      sourceCityHref: meta.sourceCityHref,
+      sourceCountyTone: getLeadBlocFromCounts(countyAggregate?.yes ?? tally.yes, countyAggregate?.no ?? tally.no),
+      sourceCityTone: districtAggregate ? getLeadBlocFromCounts(districtAggregate.yes, districtAggregate.no) : undefined,
       weight: getVoteWeight(vote),
       mode: (vote.mode === "google" ? "google" : "anonymous") as VoteMode,
     };
@@ -310,7 +336,10 @@ function getScopeMeta(scope: string) {
       sourceLabel: "Országos",
       sourceCounty: "Országos",
       sourceCity: undefined,
-      sourceHref: "/",
+      sourceCountyHref: "/",
+      sourceCityHref: undefined,
+      maz: undefined as string | undefined,
+      evk: undefined as string | undefined,
     };
   }
 
@@ -323,7 +352,10 @@ function getScopeMeta(scope: string) {
         sourceLabel: "Országos",
         sourceCounty: "Országos",
         sourceCity: undefined,
-        sourceHref: "/",
+        sourceCountyHref: "/",
+        sourceCityHref: undefined,
+        maz: undefined as string | undefined,
+        evk: undefined as string | undefined,
       };
     }
     const city = getSeatLabel(constituency.szekhely);
@@ -331,7 +363,10 @@ function getScopeMeta(scope: string) {
       sourceLabel: `${constituency.mazNev}, ${city}`,
       sourceCounty: constituency.mazNev,
       sourceCity: city,
-      sourceHref: `/ogy2026/egyeni-valasztokeruletek/${maz}/${evk}`,
+      sourceCountyHref: `/ogy2026/egyeni-valasztokeruletek/${maz}`,
+      sourceCityHref: `/ogy2026/egyeni-valasztokeruletek/${maz}/${evk}`,
+      maz,
+      evk,
     };
   }
 
@@ -343,7 +378,10 @@ function getScopeMeta(scope: string) {
       sourceLabel: county,
       sourceCounty: county,
       sourceCity: undefined,
-      sourceHref: `/ogy2026/egyeni-valasztokeruletek/${maz}`,
+      sourceCountyHref: `/ogy2026/egyeni-valasztokeruletek/${maz}`,
+      sourceCityHref: undefined,
+      maz,
+      evk: undefined as string | undefined,
     };
   }
 
@@ -351,7 +389,10 @@ function getScopeMeta(scope: string) {
     sourceLabel: getScopeLabel(scope),
     sourceCounty: "Országos",
     sourceCity: undefined,
-    sourceHref: "/",
+    sourceCountyHref: "/",
+    sourceCityHref: undefined,
+    maz: undefined as string | undefined,
+    evk: undefined as string | undefined,
   };
 }
 
