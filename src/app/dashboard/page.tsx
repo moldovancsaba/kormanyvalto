@@ -213,24 +213,9 @@ export default async function DashboardPage() {
           value={formatNumber(summary.totalWeightedVotes)}
           detail={`${formatNumber(summary.totalVoteEvents)} leadott kattintás alapján`}
         />
-        <KpiCard
-          label="Összes regisztrált játékos"
-          value={formatNumber(summary.totalRegisteredPlayers)}
-          detail="A 3x VOTE módot használó belépett játékosok"
-        />
       </section>
 
       <section className="pie-grid">
-        <PieCard
-          title="3x-os szavazatok vs sima szavazatok"
-          subtitle="Súlyozott összesítés a belépett és anonim játékmód között."
-          leftLabel="3x-os"
-          leftValue={summary.weightedTripleVotes}
-          rightLabel="sima"
-          rightValue={summary.weightedRegularVotes}
-          leftTone="warm"
-          rightTone="cool"
-        />
         <PieCard
           title="Összes igen vs összes nem"
           subtitle="A teljes rendszer jelenlegi súlyozott állása."
