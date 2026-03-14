@@ -119,6 +119,11 @@ export function getLeadBlocFromCounts(yes: number, no: number, tieThresholdRatio
   return yes > no ? "yes" : "no";
 }
 
+function getProjectedFinalBloc(yes: number, no: number): Exclude<ParliamentBloc, "neutral"> {
+  if (yes === no) return "no";
+  return yes > no ? "yes" : "no";
+}
+
 async function getVotesCollection() {
   const client = await getMongoClient();
   const db = client.db(getMongoDbName());
@@ -654,7 +659,7 @@ export async function getParliamentEstimate(mode: ParliamentEstimateMode = "stri
     const label = `${constituency.evkNev} - ${seatLabel}`;
     const href = `/ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`;
     const margin = Math.abs(stat.yes - stat.no);
-    const resolvedBloc = getLeadBlocFromCounts(stat.yes, stat.no);
+    const resolvedBloc = mode === "projection" ? getProjectedFinalBloc(stat.yes, stat.no) : getLeadBlocFromCounts(stat.yes, stat.no);
     const tieDetailSuffix =
       stat.total > 0 && resolvedBloc === "neutral" ? " - 3% alatti különbség (döntetlen zóna)" : "";
 
