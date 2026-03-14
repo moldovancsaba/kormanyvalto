@@ -9,7 +9,7 @@ type ParliamentHemicycleProps = {
 };
 
 const VIEWBOX_WIDTH = 1100;
-const VIEWBOX_HEIGHT = 760;
+const VIEWBOX_HEIGHT = 920;
 const TEMPLATE_STEP_X = 100;
 const TEMPLATE_STEP_Y = 220;
 const SEAT_WIDTH = 46;
