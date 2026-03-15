@@ -53,6 +53,26 @@ Required before push to `main`:
 - Avoid hardcoded chart values.
 - Avoid inline styling for new visual modules.
 
+## KPI / Card Implementation Guide
+
+When creating or changing KPI/cards, always compose from global classes:
+
+- KPI card shell: `.kpi-card`
+- KPI single value chip: `.kpi-value-chip` (+ tone variant such as `.kpi-value-chip-neutral`)
+- KPI dual value chips: `.kpi-dual-stack`, `.kpi-dual-chip`, `.kpi-dual-chip-yes`, `.kpi-dual-chip-no`
+- Shared header block: `.chart-card-head`
+- Chart card shell: `.chart-card`
+- Pie card shell: `.pie-card`
+
+Value formatting:
+- large totals must use compact formatter (`K` / `M`) in page logic,
+- single-value chips must stay on one line (no wrapped numbers),
+- descriptive text belongs in `.kpi-detail` or header subtitle.
+
+Overflow handling:
+- card content must stay inside container,
+- prefer global CSS rules (`overflow`, `word-break`, `overflow-wrap`) over per-component custom hacks.
+
 ## Preview Visual Delivery Rules
 
 For `/dashboard-preview`:

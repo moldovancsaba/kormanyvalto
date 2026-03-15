@@ -145,6 +145,7 @@ export default async function ParliamentEstimatePage() {
           </header>
           <div className="kpi-value-chip kpi-value-chip-neutral">
             <p className="kpi-value">{formatCompact(projectedEstimate.listBasisYes + projectedEstimate.listBasisNo)}</p>
+            <span className="kpi-value-hint">szavazat</span>
           </div>
           <p className="kpi-detail">
             országos és töredékszavazatok összesen a 93 listás mandátumhoz

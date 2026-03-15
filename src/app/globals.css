@@ -792,6 +792,15 @@ button:disabled {
   color: var(--on-dark);
 }
 
+.kpi-value-hint {
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  color: var(--on-dark);
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .kpi-dual-stack {
   width: 100%;
   display: grid;

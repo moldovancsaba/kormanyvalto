@@ -21,6 +21,18 @@ Required:
 - No hardcoded data values.
 - No in-code style (no inline style objects for new visual modules).
 
+## KPI/Card Design Governance
+
+Status: Active
+
+Required:
+- Use only global reusable card classes from `src/app/globals.css`.
+- Do not create per-page hardcoded layout/spacing for card internals.
+- Keep KPI headline values single-line.
+- For large values, use compact numeric rendering (`K` / `M`).
+- Ensure titles/subtitles use shared header structure (`.chart-card-head`) and stay visually aligned across sibling cards.
+- Ensure content never overflows card boundaries.
+
 Implementation notes:
 
 - Use shared data builders under `src/lib/*`.

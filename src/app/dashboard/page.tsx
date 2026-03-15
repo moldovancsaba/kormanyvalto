@@ -60,10 +60,11 @@ type KpiCardProps = {
   label: string;
   subtitle: string;
   value: string;
+  valueHint?: string;
   detail: string;
 };
 
-function KpiCard({ label, subtitle, value, detail }: KpiCardProps) {
+function KpiCard({ label, subtitle, value, valueHint, detail }: KpiCardProps) {
   return (
     <article className="kpi-card">
       <header className="chart-card-head">
@@ -72,6 +73,7 @@ function KpiCard({ label, subtitle, value, detail }: KpiCardProps) {
       </header>
       <div className="kpi-value-chip kpi-value-chip-neutral">
         <p className="kpi-value">{value}</p>
+        {valueHint ? <span className="kpi-value-hint">{valueHint}</span> : null}
       </div>
       <p className="kpi-detail">{detail}</p>
     </article>
@@ -322,6 +324,7 @@ export default async function DashboardPage() {
           label="Összes eddigi szavazat"
           subtitle="A teljes rendszer eddigi súlyozott aktivitása."
           value={formatCompact(summary.totalWeightedVotes)}
+          valueHint="szavazat"
           detail={`${formatNumber(summary.totalVoteEvents)} leadott kattintás alapján`}
         />
         <PieCard

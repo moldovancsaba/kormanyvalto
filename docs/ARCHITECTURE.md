@@ -49,11 +49,12 @@ Design:
 
 Production dashboard:
 - `/dashboard`
-  - includes production-ready ranking section: `3. Top csataterek`
+  - includes production-ready ranking and KPI/pie cards (`Csataterek`, `Biztos bástyák`, county/city chart pack)
 
 Preview dashboard:
 - `/dashboard-preview`
   - contains staging/validation visuals before promotion to production dashboard
+  - currently hosts `Elsöprő győzelmek` card for iteration
 
 Reusable preview data:
 - `src/lib/dashboardPreviewData.ts`
@@ -71,3 +72,7 @@ Reusable preview visual components:
 
 - Global design tokens and component styles in `src/app/globals.css`
 - Design rule: new visual modules should use global classes, not inline style definitions
+- KPI/Card system is centralized and reusable:
+  - `.kpi-card`, `.kpi-value-chip`, `.kpi-dual-chip`
+  - `.chart-card`, `.pie-card`
+  - collectible cards under `.preview-*`

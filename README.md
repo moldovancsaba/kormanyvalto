@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Election-style civic game platform for OGY 2026 simulation: országos, vármegyei, and EVK voting with analytics and mandate estimation.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v1.1.1-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.1.2-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -40,8 +40,8 @@ Core capabilities:
 ## Main Routes
 
 - `/` - national vote page
-- `/dashboard` - production analytics dashboard (includes Section 3: `Top csataterek`)
-- `/dashboard-preview` - preview board for upcoming visuals (currently sections 4-6 + hidden KPI/pie validations, intentionally not linked from navigation)
+- `/dashboard` - production analytics dashboard (`Csataterek`, `Biztos bástyák`, county/city chart pack, KPI + pie)
+- `/dashboard-preview` - preview board for upcoming visuals (includes staging charts like `Elsöprő győzelmek`; intentionally not linked from navigation)
 - `/mandatumbecsles` - mandate estimate and parliament visualization
 - `/ogy2026/egyeni-valasztokeruletek` - county list + county map
 - `/ogy2026/egyeni-valasztokeruletek/[maz]` - county EVK list
@@ -110,6 +110,20 @@ Preview rule (active):
 - shared global CSS + reusable components required.
 
 See: `docs/KNOWLEDGE_BASE.md`
+
+## UI Card System
+
+The app uses a global card system from `src/app/globals.css`:
+- summary KPI cards: `.kpi-card`, `.kpi-value-chip`, `.kpi-dual-chip`
+- analytics cards: `.chart-card`
+- pie cards: `.pie-card`
+- collectible ranking cards: `.preview-visual-card`, `.preview-trading-card`
+
+Rules:
+- no inline style for layout/visual structure,
+- no hardcoded one-off sizing per card,
+- use shared classes and variants (`yes` / `no` / `neutral`),
+- keep large KPI values single-line and compact (`K` / `M`).
 
 ## Documentation Map
 

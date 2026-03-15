@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.2 - 2026-03-15
+
+### Changed
+- Standardized dashboard and mandate KPI cards to the global card system.
+- Added compact KPI number rendering (`K` / `M`) to avoid line breaks in large value chips.
+- Moved `Elsöprő győzelmek` from `/dashboard` to `/dashboard-preview`.
+- Updated map and parliament visual strokes to white where requested.
+
+### Documentation
+- Updated README and engineering docs with current dashboard/preview ownership.
+- Added explicit reusable KPI/card implementation guidance and style governance notes.
+
 ## 1.1.1 - 2026-03-15
 
 ### Fixed
