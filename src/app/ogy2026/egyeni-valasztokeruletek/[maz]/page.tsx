@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { PageShell } from "../../../../components/PageChrome";
 import { getConstituenciesByCounty, getCounties, getSeatLabel } from "../../../../lib/constituencies";
@@ -69,22 +68,24 @@ export default async function CountyPage({ params }: PageProps) {
           const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
           const stat = counts[scope] ?? { yes: 0, no: 0, yesPercent: 50 };
           const yesPercent = Number(stat.yesPercent.toFixed(1));
-          const buttonStyle = {
-            "--yes-percent": `${yesPercent}%`,
-          } as CSSProperties;
 
           return (
             <Link
               key={`${c.maz}-${c.evk}`}
               href={`/ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`}
               className="route-button route-button--barometer"
-              style={buttonStyle}
             >
-              <span className="route-button-title">
-                {c.evkNev} - {getSeatLabel(c.szekhely)}
-              </span>
-              <span className="route-button-meta">
-                igen: {stat.yes} | nem: {stat.no}
+              <svg viewBox="0 0 100 10" className="route-button-barometer-bg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <rect x="0" y="0" width="100" height="10" className="route-button-bar-no" />
+                <rect x="0" y="0" width={yesPercent} height="10" className="route-button-bar-yes" />
+              </svg>
+              <span className="route-button-content">
+                <span className="route-button-title">
+                  {c.evkNev} - {getSeatLabel(c.szekhely)}
+                </span>
+                <span className="route-button-meta">
+                  igen: {stat.yes} | nem: {stat.no}
+                </span>
               </span>
             </Link>
           );

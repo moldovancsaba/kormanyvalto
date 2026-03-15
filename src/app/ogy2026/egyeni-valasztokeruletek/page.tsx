@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { PageShell } from "../../../components/PageChrome";
 import { constituencies, getCounties } from "../../../lib/constituencies";
 import { getHungaryCountyMapData } from "../../../lib/hungaryCountyMap";
@@ -107,20 +106,21 @@ export default async function Ogy2026ConstituenciesPage() {
           }, 0);
           const total = totalYes + totalNo;
           const yesPercent = total === 0 ? 50 : Number(((totalYes / total) * 100).toFixed(1));
-          const buttonStyle = {
-            "--yes-percent": `${yesPercent}%`,
-          } as CSSProperties;
-
           return (
             <Link
               key={county.maz}
               href={`/ogy2026/egyeni-valasztokeruletek/${county.maz}`}
               className="route-button route-button--barometer"
-              style={buttonStyle}
             >
-              <span className="route-button-title">{county.mazNev}</span>
-              <span className="route-button-meta">
-                körzetek: {countyConstituencies.length} | igen: {totalYes} | nem: {totalNo}
+              <svg viewBox="0 0 100 10" className="route-button-barometer-bg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <rect x="0" y="0" width="100" height="10" className="route-button-bar-no" />
+                <rect x="0" y="0" width={yesPercent} height="10" className="route-button-bar-yes" />
+              </svg>
+              <span className="route-button-content">
+                <span className="route-button-title">{county.mazNev}</span>
+                <span className="route-button-meta">
+                  körzetek: {countyConstituencies.length} | igen: {totalYes} | nem: {totalNo}
+                </span>
               </span>
             </Link>
           );

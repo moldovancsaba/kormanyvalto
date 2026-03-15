@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import type { CSSProperties } from "react";
 import { PageShell } from "../../components/PageChrome";
 import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
 import { CountyRankingCard } from "../../components/dashboard-preview/CountyRankingCard";
@@ -104,12 +103,10 @@ function PieCard({
   rightTone,
 }: PieCardProps) {
   const total = leftValue + rightValue;
-  const leftPercent = total === 0 ? 50 : (leftValue / total) * 100;
-  const chartStyle = {
-    "--pie-left-percent": `${leftPercent}%`,
-    "--pie-left-tone": `var(--tone-${leftTone})`,
-    "--pie-right-tone": `var(--tone-${rightTone})`,
-  };
+  const leftRatio = total === 0 ? 0.5 : leftValue / total;
+  const radius = 44;
+  const circumference = 2 * Math.PI * radius;
+  const leftArc = Math.max(0, Math.min(circumference, leftRatio * circumference));
 
   return (
     <section className="pie-card">
@@ -118,7 +115,18 @@ function PieCard({
         <p>{subtitle}</p>
       </header>
       <div className="pie-layout">
-        <div className="pie-chart" style={chartStyle as CSSProperties}>
+        <div className="pie-chart">
+          <svg viewBox="0 0 100 100" className="pie-chart-svg" aria-hidden="true" focusable="false">
+            <circle cx="50" cy="50" r={radius} className="pie-chart-ring pie-chart-ring-track" />
+            <circle cx="50" cy="50" r={radius} className={`pie-chart-ring pie-chart-ring-${rightTone}`} />
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              className={`pie-chart-ring pie-chart-ring-${leftTone}`}
+              strokeDasharray={`${leftArc} ${circumference - leftArc}`}
+            />
+          </svg>
           <div className="pie-hole">
             <strong>{formatCompact(total)}</strong>
             <span>összesen</span>
@@ -170,10 +178,15 @@ function ChartCard({ title, ariaLabel, subtitle, tone, items, valueLabel, valueF
               >
                 <div className="chart-column-value">{valueLabel(item)}</div>
                 <div className="chart-column-plot">
-                  <div
-                    className={`chart-column-bar chart-column-bar-${getCityTone(item)}`}
-                    style={{ "--bar-height": `${height}%` } as CSSProperties}
-                  />
+                  <svg viewBox="0 0 100 100" className="chart-column-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                    <rect
+                      x="0"
+                      y={100 - height}
+                      width="100"
+                      height={height}
+                      className={`chart-column-bar chart-column-bar-${getCityTone(item)}`}
+                    />
+                  </svg>
                 </div>
                 <div className="chart-column-label" title={`${item.city} - ${item.county} - ${item.districtLabel}`}>
                   <strong>{item.city}</strong>

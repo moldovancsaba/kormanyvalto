@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import type { CSSProperties } from "react";
 import { PageHero } from "./PageChrome";
 
 type ClickStore = {
@@ -63,7 +62,6 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
   const noCount = data.noCount;
   const totalCount = yesCount + noCount;
   const yesPercent = totalCount === 0 ? 50 : (yesCount / totalCount) * 100;
-  const noPercent = 100 - yesPercent;
   const cooldownStorageKey = `kv-cooldown-until:${scope}`;
   const mergedVotes = useMemo(
     () =>
@@ -278,10 +276,6 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
   const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
   const logoutHref = `/api/auth/logout?returnTo=${encodeURIComponent(returnTo)}`;
   const voteSuffix = auth.authenticated ? " x3" : "";
-  const barTrackStyle = {
-    "--yes-width": `${yesPercent}%`,
-    "--no-width": `${noPercent}%`,
-  } as CSSProperties;
 
   return (
     <main className="app">
@@ -291,9 +285,11 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
 
       <section className="barometer" aria-label="Vezető opció">
         <p className="barometer-label">{winnerText}</p>
-        <div className="bar-track" style={barTrackStyle} role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
-          <div className="bar-yes" />
-          <div className="bar-no" />
+        <div className="bar-track" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
+          <svg viewBox="0 0 100 10" className="bar-track-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <rect x="0" y="0" width="100" height="10" className="bar-no" />
+            <rect x="0" y="0" width={yesPercent} height="10" className="bar-yes" />
+          </svg>
         </div>
         <p className="barometer-stats">
           igen: {yesCount} | nem: {noCount}
