@@ -29,6 +29,8 @@ export type DashboardPreviewMetrics = {
   topClosestCities: Array<{
     city: string;
     county: string;
+    countyCode: string;
+    countyHref: string;
     districtLabel: string;
     href: string;
     totalVotes: number;
@@ -38,6 +40,8 @@ export type DashboardPreviewMetrics = {
   topStrongestCities: Array<{
     city: string;
     county: string;
+    countyCode: string;
+    countyHref: string;
     districtLabel: string;
     href: string;
     totalVotes: number;
@@ -113,6 +117,8 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     .sort((left, right) => Math.abs(left.diffPercent) - Math.abs(right.diffPercent) || right.total - left.total)
     .slice(0, 5)
     .map((item) => ({
+      countyCode: item.href.split("/")[3] ?? "",
+      countyHref: `/ogy2026/egyeni-valasztokeruletek/${item.href.split("/")[3] ?? ""}`,
       city: item.city,
       county: item.county,
       districtLabel: item.districtLabel,
@@ -126,6 +132,8 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     .sort((left, right) => Math.abs(right.diffPercent) - Math.abs(left.diffPercent) || right.total - left.total)
     .slice(0, 5)
     .map((item) => ({
+      countyCode: item.href.split("/")[3] ?? "",
+      countyHref: `/ogy2026/egyeni-valasztokeruletek/${item.href.split("/")[3] ?? ""}`,
       city: item.city,
       county: item.county,
       districtLabel: item.districtLabel,

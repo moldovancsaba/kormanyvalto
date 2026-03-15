@@ -40,7 +40,7 @@
   --barometer-overlay-border: rgba(15, 23, 42, 0.4);
   --barometer-shell: #111827;
   --patko-seat-stroke-width: 5px;
-  --patko-seat-neutral: #8aa8df;
+  --patko-seat-neutral: #444444;
   --patko-seat-fill-list: #ffffff;
   --patko-seat-stroke-evk: #ffffff;
   --container-top-gap: 2rem;
@@ -389,7 +389,7 @@ li {
 }
 
 .history-chip-neutral {
-  background: linear-gradient(180deg, #9cb5e6 0%, var(--patko-seat-neutral) 100%);
+  background: linear-gradient(180deg, #7a7a7a 0%, var(--patko-seat-neutral) 100%);
   color: var(--on-dark);
 }
 
@@ -1139,6 +1139,121 @@ button:disabled {
   fill: rgba(15, 23, 42, 0.12);
 }
 
+.preview-trading-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.preview-trading-card {
+  border: 2px solid rgba(15, 23, 42, 0.2);
+  border-radius: 14px;
+  padding: 0.7rem;
+  display: grid;
+  gap: 0.55rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.95) 100%);
+}
+
+.preview-trading-card-yes {
+  background: linear-gradient(180deg, rgba(143, 212, 229, 0.23) 0%, rgba(255, 255, 255, 0.95) 100%);
+}
+
+.preview-trading-card-no {
+  background: linear-gradient(180deg, rgba(255, 138, 31, 0.24) 0%, rgba(255, 255, 255, 0.95) 100%);
+}
+
+.preview-trading-card-neutral {
+  background: linear-gradient(180deg, rgba(68, 68, 68, 0.2) 0%, rgba(255, 255, 255, 0.95) 100%);
+}
+
+.preview-trading-card-head h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.preview-trading-card-head p {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.preview-trading-card-media {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  min-height: 108px;
+  display: grid;
+  place-items: center;
+}
+
+.preview-card-stamp-svg {
+  width: min(140px, 88%);
+  height: 88px;
+  display: block;
+}
+
+.preview-card-stamp-shape {
+  stroke: rgba(15, 23, 42, 0.75);
+  stroke-width: 2px;
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+}
+
+.preview-card-stamp-shape-yes {
+  fill: var(--yes-grad-bottom);
+}
+
+.preview-card-stamp-shape-no {
+  fill: var(--no-grad-bottom);
+}
+
+.preview-card-stamp-shape-neutral {
+  fill: var(--patko-seat-neutral);
+}
+
+.preview-card-stamp-fallback {
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.preview-trading-card-props {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 10px;
+  padding: 0.48rem 0.6rem;
+  background: rgba(255, 255, 255, 0.76);
+  display: grid;
+  gap: 0.18rem;
+}
+
+.preview-trading-card-props p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.preview-trading-card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.preview-card-bar {
+  fill: var(--patko-seat-neutral);
+}
+
+.preview-card-bar-yes {
+  fill: var(--yes-grad-bottom);
+}
+
+.preview-card-bar-no {
+  fill: var(--no-grad-bottom);
+}
+
+.preview-card-bar-neutral {
+  fill: var(--patko-seat-neutral);
+}
+
 .patko-card {
   padding: 1rem;
   border-radius: 22px;
@@ -1247,7 +1362,7 @@ button:disabled {
 }
 
 .patko-summary-card-neutral strong {
-  color: var(--neutral-blue);
+  color: var(--patko-seat-neutral);
 }
 
 .patko-legend {
@@ -1282,7 +1397,7 @@ button:disabled {
 }
 
 .patko-dot-neutral {
-  background: var(--neutral-blue);
+  background: var(--patko-seat-neutral);
 }
 
 .patko-dot-list {
@@ -1507,7 +1622,7 @@ button:disabled {
 }
 
 .chart-column-bar-neutral {
-  background: linear-gradient(180deg, #6f97dd 0%, #1f4ea3 100%);
+  background: linear-gradient(180deg, #7a7a7a 0%, var(--patko-seat-neutral) 100%);
 }
 
 .chart-column-label {
