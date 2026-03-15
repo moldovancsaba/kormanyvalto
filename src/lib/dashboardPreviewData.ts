@@ -66,6 +66,56 @@ export type DashboardPreviewMetrics = {
     marginPercent: number;
     leadBloc: "yes" | "no" | "neutral";
   }>;
+  topWarZones: Array<{
+    city: string;
+    county: string;
+    districtLabel: string;
+    href: string;
+    totalVotes: number;
+    diff: number;
+    diffPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
+  topPeaceIslands: Array<{
+    city: string;
+    county: string;
+    districtLabel: string;
+    href: string;
+    totalVotes: number;
+    diff: number;
+    diffPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
+  topYesCities: Array<{
+    city: string;
+    county: string;
+    districtLabel: string;
+    href: string;
+    totalVotes: number;
+    diff: number;
+    diffPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
+  topNoCities: Array<{
+    city: string;
+    county: string;
+    districtLabel: string;
+    href: string;
+    totalVotes: number;
+    diff: number;
+    diffPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
+  topUncertainCities: Array<{
+    city: string;
+    county: string;
+    districtLabel: string;
+    href: string;
+    totalVotes: number;
+    diff: number;
+    diffPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
 };
 
 function toPercent(part: number, total: number): number {
@@ -186,6 +236,78 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     .sort((left, right) => Math.abs(left.marginPercent) - Math.abs(right.marginPercent) || right.totalVotes - left.totalVotes)
     .slice(0, 5);
 
+  const topWarZones = [...votedCities]
+    .sort((left, right) => right.total - left.total || left.city.localeCompare(right.city, "hu"))
+    .slice(0, 5)
+    .map((item) => ({
+      city: item.city,
+      county: item.county,
+      districtLabel: item.districtLabel,
+      href: item.href,
+      totalVotes: item.total,
+      diff: item.diff,
+      diffPercent: item.diffPercent,
+      leadBloc: item.leadBloc,
+    }));
+
+  const topPeaceIslands = [...votedCities]
+    .sort((left, right) => left.total - right.total || left.city.localeCompare(right.city, "hu"))
+    .slice(0, 5)
+    .map((item) => ({
+      city: item.city,
+      county: item.county,
+      districtLabel: item.districtLabel,
+      href: item.href,
+      totalVotes: item.total,
+      diff: item.diff,
+      diffPercent: item.diffPercent,
+      leadBloc: item.leadBloc,
+    }));
+
+  const topYesCities = [...votedCities]
+    .filter((item) => item.leadBloc === "yes")
+    .sort((left, right) => right.diff - left.diff || right.total - left.total)
+    .slice(0, 5)
+    .map((item) => ({
+      city: item.city,
+      county: item.county,
+      districtLabel: item.districtLabel,
+      href: item.href,
+      totalVotes: item.total,
+      diff: item.diff,
+      diffPercent: item.diffPercent,
+      leadBloc: item.leadBloc,
+    }));
+
+  const topNoCities = [...votedCities]
+    .filter((item) => item.leadBloc === "no")
+    .sort((left, right) => left.diff - right.diff || right.total - left.total)
+    .slice(0, 5)
+    .map((item) => ({
+      city: item.city,
+      county: item.county,
+      districtLabel: item.districtLabel,
+      href: item.href,
+      totalVotes: item.total,
+      diff: item.diff,
+      diffPercent: item.diffPercent,
+      leadBloc: item.leadBloc,
+    }));
+
+  const topUncertainCities = [...votedCities]
+    .sort((left, right) => Math.abs(left.diffPercent) - Math.abs(right.diffPercent) || right.total - left.total)
+    .slice(0, 5)
+    .map((item) => ({
+      city: item.city,
+      county: item.county,
+      districtLabel: item.districtLabel,
+      href: item.href,
+      totalVotes: item.total,
+      diff: item.diff,
+      diffPercent: item.diffPercent,
+      leadBloc: item.leadBloc,
+    }));
+
   return {
     leadOverview,
     reportingCoverage,
@@ -196,5 +318,10 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     topStrongestCities,
     topActiveCounties,
     topBalancedCounties,
+    topWarZones,
+    topPeaceIslands,
+    topYesCities,
+    topNoCities,
+    topUncertainCities,
   };
 }

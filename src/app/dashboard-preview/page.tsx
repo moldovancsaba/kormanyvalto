@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import type { ReactNode } from "react";
 import { PageShell } from "../../components/PageChrome";
 import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
 import { CountyRankingCard } from "../../components/dashboard-preview/CountyRankingCard";
@@ -32,6 +34,25 @@ type PieCardProps = {
   rightValue: number;
   leftTone: "yes" | "no" | "warm" | "cool";
   rightTone: "yes" | "no" | "warm" | "cool";
+};
+
+type PreviewCityItem = {
+  city: string;
+  county: string;
+  districtLabel: string;
+  href: string;
+  totalVotes: number;
+  diff: number;
+  diffPercent: number;
+  leadBloc: "yes" | "no" | "neutral";
+};
+
+type CityListCardProps = {
+  title: ReactNode;
+  subtitle: string;
+  emptyText: string;
+  items: PreviewCityItem[];
+  metricLabel: "votes" | "diff" | "percent";
 };
 
 function formatNumber(value: number) {
@@ -122,6 +143,66 @@ function PieCard({
   );
 }
 
+function formatSignedDiff(value: number) {
+  if (value > 0) return `+${value}`;
+  return String(value);
+}
+
+function formatPercent(value: number) {
+  return `${Math.abs(value).toFixed(1).replace(".", ",")}%`;
+}
+
+function getMetricValue(item: PreviewCityItem, metricLabel: CityListCardProps["metricLabel"]) {
+  if (metricLabel === "votes") return item.totalVotes;
+  if (metricLabel === "diff") return Math.abs(item.diff);
+  return Math.abs(item.diffPercent);
+}
+
+function getMetricText(item: PreviewCityItem, metricLabel: CityListCardProps["metricLabel"]) {
+  if (metricLabel === "votes") return `${formatNumber(item.totalVotes)} szavazat`;
+  if (metricLabel === "diff") return `${formatSignedDiff(item.diff)} különbség`;
+  return `${formatPercent(item.diffPercent)} különbség`;
+}
+
+function CityListCard({ title, subtitle, emptyText, items, metricLabel }: CityListCardProps) {
+  const maxMetric = Math.max(1, ...items.map((item) => getMetricValue(item, metricLabel)));
+
+  return (
+    <section className="preview-visual-card">
+      <header className="chart-card-head">
+        <h2>{title}</h2>
+        <p>{subtitle}</p>
+      </header>
+      {items.length === 0 ? (
+        <p className="chart-empty">{emptyText}</p>
+      ) : (
+        <div className="preview-ranking-list" role="list" aria-label={typeof title === "string" ? title : "Város ranglista"}>
+          {items.map((item, index) => {
+            const fillPercent = Math.max(8, (getMetricValue(item, metricLabel) / maxMetric) * 100);
+            return (
+              <Link key={`${item.href}-${index}`} href={item.href} className="preview-ranking-item" role="listitem">
+                <div className="preview-ranking-meta">
+                  <strong>{item.city}</strong>
+                  <span>
+                    {item.county} · {item.districtLabel}
+                  </span>
+                </div>
+                <div className="preview-ranking-values">
+                  <span className={`preview-ranking-chip preview-ranking-chip-${item.leadBloc}`}>{getMetricText(item, metricLabel)}</span>
+                </div>
+                <svg viewBox="0 0 100 10" className="preview-ranking-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                  <rect x="0" y="0" width="100" height="10" className="preview-ranking-track" />
+                  <rect x="0" y="0" width={fillPercent} height="10" className={`preview-card-bar preview-card-bar-${item.leadBloc}`} />
+                </svg>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default async function DashboardPreviewPage() {
   let metrics: DashboardPreviewMetrics = {
     leadOverview: {
@@ -148,6 +229,11 @@ export default async function DashboardPreviewPage() {
     topStrongestCities: [],
     topActiveCounties: [],
     topBalancedCounties: [],
+    topWarZones: [],
+    topPeaceIslands: [],
+    topYesCities: [],
+    topNoCities: [],
+    topUncertainCities: [],
   };
   try {
     metrics = await getDashboardPreviewMetrics();
@@ -172,6 +258,49 @@ export default async function DashboardPreviewPage() {
           emptyText="Nincs még elég EVK adat az elsöprő győzelmek listához."
           items={metrics.topStrongestCities}
           mode="strongest"
+        />
+        <CityListCard
+          title="Háborús övezetek"
+          subtitle="A legtöbb összesített szavazatot kapó EVK-k."
+          emptyText="Nincs még elég adat ehhez a listához."
+          items={metrics.topWarZones}
+          metricLabel="votes"
+        />
+        <CityListCard
+          title="A béke szigetei"
+          subtitle="A legkevesebb, de már mért aktivitást mutató EVK-k."
+          emptyText="Nincs még elég adat ehhez a listához."
+          items={metrics.topPeaceIslands}
+          metricLabel="votes"
+        />
+        <CityListCard
+          title={
+            <>
+              Az <span className="title-inline-chip title-inline-chip-yes">igen</span> városok
+            </>
+          }
+          subtitle="Ahol az igen a legnagyobb különbséggel vezet."
+          emptyText="Nincs még elég igen vezetésű EVK."
+          items={metrics.topYesCities}
+          metricLabel="diff"
+        />
+        <CityListCard
+          title={
+            <>
+              A <span className="title-inline-chip title-inline-chip-no">nem</span> városok
+            </>
+          }
+          subtitle="Ahol a nem a legnagyobb különbséggel vezet."
+          emptyText="Nincs még elég nem vezetésű EVK."
+          items={metrics.topNoCities}
+          metricLabel="diff"
+        />
+        <CityListCard
+          title="Senki nem tudja"
+          subtitle="A legszorosabb EVK-k, ahol alig van különbség."
+          emptyText="Nincs még elég szoros EVK adat."
+          items={metrics.topUncertainCities}
+          metricLabel="percent"
         />
         <CountyRankingCard
           title="5. Top aktív vármegyék"
