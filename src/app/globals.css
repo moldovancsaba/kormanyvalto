@@ -25,6 +25,11 @@
   --neutral-blue-soft-border: #b9cbef;
   --neutral-blue-mid-border: #8aa8df;
   --neutral-blue-soft-text: #102a56;
+  --warning-card-bg: #fff8e1;
+  --warning-card-border: #ffc107;
+  --warning-card-header: #b71c1c;
+  --warning-card-trust: #1b5e20;
+  --warning-card-highlight: #f57c00;
   --inner-ring: rgba(255, 255, 255, 0.92);
   --shadow-dark-soft: rgba(17, 24, 39, 0.8);
   --shadow-dark-strong: rgba(22, 51, 107, 0.85);
@@ -153,10 +158,9 @@ h1 {
 .boost-card {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  padding: 0.9rem;
+  padding: 1rem;
   margin: 0 0 1rem;
   background: linear-gradient(180deg, var(--neutral-blue-soft) 0%, var(--panel) 100%);
-  text-align: center;
 }
 
 .boost-card-muted {
@@ -182,6 +186,111 @@ h1 {
 
 .boost-login-button {
   margin-top: 0.9rem;
+}
+
+.boost-card-warning {
+  background: var(--warning-card-bg);
+  border: 2px solid var(--warning-card-border);
+}
+
+.boost-warning-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.boost-warning-header h2 {
+  margin: 0;
+  color: var(--warning-card-header);
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+}
+
+.boost-warning-icon {
+  color: var(--warning-card-header);
+}
+
+.boost-privacy-strong {
+  margin: 0 0 0.45rem;
+  color: var(--warning-card-trust);
+  font-weight: 600;
+}
+
+.boost-card-divider {
+  border: 0;
+  border-top: 1px solid rgba(245, 124, 0, 0.35);
+  margin: 0.95rem 0;
+}
+
+.boost-subsection-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.45rem;
+}
+
+.boost-subsection-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--warning-card-highlight);
+}
+
+.boost-subsection-icon {
+  color: var(--warning-card-highlight);
+}
+
+.boost-benefits-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.boost-benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.boost-benefit-icon {
+  color: var(--warning-card-highlight);
+}
+
+.boost-benefit-highlight {
+  color: var(--warning-card-highlight);
+  font-weight: 700;
+}
+
+.boost-login-button-warning {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: linear-gradient(180deg, #3a7be0 0%, var(--neutral-blue) 100%);
+  color: var(--on-dark);
+}
+
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.2rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 500,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 button {

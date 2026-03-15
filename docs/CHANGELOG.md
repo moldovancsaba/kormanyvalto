@@ -22,3 +22,11 @@
   - all preview visuals must be fully interactive with real links and chips,
   - no hardcoded values,
   - no in-code styling for new visual modules.
+
+### Documentation
+- Replaced README with a professional product-level structure:
+  - overview, architecture snapshot, operations/validation, docs map.
+- Added developer and operations documentation:
+  - `docs/DEVELOPMENT.md`
+  - `docs/ARCHITECTURE.md`
+  - `docs/OPERATIONS.md`
