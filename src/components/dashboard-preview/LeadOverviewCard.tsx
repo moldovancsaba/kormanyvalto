@@ -26,12 +26,12 @@ export function LeadOverviewCard({ metric }: LeadOverviewCardProps) {
   return (
     <section className="preview-visual-card">
       <header className="chart-card-head">
-        <h2>1. Országos vezetés</h2>
+        <h2>Pillanatkép</h2>
         <p>Összesített igen/nem állás és pillanatnyi különbség.</p>
       </header>
 
       <div className="preview-lead-meta">
-        <p className="preview-lead-status">{getLeadLabel(metric.leadBloc)}</p>
+        <p className="preview-lead-status">{metric.matrixText || getLeadLabel(metric.leadBloc)}</p>
         <p className="preview-lead-margin">
           Különbség: {formatNumber(metric.marginVotes)} szavazat ({formatPercent(metric.marginPercent)})
         </p>

@@ -1,5 +1,5 @@
 import { constituencies, getCounties } from "./constituencies";
-import { getDashboardCityStats, getDashboardSummary, getLeadBlocFromCounts, getScopeVoteCounts } from "./results";
+import { getDashboardCityStats, getDashboardSummary, getLeadBlocFromCounts, getParliamentEstimate, getScopeVoteCounts } from "./results";
 
 export type LeadOverviewMetric = {
   totalWeightedVotes: number;
@@ -8,6 +8,7 @@ export type LeadOverviewMetric = {
   yesPercent: number;
   noPercent: number;
   leadBloc: "yes" | "no" | "neutral";
+  matrixText: string;
   marginVotes: number;
   marginPercent: number;
 };
@@ -116,6 +117,17 @@ export type DashboardPreviewMetrics = {
     diffPercent: number;
     leadBloc: "yes" | "no" | "neutral";
   }>;
+  topIndicatorCities: Array<{
+    city: string;
+    county: string;
+    districtLabel: string;
+    href: string;
+    totalVotes: number;
+    diff: number;
+    diffPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+    indicatorDistance: number;
+  }>;
 };
 
 function toPercent(part: number, total: number): number {
@@ -123,11 +135,37 @@ function toPercent(part: number, total: number): number {
   return (part / total) * 100;
 }
 
+function getMatrixStatusText(yesVotes: number, noVotes: number, projectedYesSeats: number, projectedNoSeats: number): string {
+  const voteLead: "yes" | "no" | "tie" = yesVotes === noVotes ? "tie" : yesVotes > noVotes ? "yes" : "no";
+  const projectedOutcome: "yes" | "no" | "tie" =
+    projectedYesSeats === projectedNoSeats ? "tie" : projectedYesSeats > projectedNoSeats ? "yes" : "no";
+
+  if (voteLead === "tie" || projectedOutcome === "tie") {
+    return "Fej fej mellett áll az igen és a nem, a becsült végeredmény is döntetlen.";
+  }
+  if (voteLead === "yes" && projectedOutcome === "yes") {
+    return "Az igenek vannak többségben, és ha most lenne vége, kormányváltás lenne.";
+  }
+  if (voteLead === "yes" && projectedOutcome === "no") {
+    return "Az igenek vannak többségben, de ha most lenne vége, nem lenne kormányváltás.";
+  }
+  if (voteLead === "no" && projectedOutcome === "no") {
+    return "A nemek vannak többségben, és ha most lenne vége, nem lenne kormányváltás.";
+  }
+  return "A nemek vannak többségben, de ha most lenne vége, kormányváltás lenne.";
+}
+
 export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetrics> {
   const districtScopes = constituencies.map((constituency) => `ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`);
-  const [summary, districtCounts, cityStats] = await Promise.all([getDashboardSummary(), getScopeVoteCounts(districtScopes), getDashboardCityStats()]);
+  const [summary, districtCounts, cityStats, projection] = await Promise.all([
+    getDashboardSummary(),
+    getScopeVoteCounts(districtScopes),
+    getDashboardCityStats(),
+    getParliamentEstimate("projection"),
+  ]);
 
   const totalWeightedVotes = summary.weightedYes + summary.weightedNo;
+  const nationalYesPercent = totalWeightedVotes > 0 ? (summary.weightedYes / totalWeightedVotes) * 100 : 50;
   const marginVotes = Math.abs(summary.weightedYes - summary.weightedNo);
   const leadOverview: LeadOverviewMetric = {
     totalWeightedVotes,
@@ -136,6 +174,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     yesPercent: toPercent(summary.weightedYes, totalWeightedVotes),
     noPercent: toPercent(summary.weightedNo, totalWeightedVotes),
     leadBloc: getLeadBlocFromCounts(summary.weightedYes, summary.weightedNo),
+    matrixText: getMatrixStatusText(summary.weightedYes, summary.weightedNo, projection.totalYesSeats, projection.totalNoSeats),
     marginVotes,
     marginPercent: toPercent(marginVotes, totalWeightedVotes),
   };
@@ -308,6 +347,24 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
       leadBloc: item.leadBloc,
     }));
 
+  const topIndicatorCities = [...votedCities]
+    .map((item) => {
+      const cityYesPercent = item.total > 0 ? (item.yes / item.total) * 100 : 50;
+      return {
+        city: item.city,
+        county: item.county,
+        districtLabel: item.districtLabel,
+        href: item.href,
+        totalVotes: item.total,
+        diff: item.diff,
+        diffPercent: item.diffPercent,
+        leadBloc: item.leadBloc,
+        indicatorDistance: Math.abs(cityYesPercent - nationalYesPercent),
+      };
+    })
+    .sort((left, right) => left.indicatorDistance - right.indicatorDistance || right.totalVotes - left.totalVotes)
+    .slice(0, 5);
+
   return {
     leadOverview,
     reportingCoverage,
@@ -323,5 +380,6 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     topYesCities,
     topNoCities,
     topUncertainCities,
+    topIndicatorCities,
   };
 }

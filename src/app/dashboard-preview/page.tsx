@@ -45,6 +45,7 @@ type PreviewCityItem = {
   diff: number;
   diffPercent: number;
   leadBloc: "yes" | "no" | "neutral";
+  indicatorDistance?: number;
 };
 
 type CityListCardProps = {
@@ -52,7 +53,7 @@ type CityListCardProps = {
   subtitle: string;
   emptyText: string;
   items: PreviewCityItem[];
-  metricLabel: "votes" | "diff" | "percent";
+  metricLabel: "votes" | "diff" | "percent" | "indicator";
 };
 
 function formatNumber(value: number) {
@@ -155,12 +156,14 @@ function formatPercent(value: number) {
 function getMetricValue(item: PreviewCityItem, metricLabel: CityListCardProps["metricLabel"]) {
   if (metricLabel === "votes") return item.totalVotes;
   if (metricLabel === "diff") return Math.abs(item.diff);
+  if (metricLabel === "indicator") return Math.max(0, 100 - (item.indicatorDistance ?? 100));
   return Math.abs(item.diffPercent);
 }
 
 function getMetricText(item: PreviewCityItem, metricLabel: CityListCardProps["metricLabel"]) {
   if (metricLabel === "votes") return `${formatNumber(item.totalVotes)} szavazat`;
   if (metricLabel === "diff") return `${formatSignedDiff(item.diff)} különbség`;
+  if (metricLabel === "indicator") return `${(item.indicatorDistance ?? 0).toFixed(1).replace(".", ",")}% eltérés az országostól`;
   return `${formatPercent(item.diffPercent)} különbség`;
 }
 
@@ -212,6 +215,7 @@ export default async function DashboardPreviewPage() {
       yesPercent: 0,
       noPercent: 0,
       leadBloc: "neutral" as const,
+      matrixText: "Nincs még elég adat az országos állapot meghatározásához.",
       marginVotes: 0,
       marginPercent: 0,
     },
@@ -234,6 +238,7 @@ export default async function DashboardPreviewPage() {
     topYesCities: [],
     topNoCities: [],
     topUncertainCities: [],
+    topIndicatorCities: [],
   };
   try {
     metrics = await getDashboardPreviewMetrics();
@@ -252,6 +257,13 @@ export default async function DashboardPreviewPage() {
       <div className="dashboard-grid">
         <LeadOverviewCard metric={metrics.leadOverview} />
         <ReportingCoverageCard metric={metrics.reportingCoverage} />
+        <CityListCard
+          title="Előrejelző városok"
+          subtitle="Az EVK-k, ahol a helyi arány a legközelebb áll az aktuális országos arányhoz. (Kisebb eltérés = jobb indikátor)"
+          emptyText="Nincs még elég adat az előrejelző listához."
+          items={metrics.topIndicatorCities}
+          metricLabel="indicator"
+        />
         <CityRankingCard
           title="Elsöprő győzelmek"
           subtitle="Top 5 legnagyobb százalékos különbség az EVK-kban."
