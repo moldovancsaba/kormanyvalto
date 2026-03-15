@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { PageShell } from "../../components/PageChrome";
+import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
 import { constituencies } from "../../lib/constituencies";
 import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
@@ -221,6 +222,23 @@ export default async function DashboardPage() {
   const nobodyKnows = [...votedCities]
     .sort((a, b) => Math.abs(a.diffPercent) - Math.abs(b.diffPercent) || b.total - a.total)
     .slice(0, 5);
+  const closestBattlegrounds = [...votedCities]
+    .sort((a, b) => Math.abs(a.diffPercent) - Math.abs(b.diffPercent) || b.total - a.total)
+    .slice(0, 5)
+    .map((item) => {
+      const countyCode = item.href.split("/")[3] ?? "";
+      return {
+        countyCode,
+        countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        city: item.city,
+        county: item.county,
+        districtLabel: item.districtLabel,
+        href: item.href,
+        totalVotes: item.total,
+        marginPercent: item.diffPercent,
+        leadBloc: item.leadBloc,
+      };
+    });
   const landslides = [...votedCities].sort((a, b) => Math.abs(b.diffPercent) - Math.abs(a.diffPercent) || b.total - a.total).slice(0, 5);
 
   return (
@@ -255,6 +273,13 @@ export default async function DashboardPage() {
       </section>
 
       <div className="dashboard-grid">
+        <CityRankingCard
+          title="3. Top csataterek"
+          subtitle="A legkisebb különbségű EVK-k, ahol minden szavazat számít."
+          emptyText="Nincs még elég EVK adat a csatatér listához."
+          items={closestBattlegrounds}
+          mode="closest"
+        />
         <ChartCard
           title="Top 5 háborús övezet"
           subtitle="A legtöbb összesített szavazatot kapó EVK-k."

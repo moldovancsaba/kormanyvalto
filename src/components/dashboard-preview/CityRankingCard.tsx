@@ -109,7 +109,7 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                 </div>
 
                 <div className="preview-trading-card-props">
-                  <p>{item.countyCode}. vármegye</p>
+                  <p>{item.county}</p>
                   <p>{getBlocLabel(item.leadBloc)}</p>
                   <p>{formatPercent(item.marginPercent)}</p>
                   <p>{item.totalVotes} szavazat</p>

@@ -167,13 +167,6 @@ export default async function DashboardPreviewPage() {
         <LeadOverviewCard metric={metrics.leadOverview} />
         <ReportingCoverageCard metric={metrics.reportingCoverage} />
         <CityRankingCard
-          title="3. Top csataterek"
-          subtitle="A legkisebb különbségű EVK-k, ahol minden szavazat számít."
-          emptyText="Nincs még elég EVK adat a csatatér listához."
-          items={metrics.topClosestCities}
-          mode="closest"
-        />
-        <CityRankingCard
           title="4. Top biztos bástyák"
           subtitle="A legnagyobb különbséggel vezető EVK-k."
           emptyText="Nincs még elég EVK adat a bástya listához."

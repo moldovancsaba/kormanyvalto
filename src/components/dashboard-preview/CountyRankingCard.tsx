@@ -100,7 +100,7 @@ export function CountyRankingCard({ title, subtitle, emptyText, items, mode }: C
               <article key={`${item.countyCode}-${index}`} className={`preview-trading-card preview-trading-card-${item.leadBloc}`} role="listitem">
                 <header className="preview-trading-card-head">
                   <h3>{item.countyName}</h3>
-                  <p>{item.countyCode}. vármegye</p>
+                  <p>Vármegye</p>
                 </header>
 
                 <div className="preview-trading-card-media">
@@ -108,7 +108,7 @@ export function CountyRankingCard({ title, subtitle, emptyText, items, mode }: C
                 </div>
 
                 <div className="preview-trading-card-props">
-                  <p>{item.countyCode}. vármegye</p>
+                  <p>{item.countyName}</p>
                   <p>{getBlocLabel(item.leadBloc)}</p>
                   <p>{formatPercent(item.marginPercent)}</p>
                   <p>{item.totalVotes} szavazat</p>
