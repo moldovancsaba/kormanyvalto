@@ -7,51 +7,140 @@ export type HungaryCountyPath = {
   d: string;
 };
 
-const COUNTY_PATH_TO_MAZ: Record<string, string> = {
-  path2230: "01", // Budapest
-  path1331: "02", // Baranya
-  path4896: "03", // Bacs-Kiskun
-  path3097: "04", // Bekes
-  path1349: "05", // Borsod-Abauj-Zemplen
-  path4015: "06", // Csongrad-Csanad
-  path7528: "07", // Fejer
-  path2218: "08", // Gyor-Moson-Sopron
-  path1315: "09", // Hajdu-Bihar
-  path4022: "10", // Heves
-  path4010: "11", // Jasz-Nagykun-Szolnok
-  path2229: "12", // Komarom-Esztergom
-  path5788: "13", // Nograd
-  path3992: "14", // Pest
-  path1337: "15", // Somogy
-  path2293: "16", // Szabolcs-Szatmar-Bereg
-  path7536: "17", // Tolna
-  path2235: "18", // Vas
-  path2221: "19", // Veszprem
-  path2219: "20", // Zala
+export type HungaryCountyMapData = {
+  width: number;
+  height: number;
+  viewBox: string;
+  paths: HungaryCountyPath[];
 };
 
-let cachedCountyPaths: HungaryCountyPath[] | null = null;
+type ParsedPath = {
+  id: string;
+  d: string;
+  style: string;
+};
 
-export function getHungaryCountyPaths(): HungaryCountyPath[] {
-  if (cachedCountyPaths) return cachedCountyPaths;
+const COUNTY_FILE_TO_MAZ: Record<string, string> = {
+  "HU_capital_Budapest.svg": "01",
+  "HU_county_Baranya.svg": "02",
+  "HU_county_Bacs-Kiskun.svg": "03",
+  "HU_county_Bekes.svg": "04",
+  "HU_county_Borsod_Abauj_Zemplen.svg": "05",
+  "HU_county_Csongrad.svg": "06",
+  "HU_county_Fejer.svg": "07",
+  "HU_county_Gyor-Moson-Sopron.svg": "08",
+  "HU_county_Hajdu-Bihar.svg": "09",
+  "HU_county_Heves.svg": "10",
+  "HU_county_Jasz-Nagykun-Szolnok.svg": "11",
+  "HU_county_Komarom-Esztergom.svg": "12",
+  "HU_county_Nograd.svg": "13",
+  "HU_county_Pest.svg": "14",
+  "HU_county_Somogy.svg": "15",
+  "HU_county_Szabolcs-Szatmar-Bereg.svg": "16",
+  "HU_county_Tolna.svg": "17",
+  "HU_county_Vas.svg": "18",
+  "HU_county_Veszprem.svg": "19",
+  "HU_county_Zala.svg": "20",
+};
 
-  const svgPath = path.join(process.cwd(), "public", "images", "HU_counties_colored.svg");
-  const svg = fs.readFileSync(svgPath, "utf8");
-  const pathRegex = /<path\b([^>]*?)\/>/g;
+const HIGHLIGHT_HEX = "#4e8348";
 
-  const out: HungaryCountyPath[] = [];
-  let match: RegExpExecArray | null;
-  while ((match = pathRegex.exec(svg))) {
-    const attrs = match[1];
-    const id = attrs.match(/\\bid=\"([^\"]+)\"/)?.[1];
-    const d = attrs.match(/\\bd=\"([^\"]+)\"/)?.[1];
-    if (!id || !d) continue;
+let cachedData: HungaryCountyMapData | null = null;
 
-    const maz = COUNTY_PATH_TO_MAZ[id];
-    if (!maz) continue;
-    out.push({ maz, id, d });
+function extractAttribute(tag: string, attribute: string): string | null {
+  const match = tag.match(new RegExp(`${attribute}="([^"]+)"`, "i"));
+  return match?.[1] ?? null;
+}
+
+function parseSvgSize(svg: string): { width: number; height: number; viewBox: string } {
+  const svgTag = svg.match(/<svg\b[\s\S]*?>/i)?.[0] ?? "";
+  const explicitViewBox = extractAttribute(svgTag, "viewBox");
+
+  if (explicitViewBox) {
+    const parts = explicitViewBox.split(/[\s,]+/).map((part) => Number(part));
+    if (parts.length === 4 && parts.every((part) => Number.isFinite(part))) {
+      return { width: parts[2], height: parts[3], viewBox: explicitViewBox };
+    }
   }
 
-  cachedCountyPaths = out;
+  const rawWidth = extractAttribute(svgTag, "width") ?? "841.88977";
+  const rawHeight = extractAttribute(svgTag, "height") ?? "595.27557";
+  const width = Number.parseFloat(rawWidth.replace(/[^0-9.\-]/g, ""));
+  const height = Number.parseFloat(rawHeight.replace(/[^0-9.\-]/g, ""));
+  const safeWidth = Number.isFinite(width) && width > 0 ? width : 841.88977;
+  const safeHeight = Number.isFinite(height) && height > 0 ? height : 595.27557;
+
+  return {
+    width: safeWidth,
+    height: safeHeight,
+    viewBox: `0 0 ${safeWidth} ${safeHeight}`,
+  };
+}
+
+function parsePaths(svg: string): ParsedPath[] {
+  const pathTags = svg.match(/<path\b[\s\S]*?\/>/gi) ?? [];
+  const out: ParsedPath[] = [];
+
+  for (const tag of pathTags) {
+    const id = extractAttribute(tag, "id");
+    const d = extractAttribute(tag, "d");
+    if (!id || !d) continue;
+
+    out.push({
+      id,
+      d,
+      style: extractAttribute(tag, "style") ?? "",
+    });
+  }
+
   return out;
+}
+
+function findHighlightedPathId(svg: string): string | null {
+  const paths = parsePaths(svg);
+  for (const item of paths) {
+    if (item.style.toLowerCase().includes(HIGHLIGHT_HEX)) {
+      return item.id;
+    }
+  }
+  return null;
+}
+
+export function getHungaryCountyMapData(): HungaryCountyMapData {
+  if (cachedData) return cachedData;
+
+  const dir = path.join(process.cwd(), "public", "images", "couties");
+  const emptySvgPath = path.join(dir, "HU_county_empty.svg");
+  const emptySvg = fs.readFileSync(emptySvgPath, "utf8");
+  const size = parseSvgSize(emptySvg);
+  const emptyPaths = parsePaths(emptySvg);
+  const pathById = new Map(emptyPaths.map((item) => [item.id, item]));
+
+  const paths: HungaryCountyPath[] = [];
+  for (const [fileName, maz] of Object.entries(COUNTY_FILE_TO_MAZ)) {
+    const svgPath = path.join(dir, fileName);
+    const svg = fs.readFileSync(svgPath, "utf8");
+    const highlightedId = findHighlightedPathId(svg);
+    if (!highlightedId) continue;
+
+    const geometry = pathById.get(highlightedId);
+    if (!geometry) continue;
+
+    paths.push({
+      maz,
+      id: highlightedId,
+      d: geometry.d,
+    });
+  }
+
+  cachedData = {
+    ...size,
+    paths,
+  };
+
+  return cachedData;
+}
+
+export function getHungaryCountyPaths(): HungaryCountyPath[] {
+  return getHungaryCountyMapData().paths;
 }

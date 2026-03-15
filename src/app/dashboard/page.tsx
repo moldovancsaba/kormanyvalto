@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { PageShell } from "../../components/PageChrome";
 import { constituencies, getCounties } from "../../lib/constituencies";
-import { getHungaryCountyPaths } from "../../lib/hungaryCountyMap";
+import { getHungaryCountyMapData } from "../../lib/hungaryCountyMap";
 import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 import {
@@ -188,7 +188,8 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
 
 function CountyMapCard({ items }: { items: CountyMapStat[] }) {
   const byMaz = new Map(items.map((item) => [item.maz, item]));
-  const countyPaths = new Map(getHungaryCountyPaths().map((item) => [item.maz, item]));
+  const countyMap = getHungaryCountyMapData();
+  const countyPaths = new Map(countyMap.paths.map((item) => [item.maz, item]));
 
   return (
     <section className="chart-card chart-card-neutral county-map-card">
@@ -197,7 +198,7 @@ function CountyMapCard({ items }: { items: CountyMapStat[] }) {
         <p>Aktuális állás vármegyénként (igen / nem / döntetlen).</p>
       </header>
       <div className="county-map-wrap">
-        <svg viewBox="0 0 1020 760" className="county-map-svg" role="img" aria-label="Magyarország vármegyei térkép">
+        <svg viewBox={countyMap.viewBox} className="county-map-svg" role="img" aria-label="Magyarország vármegyei térkép">
           {getCounties().map((county) => {
             const stat = byMaz.get(county.maz) ?? { maz: county.maz, name: county.mazNev, yes: 0, no: 0, total: 0, leadBloc: "neutral" as const };
             const countyPath = countyPaths.get(county.maz);
