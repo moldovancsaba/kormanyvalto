@@ -377,7 +377,11 @@ export default async function DashboardPage() {
         <ChartCard
           title={
             <>
-              Az <span className="title-inline-chip title-inline-chip-yes">igen</span> városok
+              Az{" "}
+              <Link href="/dashboard/igen" className="title-inline-chip title-inline-chip-link title-inline-chip-yes">
+                igen
+              </Link>{" "}
+              városok
             </>
           }
           ariaLabel="Az igen városok"
@@ -390,7 +394,11 @@ export default async function DashboardPage() {
         <ChartCard
           title={
             <>
-              A <span className="title-inline-chip title-inline-chip-no">nem</span> városok
+              A{" "}
+              <Link href="/dashboard/nem" className="title-inline-chip title-inline-chip-link title-inline-chip-no">
+                nem
+              </Link>{" "}
+              városok
             </>
           }
           ariaLabel="A nem városok"

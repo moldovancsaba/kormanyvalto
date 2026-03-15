@@ -580,6 +580,28 @@ export async function getDashboardCityStats(): Promise<CityVoteStat[]> {
   );
 }
 
+export async function getCityStatsByBloc(
+  bloc: "yes" | "no",
+  offset = 0,
+  limit = 10
+): Promise<{ items: CityVoteStat[]; total: number; hasMore: boolean }> {
+  const all = await getDashboardCityStats();
+  const filtered = all.filter((item) => item.total > 0 && item.leadBloc === bloc);
+  const sorted = [...filtered].sort((left, right) => {
+    if (bloc === "yes") {
+      return right.diff - left.diff || right.total - left.total || left.city.localeCompare(right.city, "hu");
+    }
+    return left.diff - right.diff || right.total - left.total || left.city.localeCompare(right.city, "hu");
+  });
+
+  const safeOffset = Math.max(0, offset);
+  const safeLimit = Math.max(1, Math.min(50, limit));
+  const items = sorted.slice(safeOffset, safeOffset + safeLimit);
+  const total = sorted.length;
+  const hasMore = safeOffset + items.length < total;
+  return { items, total, hasMore };
+}
+
 export async function getDashboardSummary(): Promise<DashboardSummary> {
   const rows = await (await getVotesCollection())
     .aggregate<{
