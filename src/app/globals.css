@@ -46,6 +46,10 @@
   --container-top-gap: 2rem;
   --container-bottom-gap: 0.5rem;
   --container-inline: min(900px, 94vw);
+  --page-surface-bg:
+    radial-gradient(circle at top left, rgba(46, 103, 202, 0.15), transparent 28%),
+    radial-gradient(circle at top right, rgba(255, 94, 0, 0.14), transparent 26%),
+    linear-gradient(180deg, #fbfdff 0%, #eef4ff 100%);
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 12px;
@@ -73,7 +77,7 @@ body {
   width: var(--container-inline);
   margin: var(--container-top-gap) auto var(--container-bottom-gap);
   padding: 1.25rem;
-  background: var(--panel);
+  background: var(--page-surface-bg);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
 }
@@ -494,7 +498,7 @@ button:disabled {
   width: var(--container-inline);
   margin: var(--container-top-gap) auto var(--container-bottom-gap);
   padding: 1.25rem;
-  background: var(--panel);
+  background: var(--page-surface-bg);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
 }
@@ -687,10 +691,7 @@ button:disabled {
 }
 
 .dashboard-page {
-  background:
-    radial-gradient(circle at top left, rgba(46, 103, 202, 0.15), transparent 28%),
-    radial-gradient(circle at top right, rgba(255, 94, 0, 0.14), transparent 26%),
-    linear-gradient(180deg, #fbfdff 0%, #eef4ff 100%);
+  background: var(--page-surface-bg);
 }
 
 .dashboard-hero {
