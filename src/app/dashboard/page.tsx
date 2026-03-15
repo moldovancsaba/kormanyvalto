@@ -65,7 +65,9 @@ function KpiCard({ label, subtitle, value, detail }: KpiCardProps) {
         <h2>{label}</h2>
         <p>{subtitle}</p>
       </header>
-      <p className="kpi-value">{value}</p>
+      <div className="kpi-value-chip kpi-value-chip-neutral">
+        <p className="kpi-value">{value}</p>
+      </div>
       <p className="kpi-detail">{detail}</p>
     </article>
   );

@@ -93,24 +93,49 @@ export default async function ParliamentEstimatePage() {
 
       <section className="kpi-grid">
         <article className="kpi-card">
-          <p className="kpi-label">Ha most vége lenne</p>
-          <p className="kpi-value">
-            {formatNumber(projectedEstimate.totalYesSeats)} : {formatNumber(projectedEstimate.totalNoSeats)}
-          </p>
-          <p className="kpi-detail">A teljes 199 mandátum kiosztva a jelenlegi vezetés alapján.</p>
+          <header className="chart-card-head">
+            <h2>Ha most vége lenne</h2>
+            <p>A teljes 199 mandátum kiosztva a jelenlegi vezetés alapján.</p>
+          </header>
+          <div className="kpi-dual-stack">
+            <article className="kpi-dual-chip kpi-dual-chip-yes">
+              <strong>{formatNumber(projectedEstimate.totalYesSeats)}</strong>
+              <span>igen</span>
+            </article>
+            <article className="kpi-dual-chip kpi-dual-chip-no">
+              <strong>{formatNumber(projectedEstimate.totalNoSeats)}</strong>
+              <span>nem</span>
+            </article>
+          </div>
+          <p className="kpi-detail">Igen és nem mandátumok véglegesített aránya.</p>
         </article>
         <article className="kpi-card">
-          <p className="kpi-label">Jelenlegi hivatalos állás</p>
-          <p className="kpi-value">
-            {formatNumber(currentEstimate.totalYesSeats)} : {formatNumber(currentEstimate.totalNoSeats)}
-          </p>
+          <header className="chart-card-head">
+            <h2>Jelenlegi hivatalos állás</h2>
+            <p>A már eldőlt helyek mandátumaránya, nyitott helyek külön számolva.</p>
+          </header>
+          <div className="kpi-dual-stack">
+            <article className="kpi-dual-chip kpi-dual-chip-yes">
+              <strong>{formatNumber(currentEstimate.totalYesSeats)}</strong>
+              <span>igen</span>
+            </article>
+            <article className="kpi-dual-chip kpi-dual-chip-no">
+              <strong>{formatNumber(currentEstimate.totalNoSeats)}</strong>
+              <span>nem</span>
+            </article>
+          </div>
           <p className="kpi-detail">
             Nyitott helyek: {formatNumber(currentEstimate.unresolvedDistrictSeats + currentEstimate.unresolvedListSeats)}
           </p>
         </article>
         <article className="kpi-card">
-          <p className="kpi-label">Listaalap most</p>
-          <p className="kpi-value">{formatNumber(projectedEstimate.listBasisYes + projectedEstimate.listBasisNo)}</p>
+          <header className="chart-card-head">
+            <h2>Listaalap most</h2>
+            <p>Országos és töredékszavazatok összesítve a listás mandátumszámításhoz.</p>
+          </header>
+          <div className="kpi-value-chip kpi-value-chip-neutral">
+            <p className="kpi-value">{formatNumber(projectedEstimate.listBasisYes + projectedEstimate.listBasisNo)}</p>
+          </div>
           <p className="kpi-detail">
             országos és töredékszavazatok összesen a 93 listás mandátumhoz
           </p>
