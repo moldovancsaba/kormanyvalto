@@ -833,6 +833,14 @@ button:disabled {
   text-overflow: clip;
 }
 
+.chip-number-fit {
+  white-space: nowrap;
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+  font-variant-numeric: tabular-nums;
+}
+
 .kpi-value-hint {
   font-size: 1rem;
   font-weight: 800;

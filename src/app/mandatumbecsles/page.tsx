@@ -7,6 +7,7 @@ import {
   type ParliamentEstimate,
 } from "../../lib/results";
 import { getSectionNavItems } from "../../lib/navigation";
+import { formatCompactChipNumber } from "../../lib/numberFormat";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -20,16 +21,6 @@ export const metadata: Metadata = buildPageMetadata({
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat("hu-HU").format(value);
-}
-
-function formatCompact(value: number) {
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`;
-  }
-  if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(1)}K`;
-  }
-  return String(value);
 }
 
 type BreakdownCardProps = {
@@ -109,11 +100,11 @@ export default async function ParliamentEstimatePage() {
           </header>
           <div className="kpi-dual-stack">
             <article className="kpi-dual-chip kpi-dual-chip-yes">
-              <strong>{formatNumber(projectedEstimate.totalYesSeats)}</strong>
+              <strong className="chip-number-fit">{formatCompactChipNumber(projectedEstimate.totalYesSeats)}</strong>
               <span>igen</span>
             </article>
             <article className="kpi-dual-chip kpi-dual-chip-no">
-              <strong>{formatNumber(projectedEstimate.totalNoSeats)}</strong>
+              <strong className="chip-number-fit">{formatCompactChipNumber(projectedEstimate.totalNoSeats)}</strong>
               <span>nem</span>
             </article>
           </div>
@@ -126,11 +117,11 @@ export default async function ParliamentEstimatePage() {
           </header>
           <div className="kpi-dual-stack">
             <article className="kpi-dual-chip kpi-dual-chip-yes">
-              <strong>{formatNumber(currentEstimate.totalYesSeats)}</strong>
+              <strong className="chip-number-fit">{formatCompactChipNumber(currentEstimate.totalYesSeats)}</strong>
               <span>igen</span>
             </article>
             <article className="kpi-dual-chip kpi-dual-chip-no">
-              <strong>{formatNumber(currentEstimate.totalNoSeats)}</strong>
+              <strong className="chip-number-fit">{formatCompactChipNumber(currentEstimate.totalNoSeats)}</strong>
               <span>nem</span>
             </article>
           </div>
@@ -144,7 +135,7 @@ export default async function ParliamentEstimatePage() {
             <p>Országos és töredékszavazatok összesítve a listás mandátumszámításhoz.</p>
           </header>
           <div className="kpi-value-chip kpi-value-chip-neutral">
-            <p className="kpi-value">{formatCompact(projectedEstimate.listBasisYes + projectedEstimate.listBasisNo)}</p>
+            <p className="kpi-value chip-number-fit">{formatCompactChipNumber(projectedEstimate.listBasisYes + projectedEstimate.listBasisNo)}</p>
             <span className="kpi-value-hint">szavazat</span>
           </div>
           <p className="kpi-detail">

@@ -6,6 +6,7 @@ import { CityRankingCard } from "../../components/dashboard-preview/CityRankingC
 import { CountyRankingCard } from "../../components/dashboard-preview/CountyRankingCard";
 import { constituencies } from "../../lib/constituencies";
 import { getSectionNavItems } from "../../lib/navigation";
+import { formatCompactChipNumber } from "../../lib/numberFormat";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 import {
   CityVoteStat,
@@ -43,16 +44,6 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("hu-HU").format(value);
 }
 
-function formatCompact(value: number) {
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`;
-  }
-  if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(1)}K`;
-  }
-  return String(value);
-}
-
 function getCityTone(item: CityVoteStat): "yes" | "no" | "neutral" {
   return item.leadBloc;
 }
@@ -60,7 +51,7 @@ function getCityTone(item: CityVoteStat): "yes" | "no" | "neutral" {
 type KpiCardProps = {
   label: string;
   subtitle: string;
-  value: string;
+  value: number;
   valueHint?: string;
   detail: string;
 };
@@ -73,7 +64,7 @@ function KpiCard({ label, subtitle, value, valueHint, detail }: KpiCardProps) {
         <p>{subtitle}</p>
       </header>
       <div className="kpi-value-chip kpi-value-chip-neutral">
-        <p className="kpi-value">{value}</p>
+        <p className="kpi-value chip-number-fit">{formatCompactChipNumber(value)}</p>
         {valueHint ? <span className="kpi-value-hint">{valueHint}</span> : null}
       </div>
       <p className="kpi-detail">{detail}</p>
@@ -128,7 +119,7 @@ function PieCard({
             />
           </svg>
           <div className="pie-hole">
-            <strong>{formatCompact(total)}</strong>
+            <strong>{formatCompactChipNumber(total)}</strong>
             <span>összesen</span>
           </div>
         </div>
@@ -367,7 +358,7 @@ export default async function DashboardPage() {
         <KpiCard
           label="Összes eddigi szavazat"
           subtitle="A teljes rendszer eddigi súlyozott aktivitása."
-          value={formatCompact(summary.totalWeightedVotes)}
+          value={summary.totalWeightedVotes}
           valueHint="szavazat"
           detail={`${formatNumber(summary.totalVoteEvents)} leadott kattintás alapján`}
         />
