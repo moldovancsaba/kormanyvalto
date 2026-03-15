@@ -24,10 +24,10 @@ function formatNumber(value: number) {
 
 function formatCompact(value: number) {
   if (value >= 1_000_000) {
-    return `${Math.floor(value / 1_000_000)}M`;
+    return `${(value / 1_000_000).toFixed(1)}M`;
   }
   if (value >= 1_000) {
-    return `${Math.floor(value / 1_000)}K`;
+    return `${(value / 1_000).toFixed(1)}K`;
   }
   return String(value);
 }
