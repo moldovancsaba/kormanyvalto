@@ -22,6 +22,16 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("hu-HU").format(value);
 }
 
+function formatCompact(value: number) {
+  if (value >= 1_000_000) {
+    return `${Math.floor(value / 1_000_000)}M`;
+  }
+  if (value >= 1_000) {
+    return `${Math.floor(value / 1_000)}K`;
+  }
+  return String(value);
+}
+
 type BreakdownCardProps = {
   title: string;
   estimate: ParliamentEstimate;
@@ -134,7 +144,7 @@ export default async function ParliamentEstimatePage() {
             <p>Országos és töredékszavazatok összesítve a listás mandátumszámításhoz.</p>
           </header>
           <div className="kpi-value-chip kpi-value-chip-neutral">
-            <p className="kpi-value">{formatNumber(projectedEstimate.listBasisYes + projectedEstimate.listBasisNo)}</p>
+            <p className="kpi-value">{formatCompact(projectedEstimate.listBasisYes + projectedEstimate.listBasisNo)}</p>
           </div>
           <p className="kpi-detail">
             országos és töredékszavazatok összesen a 93 listás mandátumhoz

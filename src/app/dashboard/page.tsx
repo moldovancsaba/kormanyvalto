@@ -42,6 +42,16 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("hu-HU").format(value);
 }
 
+function formatCompact(value: number) {
+  if (value >= 1_000_000) {
+    return `${Math.floor(value / 1_000_000)}M`;
+  }
+  if (value >= 1_000) {
+    return `${Math.floor(value / 1_000)}K`;
+  }
+  return String(value);
+}
+
 function getCityTone(item: CityVoteStat): "yes" | "no" | "neutral" {
   return item.leadBloc;
 }
@@ -106,7 +116,7 @@ function PieCard({
       <div className="pie-layout">
         <div className="pie-chart" style={chartStyle as CSSProperties}>
           <div className="pie-hole">
-            <strong>{formatNumber(total)}</strong>
+            <strong>{formatCompact(total)}</strong>
             <span>összesen</span>
           </div>
         </div>
@@ -311,7 +321,7 @@ export default async function DashboardPage() {
         <KpiCard
           label="Összes eddigi szavazat"
           subtitle="A teljes rendszer eddigi súlyozott aktivitása."
-          value={formatNumber(summary.totalWeightedVotes)}
+          value={formatCompact(summary.totalWeightedVotes)}
           detail={`${formatNumber(summary.totalVoteEvents)} leadott kattintás alapján`}
         />
         <PieCard
