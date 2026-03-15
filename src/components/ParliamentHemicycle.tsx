@@ -99,15 +99,15 @@ export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow
         <svg className="patko-svg" viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`} role="img" aria-label={title}>
           <defs>
             <linearGradient id="patkoListYesGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="0%" stopColor="var(--panel)" />
               <stop offset="100%" stopColor="var(--yes-grad-bottom)" />
             </linearGradient>
             <linearGradient id="patkoListNoGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="0%" stopColor="var(--panel)" />
               <stop offset="100%" stopColor="var(--no-grad-bottom)" />
             </linearGradient>
             <linearGradient id="patkoListNeutralGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="0%" stopColor="var(--panel)" />
               <stop offset="100%" stopColor="var(--patko-seat-neutral)" />
             </linearGradient>
             <symbol id="patkoPerson" viewBox="0 0 80 110">
