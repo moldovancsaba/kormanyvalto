@@ -184,6 +184,8 @@ function ChartCard({ title, ariaLabel, subtitle, tone, items, valueLabel, valueF
                       y={100 - height}
                       width="100"
                       height={height}
+                      rx="8"
+                      ry="8"
                       className={`chart-column-bar chart-column-bar-${getCityTone(item)}`}
                     />
                   </svg>

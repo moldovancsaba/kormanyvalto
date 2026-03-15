@@ -132,12 +132,12 @@ body {
 }
 
 .bar-yes {
-  background: linear-gradient(180deg, var(--yes-grad-top) 0%, var(--yes-grad-bottom) 100%);
+  fill: var(--yes-grad-bottom);
   transition: width 220ms ease, x 220ms ease;
 }
 
 .bar-no {
-  background: linear-gradient(180deg, var(--no-grad-top) 0%, var(--no-grad-bottom) 100%);
+  fill: var(--no-grad-bottom);
   transition: width 220ms ease, x 220ms ease;
 }
 
@@ -1841,7 +1841,7 @@ button:disabled {
 
 .chart-column-bar {
   stroke: rgba(17, 24, 39, 0.86);
-  stroke-width: 2;
+  stroke-width: 1.5;
 }
 
 .chart-column-bar-yes {
