@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageShell } from "../../components/PageChrome";
+import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
 import { LeadOverviewCard } from "../../components/dashboard-preview/LeadOverviewCard";
 import { ReportingCoverageCard } from "../../components/dashboard-preview/ReportingCoverageCard";
 import { type DashboardPreviewMetrics, getDashboardPreviewMetrics } from "../../lib/dashboardPreviewData";
@@ -142,6 +143,8 @@ export default async function DashboardPreviewPage() {
     totalRegisteredPlayers: 0,
     weightedTripleVotes: 0,
     weightedRegularVotes: 0,
+    topClosestCities: [],
+    topStrongestCities: [],
   };
   try {
     metrics = await getDashboardPreviewMetrics();
@@ -160,6 +163,20 @@ export default async function DashboardPreviewPage() {
       <div className="dashboard-grid">
         <LeadOverviewCard metric={metrics.leadOverview} />
         <ReportingCoverageCard metric={metrics.reportingCoverage} />
+        <CityRankingCard
+          title="3. Top csataterek"
+          subtitle="A legkisebb különbségű EVK-k, ahol minden szavazat számít."
+          emptyText="Nincs még elég EVK adat a csatatér listához."
+          items={metrics.topClosestCities}
+          mode="closest"
+        />
+        <CityRankingCard
+          title="4. Top biztos bástyák"
+          subtitle="A legnagyobb különbséggel vezető EVK-k."
+          emptyText="Nincs még elég EVK adat a bástya listához."
+          items={metrics.topStrongestCities}
+          mode="strongest"
+        />
       </div>
 
       <section className="kpi-grid">

@@ -1,5 +1,5 @@
 import { constituencies, getCounties } from "./constituencies";
-import { getDashboardSummary, getLeadBlocFromCounts, getScopeVoteCounts } from "./results";
+import { getDashboardCityStats, getDashboardSummary, getLeadBlocFromCounts, getScopeVoteCounts } from "./results";
 
 export type LeadOverviewMetric = {
   totalWeightedVotes: number;
@@ -26,6 +26,24 @@ export type DashboardPreviewMetrics = {
   totalRegisteredPlayers: number;
   weightedTripleVotes: number;
   weightedRegularVotes: number;
+  topClosestCities: Array<{
+    city: string;
+    county: string;
+    districtLabel: string;
+    href: string;
+    totalVotes: number;
+    marginPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
+  topStrongestCities: Array<{
+    city: string;
+    county: string;
+    districtLabel: string;
+    href: string;
+    totalVotes: number;
+    marginPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
 };
 
 function toPercent(part: number, total: number): number {
@@ -35,7 +53,7 @@ function toPercent(part: number, total: number): number {
 
 export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetrics> {
   const districtScopes = constituencies.map((constituency) => `ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`);
-  const [summary, districtCounts] = await Promise.all([getDashboardSummary(), getScopeVoteCounts(districtScopes)]);
+  const [summary, districtCounts, cityStats] = await Promise.all([getDashboardSummary(), getScopeVoteCounts(districtScopes), getDashboardCityStats()]);
 
   const totalWeightedVotes = summary.weightedYes + summary.weightedNo;
   const marginVotes = Math.abs(summary.weightedYes - summary.weightedNo);
@@ -74,11 +92,40 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     hasNationalVotes: summary.totalVoteEvents > 0,
   };
 
+  const votedCities = cityStats.filter((item) => item.total > 0);
+  const topClosestCities = [...votedCities]
+    .sort((left, right) => Math.abs(left.diffPercent) - Math.abs(right.diffPercent) || right.total - left.total)
+    .slice(0, 5)
+    .map((item) => ({
+      city: item.city,
+      county: item.county,
+      districtLabel: item.districtLabel,
+      href: item.href,
+      totalVotes: item.total,
+      marginPercent: item.diffPercent,
+      leadBloc: item.leadBloc,
+    }));
+
+  const topStrongestCities = [...votedCities]
+    .sort((left, right) => Math.abs(right.diffPercent) - Math.abs(left.diffPercent) || right.total - left.total)
+    .slice(0, 5)
+    .map((item) => ({
+      city: item.city,
+      county: item.county,
+      districtLabel: item.districtLabel,
+      href: item.href,
+      totalVotes: item.total,
+      marginPercent: item.diffPercent,
+      leadBloc: item.leadBloc,
+    }));
+
   return {
     leadOverview,
     reportingCoverage,
     totalRegisteredPlayers: summary.totalRegisteredPlayers,
     weightedTripleVotes: summary.weightedTripleVotes,
     weightedRegularVotes: summary.weightedRegularVotes,
+    topClosestCities,
+    topStrongestCities,
   };
 }
