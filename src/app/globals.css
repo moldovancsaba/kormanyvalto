@@ -717,6 +717,14 @@ button:disabled {
   margin-bottom: 1rem;
 }
 
+.dashboard-summary-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: stretch;
+}
+
 .kpi-card {
   display: grid;
   grid-template-rows: minmax(3.1rem, auto) minmax(4.4rem, auto) minmax(4.5rem, auto);
@@ -769,6 +777,12 @@ button:disabled {
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 960px) {
+  .dashboard-summary-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pie-card > .chart-card-head,

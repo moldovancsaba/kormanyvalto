@@ -106,6 +106,9 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                       {item.city}
                     </Link>
                   </h3>
+                  <Link href={item.countyHref} className={`preview-ranking-chip preview-ranking-chip-${item.countyLeadBloc}`}>
+                    {item.county}
+                  </Link>
                   <p>{item.districtLabel}</p>
                 </header>
 
@@ -119,15 +122,6 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                   <p>EVK: {getBlocLabel(item.leadBloc)}</p>
                   <p>{formatPercent(item.marginPercent)}</p>
                   <p>{item.totalVotes} szavazat</p>
-                </div>
-
-                <div className="preview-trading-card-chips">
-                  <span className={`preview-ranking-chip preview-ranking-chip-${item.countyLeadBloc}`}>
-                    {item.county}
-                  </span>
-                  <span className={`preview-ranking-chip preview-ranking-chip-${item.leadBloc}`}>
-                    {item.city}
-                  </span>
                 </div>
 
                 <svg viewBox="0 0 100 10" className="preview-ranking-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">

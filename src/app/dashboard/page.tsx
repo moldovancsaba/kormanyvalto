@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { PageShell } from "../../components/PageChrome";
 import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
+import { CountyRankingCard } from "../../components/dashboard-preview/CountyRankingCard";
 import { constituencies } from "../../lib/constituencies";
 import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
@@ -244,6 +245,56 @@ export default async function DashboardPage() {
         leadBloc: item.leadBloc,
       };
     });
+  const strongestBastions = [...votedCities]
+    .sort((a, b) => Math.abs(b.diffPercent) - Math.abs(a.diffPercent) || b.total - a.total)
+    .slice(0, 5)
+    .map((item) => {
+      const countyCode = item.href.split("/")[3] ?? "";
+      const countyCities = votedCities.filter((city) => city.href.split("/")[3] === countyCode);
+      const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
+      const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
+      return {
+        countyCode,
+        countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
+        city: item.city,
+        county: item.county,
+        districtLabel: item.districtLabel,
+        href: item.href,
+        totalVotes: item.total,
+        marginPercent: item.diffPercent,
+        leadBloc: item.leadBloc,
+      };
+    });
+  const countyAggregates = Array.from(
+    votedCities.reduce(
+      (map, item) => {
+        const countyCode = item.href.split("/")[3] ?? "";
+        const current = map.get(countyCode) ?? { yes: 0, no: 0, totalVotes: 0, countyName: item.county };
+        current.yes += item.yes;
+        current.no += item.no;
+        current.totalVotes += item.total;
+        map.set(countyCode, current);
+        return map;
+      },
+      new Map<string, { yes: number; no: number; totalVotes: number; countyName: string }>()
+    )
+  ).map(([countyCode, data]) => {
+    const totalVotes = data.yes + data.no;
+    const marginPercent = totalVotes > 0 ? ((data.yes - data.no) / totalVotes) * 100 : 0;
+    return {
+      countyName: data.countyName,
+      countyCode,
+      href: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+      totalVotes: data.totalVotes,
+      marginPercent,
+      leadBloc: getLeadBlocFromCounts(data.yes, data.no),
+    };
+  });
+  const balancedCounties = [...countyAggregates]
+    .filter((item) => item.totalVotes > 0)
+    .sort((left, right) => Math.abs(left.marginPercent) - Math.abs(right.marginPercent) || right.totalVotes - left.totalVotes)
+    .slice(0, 5);
   const landslides = [...votedCities].sort((a, b) => Math.abs(b.diffPercent) - Math.abs(a.diffPercent) || b.total - a.total).slice(0, 5);
 
   return (
@@ -256,15 +307,12 @@ export default async function DashboardPage() {
         </p>
       </header>
 
-      <section className="kpi-grid">
+      <section className="dashboard-summary-grid">
         <KpiCard
           label="Összes eddigi szavazat"
           value={formatNumber(summary.totalWeightedVotes)}
           detail={`${formatNumber(summary.totalVoteEvents)} leadott kattintás alapján`}
         />
-      </section>
-
-      <section className="pie-grid">
         <PieCard
           title="Összes igen vs összes nem"
           subtitle="A teljes rendszer jelenlegi súlyozott állása."
@@ -279,7 +327,7 @@ export default async function DashboardPage() {
 
       <div className="dashboard-grid">
         <CityRankingCard
-          title="3. Top csataterek"
+          title="Csataterek"
           subtitle="A legkisebb különbségű EVK-k, ahol minden szavazat számít."
           emptyText="Nincs még elég EVK adat a csatatér listához."
           items={closestBattlegrounds}
@@ -294,12 +342,19 @@ export default async function DashboardPage() {
           valueForBar={(item) => item.total}
         />
         <ChartCard
-          title="Top 5 a béke szigetei"
+          title="A béke szigetei"
           subtitle="A legkevesebb, de már mért aktivitást mutató EVK-k."
           tone="cool"
           items={peaceIslands}
           valueLabel={(item) => `${item.total}`}
           valueForBar={(item) => item.total}
+        />
+        <CountyRankingCard
+          title="Kiegyensúlyozott vármegyék"
+          subtitle="A legszorosabb vármegyei állások."
+          emptyText="Nincs még kiegyensúlyozott vármegyei adat."
+          items={balancedCounties}
+          mode="balance"
         />
         <ChartCard
           title="Top 5 az igen városok"
@@ -332,6 +387,13 @@ export default async function DashboardPage() {
           items={landslides}
           valueLabel={(item) => formatPercent(item.diffPercent)}
           valueForBar={(item) => Math.max(0.1, Math.abs(item.diffPercent))}
+        />
+        <CityRankingCard
+          title="Biztos bástyák"
+          subtitle="A legnagyobb különbséggel vezető EVK-k."
+          emptyText="Nincs még elég EVK adat a bástya listához."
+          items={strongestBastions}
+          mode="strongest"
         />
       </div>
     </PageShell>

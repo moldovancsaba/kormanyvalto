@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { PageShell } from "../../components/PageChrome";
-import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
 import { CountyRankingCard } from "../../components/dashboard-preview/CountyRankingCard";
 import { LeadOverviewCard } from "../../components/dashboard-preview/LeadOverviewCard";
 import { ReportingCoverageCard } from "../../components/dashboard-preview/ReportingCoverageCard";
@@ -166,13 +165,6 @@ export default async function DashboardPreviewPage() {
       <div className="dashboard-grid">
         <LeadOverviewCard metric={metrics.leadOverview} />
         <ReportingCoverageCard metric={metrics.reportingCoverage} />
-        <CityRankingCard
-          title="4. Top biztos bástyák"
-          subtitle="A legnagyobb különbséggel vezető EVK-k."
-          emptyText="Nincs még elég EVK adat a bástya listához."
-          items={metrics.topStrongestCities}
-          mode="strongest"
-        />
         <CountyRankingCard
           title="5. Top aktív vármegyék"
           subtitle="A legtöbb összesített szavazatot kapó vármegyék."
