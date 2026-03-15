@@ -281,6 +281,33 @@ export default async function DashboardPage() {
         leadBloc: item.leadBloc,
       };
     });
+  const nationalYes = votedCities.reduce((sum, item) => sum + item.yes, 0);
+  const nationalNo = votedCities.reduce((sum, item) => sum + item.no, 0);
+  const nationalTotal = nationalYes + nationalNo;
+  const nationalYesPercent = nationalTotal > 0 ? (nationalYes / nationalTotal) * 100 : 50;
+  const indicatorCities = [...votedCities]
+    .map((item) => {
+      const countyCode = item.href.split("/")[3] ?? "";
+      const countyCities = votedCities.filter((city) => city.href.split("/")[3] === countyCode);
+      const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
+      const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
+      const cityYesPercent = item.total > 0 ? (item.yes / item.total) * 100 : 50;
+      return {
+        countyCode,
+        countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
+        city: item.city,
+        county: item.county,
+        districtLabel: item.districtLabel,
+        href: item.href,
+        totalVotes: item.total,
+        marginPercent: item.diffPercent,
+        indicatorDistance: Math.abs(cityYesPercent - nationalYesPercent),
+        leadBloc: item.leadBloc,
+      };
+    })
+    .sort((a, b) => a.indicatorDistance - b.indicatorDistance || b.totalVotes - a.totalVotes)
+    .slice(0, 5);
   const countyAggregates = Array.from(
     votedCities.reduce(
       (map, item) => {
@@ -357,6 +384,13 @@ export default async function DashboardPage() {
           items={warZone}
           valueLabel={(item) => `${item.total}`}
           valueForBar={(item) => item.total}
+        />
+        <CityRankingCard
+          title="Előrejelző városok"
+          subtitle="Az EVK-k, ahol a helyi arány a legközelebb áll az aktuális országos arányhoz."
+          emptyText="Nincs még elég adat az előrejelző kártyákhoz."
+          items={indicatorCities}
+          mode="indicator"
         />
         <ChartCard
           title="A béke szigetei"

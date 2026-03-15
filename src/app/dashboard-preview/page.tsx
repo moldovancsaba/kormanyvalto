@@ -258,13 +258,6 @@ export default async function DashboardPreviewPage() {
         <LeadOverviewCard metric={metrics.leadOverview} />
         <ReportingCoverageCard metric={metrics.reportingCoverage} />
         <CityRankingCard
-          title="Előrejelző városok"
-          subtitle="Az EVK-k, ahol a helyi arány a legközelebb áll az aktuális országos arányhoz. (Kisebb eltérés = jobb indikátor)"
-          emptyText="Nincs még elég adat az előrejelző kártyákhoz."
-          items={metrics.topIndicatorCities}
-          mode="indicator"
-        />
-        <CityRankingCard
           title="Elsöprő győzelmek"
           subtitle="Top 5 legnagyobb százalékos különbség az EVK-kban."
           emptyText="Nincs még elég EVK adat az elsöprő győzelmek listához."

@@ -104,7 +104,6 @@ export function CountyRankingCard({ title, subtitle, emptyText, items, mode }: C
                       {item.countyName}
                     </Link>
                   </h3>
-                  <p>Vármegye</p>
                 </header>
 
                 <div className="preview-trading-card-media">
@@ -112,7 +111,6 @@ export function CountyRankingCard({ title, subtitle, emptyText, items, mode }: C
                 </div>
 
                 <div className="preview-trading-card-props">
-                  <p>{item.countyName}</p>
                   <p>{getBlocLabel(item.leadBloc)}</p>
                   <p>{formatPercent(item.marginPercent)}</p>
                   <p>{item.totalVotes} szavazat</p>
