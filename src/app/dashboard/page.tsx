@@ -189,7 +189,7 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
 function CountyMapCard({ items }: { items: CountyMapStat[] }) {
   const byMaz = new Map(items.map((item) => [item.maz, item]));
   const countyMap = getHungaryCountyMapData();
-  const countyPaths = new Map(countyMap.paths.map((item) => [item.maz, item]));
+  const countyPaths = new Map(countyMap.counties.map((item) => [item.countyCode, item]));
 
   return (
     <section className="chart-card chart-card-neutral county-map-card">
@@ -205,7 +205,7 @@ function CountyMapCard({ items }: { items: CountyMapStat[] }) {
             if (!countyPath) return null;
             return (
               <a key={county.maz} href={`/ogy2026/egyeni-valasztokeruletek/${county.maz}`}>
-                <path d={countyPath.d} className={`county-shape county-shape-${stat.leadBloc}`}>
+                <path d={countyPath.pathData} className={`county-shape county-shape-${stat.leadBloc}`}>
                   <title>
                     {stat.name} · igen: {stat.yes} · nem: {stat.no}
                   </title>
