@@ -774,6 +774,164 @@ button:disabled {
   background: #72c8df;
 }
 
+.preview-visual-card {
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.preview-lead-meta {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.75rem 0;
+}
+
+.preview-lead-status {
+  margin: 0;
+  font-weight: 800;
+  color: var(--ink-strong);
+}
+
+.preview-lead-margin {
+  margin: 0;
+  color: var(--muted);
+}
+
+.preview-lead-chart {
+  margin: 0.75rem 0;
+}
+
+.preview-lead-bar-svg {
+  width: 100%;
+  height: 16px;
+  display: block;
+  border: 2px solid rgba(15, 23, 42, 0.82);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.preview-lead-values {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.preview-lead-values p {
+  margin: 0;
+}
+
+.preview-tone-yes {
+  fill: var(--yes-grad-bottom);
+  stroke: var(--yes-grad-bottom);
+}
+
+.preview-tone-no {
+  fill: var(--no-grad-bottom);
+  stroke: var(--no-grad-bottom);
+}
+
+.preview-coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+}
+
+.preview-coverage-item {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.75rem;
+}
+
+.preview-coverage-item header h3,
+.preview-coverage-item header p {
+  margin: 0;
+}
+
+.preview-coverage-item header h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.preview-coverage-item header p {
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.preview-coverage-bar-svg {
+  width: 100%;
+  height: 10px;
+  display: block;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-coverage-track {
+  fill: rgba(15, 23, 42, 0.12);
+}
+
+.preview-coverage-fill {
+  fill: var(--neutral-blue);
+}
+
+.preview-coverage-item-national {
+  display: grid;
+  align-content: space-between;
+}
+
+.preview-coverage-national-state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.preview-coverage-national-state[data-state="active"] {
+  background: rgba(46, 103, 202, 0.14);
+  color: var(--neutral-blue-deep);
+}
+
+.preview-coverage-national-state[data-state="inactive"] {
+  background: rgba(15, 23, 42, 0.1);
+  color: var(--muted);
+}
+
+.preview-pie-chart {
+  background: none;
+  box-shadow: none;
+  border: 0;
+  padding: 0;
+  position: relative;
+}
+
+.preview-pie-svg {
+  width: min(220px, 100%);
+  aspect-ratio: 1;
+  display: block;
+  margin: 0 auto;
+}
+
+.preview-pie-svg circle {
+  fill: none;
+  stroke-width: 16;
+}
+
+.preview-pie-track {
+  stroke: rgba(15, 23, 42, 0.14);
+}
+
+.preview-pie-chart .pie-hole {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .patko-card {
   padding: 1rem;
   border-radius: 22px;
