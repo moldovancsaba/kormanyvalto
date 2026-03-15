@@ -42,6 +42,7 @@ npm run lint
 Required before push to `main`:
 - build must pass,
 - major user-facing changes must update docs,
+- release-impacting changes must bump `package.json` version and add a `docs/CHANGELOG.md` entry,
 - preview visuals must follow interactive standards (`docs/KNOWLEDGE_BASE.md`).
 
 ## Code Conventions

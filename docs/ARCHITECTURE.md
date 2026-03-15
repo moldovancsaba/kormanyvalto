@@ -49,9 +49,11 @@ Design:
 
 Production dashboard:
 - `/dashboard`
+  - includes production-ready ranking section: `3. Top csataterek`
 
 Preview dashboard:
 - `/dashboard-preview`
+  - contains staging/validation visuals before promotion to production dashboard
 
 Reusable preview data:
 - `src/lib/dashboardPreviewData.ts`

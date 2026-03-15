@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.1 - 2026-03-15
+
+### Fixed
+- Collectible ranking cards now show county names (e.g. `Pest vármegye`) instead of numeric placeholders (e.g. `08. vármegye`).
+
+### Changed
+- Moved preview section `3. Top csataterek` to production `/dashboard`.
+- Kept `/dashboard-preview` focused on experimental sections (`4-6`) and validation visuals.
+
+### Documentation
+- Updated route responsibilities in `README.md` for `/dashboard` vs `/dashboard-preview`.
+
 ## 1.1.0 - 2026-03-15
 
 ### Added
