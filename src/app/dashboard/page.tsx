@@ -53,14 +53,18 @@ function getCityTone(item: CityVoteStat): "yes" | "no" | "neutral" {
 
 type KpiCardProps = {
   label: string;
+  subtitle: string;
   value: string;
   detail: string;
 };
 
-function KpiCard({ label, value, detail }: KpiCardProps) {
+function KpiCard({ label, subtitle, value, detail }: KpiCardProps) {
   return (
     <article className="kpi-card">
-      <p className="kpi-label">{label}</p>
+      <header className="chart-card-head">
+        <h2>{label}</h2>
+        <p>{subtitle}</p>
+      </header>
       <p className="kpi-value">{value}</p>
       <p className="kpi-detail">{detail}</p>
     </article>
@@ -310,6 +314,7 @@ export default async function DashboardPage() {
       <section className="dashboard-summary-grid">
         <KpiCard
           label="Összes eddigi szavazat"
+          subtitle="A teljes rendszer eddigi súlyozott aktivitása."
           value={formatNumber(summary.totalWeightedVotes)}
           detail={`${formatNumber(summary.totalVoteEvents)} leadott kattintás alapján`}
         />

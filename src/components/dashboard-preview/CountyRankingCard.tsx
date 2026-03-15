@@ -99,7 +99,11 @@ export function CountyRankingCard({ title, subtitle, emptyText, items, mode }: C
             return (
               <article key={`${item.countyCode}-${index}`} className={`preview-trading-card preview-trading-card-${item.leadBloc}`} role="listitem">
                 <header className="preview-trading-card-head">
-                  <h3>{item.countyName}</h3>
+                  <h3>
+                    <Link href={item.href} className={`preview-ranking-chip preview-ranking-chip-title preview-ranking-chip-${item.leadBloc}`}>
+                      {item.countyName}
+                    </Link>
+                  </h3>
                   <p>Vármegye</p>
                 </header>
 
@@ -112,12 +116,6 @@ export function CountyRankingCard({ title, subtitle, emptyText, items, mode }: C
                   <p>{getBlocLabel(item.leadBloc)}</p>
                   <p>{formatPercent(item.marginPercent)}</p>
                   <p>{item.totalVotes} szavazat</p>
-                </div>
-
-                <div className="preview-trading-card-chips">
-                  <Link href={item.href} className="preview-ranking-chip">
-                    {item.countyName}
-                  </Link>
                 </div>
 
                 <svg viewBox="0 0 100 10" className="preview-ranking-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
