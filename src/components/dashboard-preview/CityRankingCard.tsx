@@ -120,14 +120,18 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                 </div>
 
                 <div className="preview-trading-card-props">
-                  <p>{item.county}</p>
+                  {mode === "indicator" ? null : <p>{item.county}</p>}
                   <p>Vármegye: {getBlocLabel(item.countyLeadBloc)}</p>
                   <p>EVK: {getBlocLabel(item.leadBloc)}</p>
                   {mode === "indicator" ? (
-                    <p>Közelítés az országoshoz: {((item.indicatorDistance ?? 0)).toFixed(1).replace(".", ",")}%</p>
+                    <>
+                      <p>Országos: 0,0%</p>
+                      <p>Helyi eltérés: {formatPercent(item.marginPercent)}</p>
+                      <p>Mintaszám: {item.totalVotes} szavazat</p>
+                    </>
                   ) : null}
-                  <p>{formatPercent(item.marginPercent)}</p>
-                  <p>{item.totalVotes} szavazat</p>
+                  {mode === "indicator" ? null : <p>{formatPercent(item.marginPercent)}</p>}
+                  {mode === "indicator" ? null : <p>{item.totalVotes} szavazat</p>}
                 </div>
 
                 <svg viewBox="0 0 100 10" className="preview-ranking-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
