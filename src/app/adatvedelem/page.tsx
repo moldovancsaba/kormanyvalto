@@ -14,6 +14,47 @@ export default function PrivacyPolicyPage() {
     <PageShell pageClassName="legal-page" narrow navItems={getSectionNavItems()}>
       <h1>Adatvédelmi tájékoztató</h1>
       <div className="legal-copy">
+        <section className="boost-card boost-card-warning" aria-label="Adatvédelmi figyelmeztetés">
+          <header className="boost-warning-header">
+            <span className="material-symbols-rounded boost-warning-icon" aria-hidden="true">
+              warning
+            </span>
+            <h2>FIGYELEM</h2>
+          </header>
+
+          <p className="boost-privacy-strong">Nem gyűjtünk és nem tárolunk személyes adatokat.</p>
+          <p className="boost-card-copy">
+            A Google-belépést kizárólag arra használjuk, hogy megerősítsük: valódi felhasználó szavaz.
+          </p>
+          <p className="boost-card-copy">
+            A rendszer nem menti el a Google-fiókod adatait, és azokat nem használjuk semmilyen más célra.
+          </p>
+
+          <hr className="boost-card-divider" />
+
+          <header className="boost-subsection-header">
+            <span className="material-symbols-rounded boost-subsection-icon" aria-hidden="true">
+              flash_on
+            </span>
+            <h3>3x SZAVAZAT GOOGLE-BELÉPÉSSEL</h3>
+          </header>
+
+          <ul className="boost-benefits-list">
+            <li>
+              <span className="material-symbols-rounded boost-benefit-icon" aria-hidden="true">
+                brightness_alert
+              </span>
+              <span className="boost-benefit-highlight">minden szavazatod 3x súllyal számít</span>
+            </li>
+            <li>
+              <span className="material-symbols-rounded boost-benefit-icon" aria-hidden="true">
+                siren
+              </span>
+              <span className="boost-benefit-highlight">a várakozási idő lassabban növekszik</span>
+            </li>
+          </ul>
+        </section>
+
         <p>
           A kormanyvalto.com egy közösségi játékoldal. Nem hivatalos választási rendszer, nem közhiteles szavazás,
           és a megjelenő eredményeknek nincs jogi hatálya.

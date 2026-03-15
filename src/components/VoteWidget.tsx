@@ -328,48 +328,11 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
       </div>
 
       {auth.authenticated && auth.user ? (
-        <section className="boost-card boost-card-warning" aria-label="3x vote állapot">
-          <header className="boost-warning-header">
-            <span className="material-symbols-rounded boost-warning-icon" aria-hidden="true">
-              warning
-            </span>
-            <h2>FIGYELEM</h2>
-          </header>
-
-          <p className="boost-privacy-strong">
-            Nem gyűjtünk és nem tárolunk személyes adatokat.
-          </p>
+        <section className="boost-card" aria-label="3x vote állapot">
+          <p className="boost-card-title">3x VOTE aktív</p>
           <p className="boost-card-copy">
-            A Google-belépést kizárólag arra használjuk, hogy megerősítsük: valódi felhasználó szavaz.
+            Google belépéssel szavazol. Minden szavazat háromszor számít, és a várakozás csak +0.2 másodperccel nő.
           </p>
-          <p className="boost-card-copy">
-            A rendszer nem menti el a Google-fiókod adatait, és azokat nem használjuk semmilyen más célra.
-          </p>
-
-          <hr className="boost-card-divider" />
-
-          <header className="boost-subsection-header">
-            <span className="material-symbols-rounded boost-subsection-icon" aria-hidden="true">
-              flash_on
-            </span>
-            <h3>3x SZAVAZAT GOOGLE-BELÉPÉSSEL</h3>
-          </header>
-
-          <ul className="boost-benefits-list">
-            <li>
-              <span className="material-symbols-rounded boost-benefit-icon" aria-hidden="true">
-                brightness_alert
-              </span>
-              <span className="boost-benefit-highlight">minden szavazatod 3x súllyal számít</span>
-            </li>
-            <li>
-              <span className="material-symbols-rounded boost-benefit-icon" aria-hidden="true">
-                siren
-              </span>
-              <span className="boost-benefit-highlight">a várakozási idő lassabban növekszik</span>
-            </li>
-          </ul>
-
           <p className="boost-card-meta">{auth.user.name}</p>
         </section>
       ) : auth.configured ? (
