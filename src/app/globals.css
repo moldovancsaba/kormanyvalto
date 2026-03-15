@@ -1199,6 +1199,8 @@ button:disabled {
 .county-shape {
   stroke: rgba(15, 23, 42, 0.85);
   stroke-width: 4;
+  fill-rule: evenodd;
+  clip-rule: evenodd;
   transition: transform 140ms ease, filter 140ms ease;
   transform-origin: center;
   transform-box: fill-box;

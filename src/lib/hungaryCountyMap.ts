@@ -48,7 +48,7 @@ const HIGHLIGHT_HEX = "#4e8348";
 let cachedData: HungaryCountyMapData | null = null;
 
 function extractAttribute(tag: string, attribute: string): string | null {
-  const match = tag.match(new RegExp(`${attribute}="([^"]+)"`, "i"));
+  const match = tag.match(new RegExp(`\\b${attribute}="([^"]+)"`, "i"));
   return match?.[1] ?? null;
 }
 
