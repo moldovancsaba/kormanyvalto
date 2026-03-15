@@ -40,10 +40,10 @@ function formatNumber(value: number) {
 
 function KpiCard({ label, value, detail }: KpiCardProps) {
   return (
-    <article className="kpi-card">
-      <p className="kpi-label">{label}</p>
-      <p className="kpi-value">{value}</p>
-      <p className="kpi-detail">{detail}</p>
+    <article className="preview-visual-card preview-kpi-card">
+      <p className="preview-kpi-label">{label}</p>
+      <p className="preview-kpi-value">{value}</p>
+      <p className="preview-kpi-detail">{detail}</p>
     </article>
   );
 }
@@ -70,7 +70,7 @@ function PieCard({
   const rightClassName = rightTone === "yes" ? "preview-tone-yes" : "preview-tone-no";
 
   return (
-    <section className="pie-card">
+    <section className="preview-visual-card">
       <header className="chart-card-head">
         <h2>{title}</h2>
         <p>{subtitle}</p>
@@ -194,17 +194,11 @@ export default async function DashboardPreviewPage() {
           items={metrics.topBalancedCounties}
           mode="balance"
         />
-      </div>
-
-      <section className="kpi-grid">
         <KpiCard
           label="Összes regisztrált játékos"
           value={formatNumber(metrics.totalRegisteredPlayers)}
           detail="A 3x VOTE módot használó belépett játékosok"
         />
-      </section>
-
-      <section className="pie-grid">
         <PieCard
           title="3x-os szavazatok vs sima szavazatok"
           subtitle="Súlyozott összesítés a belépett és anonim játékmód között."
@@ -215,7 +209,7 @@ export default async function DashboardPreviewPage() {
           leftTone="no"
           rightTone="yes"
         />
-      </section>
+      </div>
     </PageShell>
   );
 }

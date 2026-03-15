@@ -780,6 +780,35 @@ button:disabled {
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+}
+
+.preview-kpi-card {
+  min-height: 0;
+}
+
+.preview-kpi-label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--neutral-blue);
+}
+
+.preview-kpi-value {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--ink-strong);
+}
+
+.preview-kpi-detail {
+  margin: 0;
+  color: var(--muted);
 }
 
 .preview-lead-meta {
