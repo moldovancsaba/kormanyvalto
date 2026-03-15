@@ -31,6 +31,7 @@ export type DashboardPreviewMetrics = {
     county: string;
     countyCode: string;
     countyHref: string;
+    countyLeadBloc: "yes" | "no" | "neutral";
     districtLabel: string;
     href: string;
     totalVotes: number;
@@ -42,6 +43,7 @@ export type DashboardPreviewMetrics = {
     county: string;
     countyCode: string;
     countyHref: string;
+    countyLeadBloc: "yes" | "no" | "neutral";
     districtLabel: string;
     href: string;
     totalVotes: number;
@@ -113,12 +115,20 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
   };
 
   const votedCities = cityStats.filter((item) => item.total > 0);
+  const countyLeadByCode = new Map<string, "yes" | "no" | "neutral">();
+  for (const county of counties) {
+    const countyCities = votedCities.filter((item) => item.href.split("/")[3] === county.maz);
+    const countyYes = countyCities.reduce((acc, item) => acc + item.yes, 0);
+    const countyNo = countyCities.reduce((acc, item) => acc + item.no, 0);
+    countyLeadByCode.set(county.maz, getLeadBlocFromCounts(countyYes, countyNo));
+  }
   const topClosestCities = [...votedCities]
     .sort((left, right) => Math.abs(left.diffPercent) - Math.abs(right.diffPercent) || right.total - left.total)
     .slice(0, 5)
     .map((item) => ({
       countyCode: item.href.split("/")[3] ?? "",
       countyHref: `/ogy2026/egyeni-valasztokeruletek/${item.href.split("/")[3] ?? ""}`,
+      countyLeadBloc: countyLeadByCode.get(item.href.split("/")[3] ?? "") ?? "neutral",
       city: item.city,
       county: item.county,
       districtLabel: item.districtLabel,
@@ -134,6 +144,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     .map((item) => ({
       countyCode: item.href.split("/")[3] ?? "",
       countyHref: `/ogy2026/egyeni-valasztokeruletek/${item.href.split("/")[3] ?? ""}`,
+      countyLeadBloc: countyLeadByCode.get(item.href.split("/")[3] ?? "") ?? "neutral",
       city: item.city,
       county: item.county,
       districtLabel: item.districtLabel,

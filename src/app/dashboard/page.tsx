@@ -11,6 +11,7 @@ import {
   DashboardSummary,
   getDashboardCityStats,
   getDashboardSummary,
+  getLeadBlocFromCounts,
 } from "../../lib/results";
 
 export const revalidate = 120;
@@ -227,9 +228,13 @@ export default async function DashboardPage() {
     .slice(0, 5)
     .map((item) => {
       const countyCode = item.href.split("/")[3] ?? "";
+      const countyCities = votedCities.filter((city) => city.href.split("/")[3] === countyCode);
+      const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
+      const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
       return {
         countyCode,
         countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
         city: item.city,
         county: item.county,
         districtLabel: item.districtLabel,

@@ -6,6 +6,7 @@ type CityRankingItem = {
   county: string;
   countyCode: string;
   countyHref: string;
+  countyLeadBloc: "yes" | "no" | "neutral";
   districtLabel: string;
   href: string;
   totalVotes: number;
@@ -105,21 +106,22 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                 </header>
 
                 <div className="preview-trading-card-media">
-                  <CountyShapeStamp countyCode={item.countyCode} leadBloc={item.leadBloc} />
+                  <CountyShapeStamp countyCode={item.countyCode} leadBloc={item.countyLeadBloc} />
                 </div>
 
                 <div className="preview-trading-card-props">
                   <p>{item.county}</p>
-                  <p>{getBlocLabel(item.leadBloc)}</p>
+                  <p>Vármegye: {getBlocLabel(item.countyLeadBloc)}</p>
+                  <p>EVK: {getBlocLabel(item.leadBloc)}</p>
                   <p>{formatPercent(item.marginPercent)}</p>
                   <p>{item.totalVotes} szavazat</p>
                 </div>
 
                 <div className="preview-trading-card-chips">
-                  <Link href={item.countyHref} className="preview-ranking-chip">
+                  <Link href={item.countyHref} className={`preview-ranking-chip preview-ranking-chip-${item.countyLeadBloc}`}>
                     {item.county}
                   </Link>
-                  <Link href={item.href} className="preview-ranking-chip">
+                  <Link href={item.href} className={`preview-ranking-chip preview-ranking-chip-${item.leadBloc}`}>
                     {item.city}
                   </Link>
                 </div>
