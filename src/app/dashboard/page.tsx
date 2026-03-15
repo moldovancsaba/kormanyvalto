@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { CSSProperties } from "react";
 import { PageShell } from "../../components/PageChrome";
 import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
@@ -25,7 +26,8 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 type ChartCardProps = {
-  title: string;
+  title: ReactNode;
+  ariaLabel: string;
   subtitle: string;
   tone: "warm" | "cool" | "yes" | "no" | "neutral";
   items: CityVoteStat[];
@@ -143,7 +145,7 @@ function PieCard({
   );
 }
 
-function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: ChartCardProps) {
+function ChartCard({ title, ariaLabel, subtitle, tone, items, valueLabel, valueForBar }: ChartCardProps) {
   const maxValue = items.length > 0 ? Math.max(...items.map((item) => valueForBar(item)), 1) : 1;
 
   return (
@@ -156,7 +158,7 @@ function ChartCard({ title, subtitle, tone, items, valueLabel, valueForBar }: Ch
       {items.length === 0 ? (
         <p className="chart-empty">Nincs elég adat ehhez a grafikonhoz.</p>
       ) : (
-        <div className="chart-columns" role="img" aria-label={title}>
+        <div className="chart-columns" role="img" aria-label={ariaLabel}>
           {items.map((item, index) => {
             const height = Math.max(12, Math.round((valueForBar(item) / maxValue) * 100));
             return (
@@ -348,7 +350,8 @@ export default async function DashboardPage() {
           mode="closest"
         />
         <ChartCard
-          title="Top 5 háborús övezet"
+          title="Háborús övezetek"
+          ariaLabel="Háborús övezetek"
           subtitle="A legtöbb összesített szavazatot kapó EVK-k."
           tone="warm"
           items={warZone}
@@ -357,6 +360,7 @@ export default async function DashboardPage() {
         />
         <ChartCard
           title="A béke szigetei"
+          ariaLabel="A béke szigetei"
           subtitle="A legkevesebb, de már mért aktivitást mutató EVK-k."
           tone="cool"
           items={peaceIslands}
@@ -371,7 +375,12 @@ export default async function DashboardPage() {
           mode="balance"
         />
         <ChartCard
-          title="Top 5 az igen városok"
+          title={
+            <>
+              Az <span className="title-inline-chip title-inline-chip-yes">igen</span> városok
+            </>
+          }
+          ariaLabel="Az igen városok"
           subtitle="Ahol az igen a legnagyobb különbséggel vezet az EVK-ban."
           tone="yes"
           items={yesCities}
@@ -379,7 +388,12 @@ export default async function DashboardPage() {
           valueForBar={(item) => item.diff}
         />
         <ChartCard
-          title="Top 5 a nem városok"
+          title={
+            <>
+              A <span className="title-inline-chip title-inline-chip-no">nem</span> városok
+            </>
+          }
+          ariaLabel="A nem városok"
           subtitle="Ahol a nem a legnagyobb különbséggel dominál az EVK-ban."
           tone="no"
           items={noCities}
@@ -387,7 +401,8 @@ export default async function DashboardPage() {
           valueForBar={(item) => Math.abs(item.diff)}
         />
         <ChartCard
-          title="Top 5 senki nem tudja"
+          title="Senki nem tudja"
+          ariaLabel="Senki nem tudja"
           subtitle="A legszorosabb EVK-k, ahol alig van különbség."
           tone="neutral"
           items={nobodyKnows}
