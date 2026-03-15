@@ -9,6 +9,8 @@ const globalWithRateLimit = global as typeof globalThis & {
   _rateBuckets?: Map<string, Bucket>;
 };
 
+const MAX_BUCKETS = 20_000;
+
 function getBuckets() {
   if (!globalWithRateLimit._rateBuckets) {
     globalWithRateLimit._rateBuckets = new Map<string, Bucket>();
@@ -26,6 +28,14 @@ export function checkRateLimit(req: NextRequest, routeKey: string, limit: number
   const now = Date.now();
   const key = `${routeKey}:${clientKey(req)}`;
   const buckets = getBuckets();
+  if (buckets.size > MAX_BUCKETS) {
+    for (const [bucketKey, bucket] of buckets) {
+      if (bucket.resetAt <= now) buckets.delete(bucketKey);
+    }
+    if (buckets.size > MAX_BUCKETS) {
+      buckets.clear();
+    }
+  }
   const existing = buckets.get(key);
 
   if (!existing || existing.resetAt <= now) {

@@ -3,11 +3,7 @@ import { getParliamentEstimate, getResults } from "../../../lib/results";
 import { NO_CACHE_HEADERS } from "../../../lib/http";
 import { checkRateLimit } from "../../../lib/rateLimit";
 import { getCooldownSec, getExistingVoteActor } from "../../../lib/voteEngine";
-
-function normalizeScope(raw: string | null) {
-  const scope = raw?.trim() || "main";
-  return scope.slice(0, 120);
-}
+import { normalizeScope } from "../../../lib/requestValidation";
 
 function getMatrixStatus(
   yesVotes: number,
@@ -65,6 +61,9 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const scope = normalizeScope(url.searchParams.get("scope"));
   const aggregate = url.searchParams.get("aggregate") === "1";
+  if (!scope) {
+    return NextResponse.json({ error: "Invalid scope" }, { status: 400, headers: NO_CACHE_HEADERS });
+  }
   const data = await getResults(scope, aggregate);
   let matrixStatus: { code: "YY" | "YN" | "NY" | "NN" | "TT"; text: string } | undefined;
 

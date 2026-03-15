@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { APP_SESSION_COOKIE, ANON_VOTER_COOKIE, OAUTH_STATE_COOKIE, isSsoConfigured, normalizeReturnTo } from "../../../../lib/auth";
 import { NO_CACHE_HEADERS } from "../../../../lib/http";
+import { checkRateLimit } from "../../../../lib/rateLimit";
 
 export async function GET(req: NextRequest) {
+  const rate = checkRateLimit(req, "api-auth-logout", 30, 60_000);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429, headers: { ...NO_CACHE_HEADERS, "Retry-After": String(rate.retryAfterSec) } }
+    );
+  }
+
   const returnTo = normalizeReturnTo(new URL(req.url).searchParams.get("returnTo"));
   const response = isSsoConfigured() && process.env.SSO_ISSUER?.trim()
     ? NextResponse.redirect(

@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addVote, type VoteType } from "../../../lib/results";
-import { NO_CACHE_HEADERS } from "../../../lib/http";
+import { isTrustedOrigin, NO_CACHE_HEADERS } from "../../../lib/http";
 import { checkRateLimit } from "../../../lib/rateLimit";
 import { ANON_VOTER_COOKIE, shouldUseSecureCookies } from "../../../lib/auth";
 import { getVoteActor, reserveVoteSlot } from "../../../lib/voteEngine";
+import { normalizeScope } from "../../../lib/requestValidation";
 
 export async function POST(req: NextRequest) {
   try {
+    const origin = req.headers.get("origin");
+    const host = req.headers.get("host");
+    if (!isTrustedOrigin(origin, host)) {
+      return NextResponse.json({ error: "Invalid origin" }, { status: 403, headers: NO_CACHE_HEADERS });
+    }
+
+    const contentType = req.headers.get("content-type") || "";
+    if (!contentType.toLowerCase().includes("application/json")) {
+      return NextResponse.json({ error: "Unsupported content type" }, { status: 415, headers: NO_CACHE_HEADERS });
+    }
+
     const rate = checkRateLimit(req, "api-vote", 30, 60_000);
     if (!rate.allowed) {
       return NextResponse.json(
@@ -17,10 +29,13 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => null);
     const type = body?.type as VoteType | undefined;
-    const scope = (body?.scope as string | undefined)?.trim().slice(0, 120) || "main";
+    const scope = normalizeScope(body?.scope);
 
     if (type !== "yes" && type !== "no") {
       return NextResponse.json({ error: "Invalid vote type" }, { status: 400, headers: NO_CACHE_HEADERS });
+    }
+    if (!scope) {
+      return NextResponse.json({ error: "Invalid scope" }, { status: 400, headers: NO_CACHE_HEADERS });
     }
 
     const actor = await getVoteActor(req);
@@ -53,8 +68,7 @@ export async function POST(req: NextRequest) {
       });
     }
     return response;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Vote handling failed.";
-    return NextResponse.json({ error: message }, { status: 500, headers: NO_CACHE_HEADERS });
+  } catch {
+    return NextResponse.json({ error: "Vote handling failed." }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }

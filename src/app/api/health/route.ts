@@ -20,17 +20,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       status: "healthy",
-      db: dbName,
       timestamp: new Date().toISOString(),
     }, { headers: NO_CACHE_HEADERS });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-
+  } catch {
     return NextResponse.json(
       {
         ok: false,
         status: "unhealthy",
-        error: message,
         timestamp: new Date().toISOString(),
       },
       { status: 503, headers: NO_CACHE_HEADERS }

@@ -11,6 +11,7 @@ import {
   verifyIdToken,
 } from "../../../../lib/auth";
 import { NO_CACHE_HEADERS } from "../../../../lib/http";
+import { checkRateLimit } from "../../../../lib/rateLimit";
 
 function buildErrorRedirect(req: NextRequest, returnTo: string, reason: string) {
   const redirectUrl = new URL(normalizeReturnTo(returnTo), req.url);
@@ -19,6 +20,14 @@ function buildErrorRedirect(req: NextRequest, returnTo: string, reason: string) 
 }
 
 export async function GET(req: NextRequest) {
+  const rate = checkRateLimit(req, "api-auth-callback", 60, 60_000);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429, headers: { ...NO_CACHE_HEADERS, "Retry-After": String(rate.retryAfterSec) } }
+    );
+  }
+
   const requestUrl = new URL(req.url);
   const code = requestUrl.searchParams.get("code");
   const state = requestUrl.searchParams.get("state");
