@@ -28,9 +28,14 @@ function getBlocLeadLabel(estimate: ParliamentEstimate) {
 }
 
 export default function ParliamentHemicycle({ estimate, title, subtitle, eyebrow }: ParliamentHemicycleProps) {
+  const layoutPoints = [...PARLIAMENT_TEMPLATE_SEATS].sort((left, right) => {
+    if (left.x !== right.x) return left.x - right.x;
+    return left.y - right.y;
+  });
+
   const mappedSeats = estimate.seats
     .map((seat, index) => {
-      const templatePoint = PARLIAMENT_TEMPLATE_SEATS[index];
+      const templatePoint = layoutPoints[index];
       if (!templatePoint) return null;
 
       return {

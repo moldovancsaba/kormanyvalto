@@ -218,15 +218,17 @@ export function createEmptyParliamentEstimate(mode: ParliamentEstimateMode = "st
 function buildSeatOrder(seats: ParliamentSeat[]) {
   const sortByStrength = (left: ParliamentSeat, right: ParliamentSeat) =>
     right.margin - left.margin || right.total - left.total || left.label.localeCompare(right.label, "hu");
+  const sortByWeakness = (left: ParliamentSeat, right: ParliamentSeat) =>
+    left.margin - right.margin || left.total - right.total || left.label.localeCompare(right.label, "hu");
 
   const yesDistrict = seats.filter((seat) => seat.bloc === "yes" && seat.source === "district").sort(sortByStrength);
-  const yesList = seats.filter((seat) => seat.bloc === "yes" && seat.source === "list");
+  const yesList = seats.filter((seat) => seat.bloc === "yes" && seat.source === "list").sort(sortByStrength);
   const neutralDistrict = seats
     .filter((seat) => seat.bloc === "neutral" && seat.source === "district")
     .sort((left, right) => right.total - left.total || left.label.localeCompare(right.label, "hu"));
-  const neutralList = seats.filter((seat) => seat.bloc === "neutral" && seat.source === "list");
-  const noList = seats.filter((seat) => seat.bloc === "no" && seat.source === "list");
-  const noDistrict = seats.filter((seat) => seat.bloc === "no" && seat.source === "district").sort(sortByStrength);
+  const neutralList = seats.filter((seat) => seat.bloc === "neutral" && seat.source === "list").sort(sortByStrength);
+  const noList = seats.filter((seat) => seat.bloc === "no" && seat.source === "list").sort(sortByWeakness);
+  const noDistrict = seats.filter((seat) => seat.bloc === "no" && seat.source === "district").sort(sortByWeakness);
 
   return [...yesDistrict, ...yesList, ...neutralDistrict, ...neutralList, ...noList, ...noDistrict];
 }
