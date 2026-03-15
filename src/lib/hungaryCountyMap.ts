@@ -111,31 +111,75 @@ export function getHungaryCountyMapData(): HungaryCountyMapData {
 
   const dir = path.join(process.cwd(), "public", "images", "couties");
   const emptySvgPath = path.join(dir, "HU_county_empty.svg");
-  const emptySvg = fs.readFileSync(emptySvgPath, "utf8");
-  const size = parseSvgSize(emptySvg);
-  const emptyPaths = parsePaths(emptySvg);
-  const pathById = new Map(emptyPaths.map((item) => [item.id, item]));
 
-  const paths: HungaryCountyPath[] = [];
-  for (const [fileName, maz] of Object.entries(COUNTY_FILE_TO_MAZ)) {
-    const svgPath = path.join(dir, fileName);
-    const svg = fs.readFileSync(svgPath, "utf8");
-    const highlightedId = findHighlightedPathId(svg);
-    if (!highlightedId) continue;
+  if (fs.existsSync(emptySvgPath)) {
+    const emptySvg = fs.readFileSync(emptySvgPath, "utf8");
+    const size = parseSvgSize(emptySvg);
+    const emptyPaths = parsePaths(emptySvg);
+    const pathById = new Map(emptyPaths.map((item) => [item.id, item]));
 
-    const geometry = pathById.get(highlightedId);
-    if (!geometry) continue;
+    const paths: HungaryCountyPath[] = [];
+    for (const [fileName, maz] of Object.entries(COUNTY_FILE_TO_MAZ)) {
+      const svgPath = path.join(dir, fileName);
+      if (!fs.existsSync(svgPath)) continue;
 
-    paths.push({
-      maz,
-      id: highlightedId,
-      d: geometry.d,
-    });
+      const svg = fs.readFileSync(svgPath, "utf8");
+      const highlightedId = findHighlightedPathId(svg);
+      if (!highlightedId) continue;
+
+      const geometry = pathById.get(highlightedId);
+      if (!geometry) continue;
+
+      paths.push({
+        maz,
+        id: highlightedId,
+        d: geometry.d,
+      });
+    }
+
+    cachedData = {
+      ...size,
+      paths,
+    };
+    return cachedData;
+  }
+
+  const fallbackSvgPath = path.join(process.cwd(), "public", "images", "HU_counties_colored.svg");
+  const fallbackSvg = fs.readFileSync(fallbackSvgPath, "utf8");
+  const fallbackSize = parseSvgSize(fallbackSvg);
+  const fallbackPaths = parsePaths(fallbackSvg);
+  const fallbackByMaz = new Map<string, HungaryCountyPath>();
+  const fallbackPathToMaz: Record<string, string> = {
+    path2230: "01",
+    path1331: "02",
+    path4896: "03",
+    path3097: "04",
+    path1349: "05",
+    path4015: "06",
+    path7528: "07",
+    path2218: "08",
+    path1315: "09",
+    path4022: "10",
+    path4010: "11",
+    path2229: "12",
+    path5788: "13",
+    path3992: "14",
+    path1337: "15",
+    path2293: "16",
+    path7536: "17",
+    path2235: "18",
+    path2221: "19",
+    path2219: "20",
+  };
+  for (const item of fallbackPaths) {
+    const maz = fallbackPathToMaz[item.id];
+    if (!maz) continue;
+    fallbackByMaz.set(maz, { maz, id: item.id, d: item.d });
   }
 
   cachedData = {
-    ...size,
-    paths,
+    ...fallbackSize,
+    paths: [...fallbackByMaz.values()],
   };
 
   return cachedData;
