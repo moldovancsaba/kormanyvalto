@@ -77,6 +77,57 @@ function parseSvgSize(svg: string): { width: number; height: number; viewBox: st
   };
 }
 
+function getPathBounds(d: string): { minX: number; minY: number; maxX: number; maxY: number } | null {
+  const numbers = d.match(/-?\d*\.?\d+(?:e[-+]?\d+)?/gi);
+  if (!numbers || numbers.length < 2) return null;
+
+  let minX = Number.POSITIVE_INFINITY;
+  let minY = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  let maxY = Number.NEGATIVE_INFINITY;
+
+  for (let i = 0; i + 1 < numbers.length; i += 2) {
+    const x = Number.parseFloat(numbers[i]);
+    const y = Number.parseFloat(numbers[i + 1]);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  }
+
+  if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY)) {
+    return null;
+  }
+
+  return { minX, minY, maxX, maxY };
+}
+
+function buildViewBoxFromPaths(paths: HungaryCountyPath[]): string | null {
+  let minX = Number.POSITIVE_INFINITY;
+  let minY = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  let maxY = Number.NEGATIVE_INFINITY;
+
+  for (const item of paths) {
+    const bounds = getPathBounds(item.d);
+    if (!bounds) continue;
+    minX = Math.min(minX, bounds.minX);
+    minY = Math.min(minY, bounds.minY);
+    maxX = Math.max(maxX, bounds.maxX);
+    maxY = Math.max(maxY, bounds.maxY);
+  }
+
+  if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY)) {
+    return null;
+  }
+
+  const pad = 16;
+  const width = Math.max(1, maxX - minX);
+  const height = Math.max(1, maxY - minY);
+  return `${minX - pad} ${minY - pad} ${width + pad * 2} ${height + pad * 2}`;
+}
+
 function parsePaths(svg: string): ParsedPath[] {
   const pathTags = svg.match(/<path\b[\s\S]*?\/>/gi) ?? [];
   const out: ParsedPath[] = [];
@@ -139,6 +190,7 @@ export function getHungaryCountyMapData(): HungaryCountyMapData {
 
     cachedData = {
       ...size,
+      viewBox: buildViewBoxFromPaths(paths) ?? size.viewBox,
       paths,
     };
     return cachedData;
@@ -179,6 +231,7 @@ export function getHungaryCountyMapData(): HungaryCountyMapData {
 
   cachedData = {
     ...fallbackSize,
+    viewBox: buildViewBoxFromPaths([...fallbackByMaz.values()]) ?? fallbackSize.viewBox,
     paths: [...fallbackByMaz.values()],
   };
 
