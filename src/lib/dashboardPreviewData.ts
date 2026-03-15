@@ -120,9 +120,13 @@ export type DashboardPreviewMetrics = {
   topIndicatorCities: Array<{
     city: string;
     county: string;
+    countyCode: string;
+    countyHref: string;
+    countyLeadBloc: "yes" | "no" | "neutral";
     districtLabel: string;
     href: string;
     totalVotes: number;
+    marginPercent: number;
     diff: number;
     diffPercent: number;
     leadBloc: "yes" | "no" | "neutral";
@@ -349,13 +353,18 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
 
   const topIndicatorCities = [...votedCities]
     .map((item) => {
+      const countyCode = item.href.split("/")[3] ?? "";
       const cityYesPercent = item.total > 0 ? (item.yes / item.total) * 100 : 50;
       return {
         city: item.city,
         county: item.county,
+        countyCode,
+        countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        countyLeadBloc: countyLeadByCode.get(countyCode) ?? "neutral",
         districtLabel: item.districtLabel,
         href: item.href,
         totalVotes: item.total,
+        marginPercent: item.diffPercent,
         diff: item.diff,
         diffPercent: item.diffPercent,
         leadBloc: item.leadBloc,

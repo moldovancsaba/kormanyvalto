@@ -12,6 +12,7 @@ type CityRankingItem = {
   totalVotes: number;
   marginPercent: number;
   leadBloc: "yes" | "no" | "neutral";
+  indicatorDistance?: number;
 };
 
 type CityRankingCardProps = {
@@ -19,7 +20,7 @@ type CityRankingCardProps = {
   subtitle: string;
   emptyText: string;
   items: CityRankingItem[];
-  mode: "closest" | "strongest";
+  mode: "closest" | "strongest" | "indicator";
 };
 
 function formatPercent(value: number): string {
@@ -95,7 +96,9 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
         <div className="preview-trading-grid" role="list" aria-label={title}>
           {items.map((item, index) => {
             const normalizedPercent =
-              mode === "closest" ? (maxMagnitude - Math.abs(item.marginPercent)) / maxMagnitude : Math.abs(item.marginPercent) / maxMagnitude;
+              mode === "closest" || mode === "indicator"
+                ? (maxMagnitude - Math.abs(item.marginPercent)) / maxMagnitude
+                : Math.abs(item.marginPercent) / maxMagnitude;
             const barPercent = Math.max(8, normalizedPercent * 100);
 
             return (
@@ -120,6 +123,9 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                   <p>{item.county}</p>
                   <p>Vármegye: {getBlocLabel(item.countyLeadBloc)}</p>
                   <p>EVK: {getBlocLabel(item.leadBloc)}</p>
+                  {mode === "indicator" ? (
+                    <p>Közelítés az országoshoz: {((item.indicatorDistance ?? 0)).toFixed(1).replace(".", ",")}%</p>
+                  ) : null}
                   <p>{formatPercent(item.marginPercent)}</p>
                   <p>{item.totalVotes} szavazat</p>
                 </div>

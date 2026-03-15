@@ -257,12 +257,12 @@ export default async function DashboardPreviewPage() {
       <div className="dashboard-grid">
         <LeadOverviewCard metric={metrics.leadOverview} />
         <ReportingCoverageCard metric={metrics.reportingCoverage} />
-        <CityListCard
+        <CityRankingCard
           title="Előrejelző városok"
           subtitle="Az EVK-k, ahol a helyi arány a legközelebb áll az aktuális országos arányhoz. (Kisebb eltérés = jobb indikátor)"
-          emptyText="Nincs még elég adat az előrejelző listához."
+          emptyText="Nincs még elég adat az előrejelző kártyákhoz."
           items={metrics.topIndicatorCities}
-          metricLabel="indicator"
+          mode="indicator"
         />
         <CityRankingCard
           title="Elsöprő győzelmek"
