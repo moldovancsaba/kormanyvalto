@@ -101,7 +101,11 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
             return (
               <article key={`${item.href}-${index}`} className={`preview-trading-card preview-trading-card-${item.leadBloc}`} role="listitem">
                 <header className="preview-trading-card-head">
-                  <h3>{item.city}</h3>
+                  <h3>
+                    <Link href={item.href} className={`preview-ranking-chip preview-ranking-chip-title preview-ranking-chip-${item.leadBloc}`}>
+                      {item.city}
+                    </Link>
+                  </h3>
                   <p>{item.districtLabel}</p>
                 </header>
 
@@ -118,12 +122,12 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                 </div>
 
                 <div className="preview-trading-card-chips">
-                  <Link href={item.countyHref} className={`preview-ranking-chip preview-ranking-chip-${item.countyLeadBloc}`}>
+                  <span className={`preview-ranking-chip preview-ranking-chip-${item.countyLeadBloc}`}>
                     {item.county}
-                  </Link>
-                  <Link href={item.href} className={`preview-ranking-chip preview-ranking-chip-${item.leadBloc}`}>
+                  </span>
+                  <span className={`preview-ranking-chip preview-ranking-chip-${item.leadBloc}`}>
                     {item.city}
-                  </Link>
+                  </span>
                 </div>
 
                 <svg viewBox="0 0 100 10" className="preview-ranking-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">

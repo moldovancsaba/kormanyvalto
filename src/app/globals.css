@@ -1191,6 +1191,11 @@ button:disabled {
   line-height: 1.2;
 }
 
+.preview-ranking-chip-title {
+  font-size: 1rem;
+  padding: 0.28rem 0.75rem;
+}
+
 .preview-trading-card-head p {
   margin: 0.15rem 0 0;
   color: var(--muted);
