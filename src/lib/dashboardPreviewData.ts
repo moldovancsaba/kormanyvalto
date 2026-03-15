@@ -44,6 +44,22 @@ export type DashboardPreviewMetrics = {
     marginPercent: number;
     leadBloc: "yes" | "no" | "neutral";
   }>;
+  topActiveCounties: Array<{
+    countyName: string;
+    countyCode: string;
+    href: string;
+    totalVotes: number;
+    marginPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
+  topBalancedCounties: Array<{
+    countyName: string;
+    countyCode: string;
+    href: string;
+    totalVotes: number;
+    marginPercent: number;
+    leadBloc: "yes" | "no" | "neutral";
+  }>;
 };
 
 function toPercent(part: number, total: number): number {
@@ -119,6 +135,38 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
       leadBloc: item.leadBloc,
     }));
 
+  const countyAggregateList = counties.map((county) => {
+    const countyConstituencies = constituencies.filter((constituency) => constituency.maz === county.maz);
+    let yesVotes = 0;
+    let noVotes = 0;
+    for (const constituency of countyConstituencies) {
+      const scope = `ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`;
+      const voteCount = districtCounts[scope];
+      yesVotes += voteCount?.yes ?? 0;
+      noVotes += voteCount?.no ?? 0;
+    }
+    const totalVotes = yesVotes + noVotes;
+    const marginPercent = totalVotes > 0 ? ((yesVotes - noVotes) / totalVotes) * 100 : 0;
+    return {
+      countyName: county.mazNev,
+      countyCode: county.maz,
+      href: `/ogy2026/egyeni-valasztokeruletek/${county.maz}`,
+      totalVotes,
+      marginPercent,
+      leadBloc: getLeadBlocFromCounts(yesVotes, noVotes),
+    };
+  });
+
+  const topActiveCounties = [...countyAggregateList]
+    .filter((item) => item.totalVotes > 0)
+    .sort((left, right) => right.totalVotes - left.totalVotes || left.countyName.localeCompare(right.countyName, "hu"))
+    .slice(0, 5);
+
+  const topBalancedCounties = [...countyAggregateList]
+    .filter((item) => item.totalVotes > 0)
+    .sort((left, right) => Math.abs(left.marginPercent) - Math.abs(right.marginPercent) || right.totalVotes - left.totalVotes)
+    .slice(0, 5);
+
   return {
     leadOverview,
     reportingCoverage,
@@ -127,5 +175,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     weightedRegularVotes: summary.weightedRegularVotes,
     topClosestCities,
     topStrongestCities,
+    topActiveCounties,
+    topBalancedCounties,
   };
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "../../components/PageChrome";
 import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
+import { CountyRankingCard } from "../../components/dashboard-preview/CountyRankingCard";
 import { LeadOverviewCard } from "../../components/dashboard-preview/LeadOverviewCard";
 import { ReportingCoverageCard } from "../../components/dashboard-preview/ReportingCoverageCard";
 import { type DashboardPreviewMetrics, getDashboardPreviewMetrics } from "../../lib/dashboardPreviewData";
@@ -145,6 +146,8 @@ export default async function DashboardPreviewPage() {
     weightedRegularVotes: 0,
     topClosestCities: [],
     topStrongestCities: [],
+    topActiveCounties: [],
+    topBalancedCounties: [],
   };
   try {
     metrics = await getDashboardPreviewMetrics();
@@ -176,6 +179,20 @@ export default async function DashboardPreviewPage() {
           emptyText="Nincs még elég EVK adat a bástya listához."
           items={metrics.topStrongestCities}
           mode="strongest"
+        />
+        <CountyRankingCard
+          title="5. Top aktív vármegyék"
+          subtitle="A legtöbb összesített szavazatot kapó vármegyék."
+          emptyText="Nincs még vármegyei aktivitási adat."
+          items={metrics.topActiveCounties}
+          mode="activity"
+        />
+        <CountyRankingCard
+          title="6. Top kiegyensúlyozott vármegyék"
+          subtitle="A legszorosabb vármegyei állások."
+          emptyText="Nincs még kiegyensúlyozott vármegyei adat."
+          items={metrics.topBalancedCounties}
+          mode="balance"
         />
       </div>
 
