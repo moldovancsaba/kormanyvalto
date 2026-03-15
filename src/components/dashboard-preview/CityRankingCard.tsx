@@ -120,7 +120,6 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                 </div>
 
                 <div className="preview-trading-card-props">
-                  {mode === "indicator" ? null : <p>{item.county}</p>}
                   <p>Vármegye: {getBlocLabel(item.countyLeadBloc)}</p>
                   <p>EVK: {getBlocLabel(item.leadBloc)}</p>
                   {mode === "indicator" ? (
