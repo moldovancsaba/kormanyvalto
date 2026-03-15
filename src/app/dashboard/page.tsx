@@ -38,11 +38,6 @@ function formatSignedDiff(value: number) {
   return String(value);
 }
 
-function formatPercent(value: number) {
-  const abs = Math.abs(value);
-  return `${abs.toFixed(1).replace(".", ",")}%`;
-}
-
 function formatNumber(value: number) {
   return new Intl.NumberFormat("hu-HU").format(value);
 }
@@ -301,7 +296,6 @@ export default async function DashboardPage() {
     .filter((item) => item.totalVotes > 0)
     .sort((left, right) => Math.abs(left.marginPercent) - Math.abs(right.marginPercent) || right.totalVotes - left.totalVotes)
     .slice(0, 5);
-  const landslides = [...votedCities].sort((a, b) => Math.abs(b.diffPercent) - Math.abs(a.diffPercent) || b.total - a.total).slice(0, 5);
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
@@ -386,14 +380,6 @@ export default async function DashboardPage() {
           items={nobodyKnows}
           valueLabel={(item) => `${Math.abs(item.diff)}`}
           valueForBar={(item) => Math.max(1, item.total)}
-        />
-        <ChartCard
-          title="Elsöprő győzelmek"
-          subtitle="Top 5 legnagyobb százalékos különbség az EVK-kban."
-          tone="warm"
-          items={landslides}
-          valueLabel={(item) => formatPercent(item.diffPercent)}
-          valueForBar={(item) => Math.max(0.1, Math.abs(item.diffPercent))}
         />
         <CityRankingCard
           title="Biztos bástyák"

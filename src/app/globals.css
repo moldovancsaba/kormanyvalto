@@ -1545,17 +1545,17 @@ button:disabled {
 
 .patko-seat-yes.patko-seat-list {
   fill: url(#patkoListYesGradient);
-  stroke: var(--yes-grad-bottom);
+  stroke: var(--patko-seat-stroke-evk);
 }
 
 .patko-seat-no.patko-seat-list {
   fill: url(#patkoListNoGradient);
-  stroke: var(--no-grad-bottom);
+  stroke: var(--patko-seat-stroke-evk);
 }
 
 .patko-seat-neutral.patko-seat-list {
   fill: url(#patkoListNeutralGradient);
-  stroke: var(--patko-seat-neutral);
+  stroke: var(--patko-seat-stroke-evk);
 }
 
 .patko-svg a:hover .patko-seat,
@@ -1780,7 +1780,7 @@ button:disabled {
 }
 
 .county-shape {
-  stroke: rgba(15, 23, 42, 0.85);
+  stroke: #ffffff;
   stroke-width: 4;
   fill-rule: evenodd;
   clip-rule: evenodd;
