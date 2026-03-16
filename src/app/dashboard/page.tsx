@@ -424,13 +424,6 @@ export default async function DashboardPage() {
           items={balancedCounties}
           mode="balance"
         />
-        <CityRankingCard
-          title="Biztos bástyák"
-          subtitle="A legnagyobb különbséggel vezető EVK-k."
-          emptyText="Nincs még elég EVK adat a bástya listához."
-          items={strongestBastions}
-          mode="strongest"
-        />
         <ChartCard
           title="Háborús övezetek"
           ariaLabel="Háborús övezetek"
@@ -439,6 +432,13 @@ export default async function DashboardPage() {
           items={warZone}
           valueLabel={(item) => `${item.total}`}
           valueForBar={(item) => item.total}
+        />
+        <CityRankingCard
+          title="Biztos bástyák"
+          subtitle="A legnagyobb különbséggel vezető EVK-k."
+          emptyText="Nincs még elég EVK adat a bástya listához."
+          items={strongestBastions}
+          mode="strongest"
         />
         <ChartCard
           title={
