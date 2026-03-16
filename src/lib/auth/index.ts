@@ -65,6 +65,19 @@ export function shouldUseSecureCookies() {
   return process.env.NODE_ENV === "production" && getAppBaseUrl().startsWith("https://");
 }
 
+function getClientIp(req: NextRequest) {
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    const [firstIp] = forwardedFor.split(",");
+    if (firstIp?.trim()) return firstIp.trim();
+  }
+
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp?.trim()) return realIp.trim();
+
+  return "";
+}
+
 export function getSsoRedirectUri() {
   return process.env.SSO_REDIRECT_URI?.trim() || `${getAppBaseUrl()}/api/auth/callback`;
 }
@@ -200,6 +213,20 @@ export async function readAppSessionFromCookies() {
     exp: payload.exp,
     iat: payload.iat,
   };
+}
+
+export function getAnonymousFingerprintActorId(req: NextRequest) {
+  const ip = getClientIp(req);
+  const userAgent = req.headers.get("user-agent")?.trim() || "";
+  const language = req.headers.get("accept-language")?.trim() || "";
+
+  if (!ip && !userAgent && !language) {
+    return null;
+  }
+
+  const fingerprint = `${ip}|${userAgent}|${language}`;
+  const digest = createHash("sha256").update(fingerprint).digest("hex");
+  return `anonfp:${digest}`;
 }
 
 export function buildAuthorizeUrl(oauthState: OAuthStatePayload, loginHint?: string) {

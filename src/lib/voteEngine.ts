@@ -1,7 +1,13 @@
 import { Collection } from "mongodb";
 import { NextRequest } from "next/server";
 import { getMongoClient, getMongoDbName } from "./mongodb";
-import { AppSession, createAnonymousActorId, getExistingAnonymousActorId, readAppSessionFromRequest } from "./auth";
+import {
+  AppSession,
+  createAnonymousActorId,
+  getAnonymousFingerprintActorId,
+  getExistingAnonymousActorId,
+  readAppSessionFromRequest,
+} from "./auth";
 
 export type VoteMode = "anonymous" | "google";
 
@@ -60,11 +66,13 @@ export async function getVoteActor(req: NextRequest): Promise<VoteActor> {
   }
 
   const existingAnonId = getExistingAnonymousActorId(req);
+  const fingerprintActorId = getAnonymousFingerprintActorId(req);
+  const actorId = existingAnonId || fingerprintActorId || createAnonymousActorId();
   return {
-    actorId: existingAnonId || createAnonymousActorId(),
+    actorId,
     mode: "anonymous",
     weight: 1,
-    cooldownStep: 0.3,
+    cooldownStep: 1,
     shouldSetAnonymousCookie: !existingAnonId,
     session: null,
   };
@@ -84,15 +92,16 @@ export async function getExistingVoteActor(req: NextRequest): Promise<VoteActor 
   }
 
   const anonId = getExistingAnonymousActorId(req);
-  if (!anonId) {
+  const actorId = anonId || getAnonymousFingerprintActorId(req);
+  if (!actorId) {
     return null;
   }
 
   return {
-    actorId: anonId,
+    actorId,
     mode: "anonymous",
     weight: 1,
-    cooldownStep: 0.3,
+    cooldownStep: 1,
     shouldSetAnonymousCookie: false,
     session: null,
   };
