@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getHungaryCountyMapData } from "../../lib/hungaryCountyMap";
+import { formatAbsolutePercent } from "../../lib/numberFormat";
+import { getSvgPathBounds } from "../../lib/svgPath";
 
 type CountyRankingItem = {
   countyName: string;
@@ -18,43 +20,10 @@ type CountyRankingCardProps = {
   mode: "activity" | "balance";
 };
 
-function formatPercent(value: number): string {
-  return `${Math.abs(value).toFixed(1).replace(".", ",")}%`;
-}
-
 function getBlocLabel(leadBloc: CountyRankingItem["leadBloc"]): string {
   if (leadBloc === "yes") return "igen";
   if (leadBloc === "no") return "nem";
   return "döntetlen";
-}
-
-function getPathBounds(pathData: string): { minX: number; minY: number; width: number; height: number } {
-  const values = pathData.match(/-?\d*\.?\d+(?:e[-+]?\d+)?/gi)?.map(Number) ?? [];
-  let minX = Number.POSITIVE_INFINITY;
-  let minY = Number.POSITIVE_INFINITY;
-  let maxX = Number.NEGATIVE_INFINITY;
-  let maxY = Number.NEGATIVE_INFINITY;
-
-  for (let i = 0; i + 1 < values.length; i += 2) {
-    const x = values[i];
-    const y = values[i + 1];
-    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-    minX = Math.min(minX, x);
-    minY = Math.min(minY, y);
-    maxX = Math.max(maxX, x);
-    maxY = Math.max(maxY, y);
-  }
-
-  if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY)) {
-    return { minX: 0, minY: 0, width: 1, height: 1 };
-  }
-
-  return {
-    minX,
-    minY,
-    width: Math.max(1, maxX - minX),
-    height: Math.max(1, maxY - minY),
-  };
 }
 
 function CountyShapeStamp({ countyCode, leadBloc }: { countyCode: string; leadBloc: "yes" | "no" | "neutral" }) {
@@ -64,7 +33,7 @@ function CountyShapeStamp({ countyCode, leadBloc }: { countyCode: string; leadBl
     return <div className="preview-card-stamp-fallback">{countyCode}</div>;
   }
 
-  const bounds = getPathBounds(county.pathData);
+  const bounds = getSvgPathBounds(county.pathData);
   const pad = 8;
   const viewBox = `${bounds.minX - pad} ${bounds.minY - pad} ${bounds.width + pad * 2} ${bounds.height + pad * 2}`;
 
@@ -112,7 +81,7 @@ export function CountyRankingCard({ title, subtitle, emptyText, items, mode }: C
 
                 <div className="preview-trading-card-props">
                   <p>{getBlocLabel(item.leadBloc)}</p>
-                  <p>{formatPercent(item.marginPercent)}</p>
+                  <p>{formatAbsolutePercent(item.marginPercent)}</p>
                   <p>{item.totalVotes} szavazat</p>
                 </div>
 

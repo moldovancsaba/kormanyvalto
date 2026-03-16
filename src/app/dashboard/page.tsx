@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PageShell } from "../../components/PageChrome";
-import { CityRankingCard } from "../../components/dashboard-preview/CityRankingCard";
-import { CountyRankingCard } from "../../components/dashboard-preview/CountyRankingCard";
+import { CityRankingCard } from "../../components/dashboard/CityRankingCard";
+import { CountyRankingCard } from "../../components/dashboard/CountyRankingCard";
 import { constituencies } from "../../lib/constituencies";
 import { getSectionNavItems } from "../../lib/navigation";
-import { formatCompactChipNumber } from "../../lib/numberFormat";
+import { formatCompactChipNumber, formatNumber } from "../../lib/numberFormat";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
+import { getCountyCodeFromConstituencyHref, getCountyHrefFromConstituencyHref } from "../../lib/territoryPaths";
 import {
   CityVoteStat,
   DashboardSummary,
@@ -38,10 +39,6 @@ type ChartCardProps = {
 function formatSignedDiff(value: number) {
   if (value > 0) return `+${value}`;
   return String(value);
-}
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("hu-HU").format(value);
 }
 
 function getCityTone(item: CityVoteStat): "yes" | "no" | "neutral" {
@@ -259,13 +256,13 @@ export default async function DashboardPage() {
     .sort((a, b) => Math.abs(a.diffPercent) - Math.abs(b.diffPercent) || b.total - a.total)
     .slice(0, 5)
     .map((item) => {
-      const countyCode = item.href.split("/")[3] ?? "";
-      const countyCities = votedCities.filter((city) => city.href.split("/")[3] === countyCode);
+      const countyCode = getCountyCodeFromConstituencyHref(item.href);
+      const countyCities = votedCities.filter((city) => getCountyCodeFromConstituencyHref(city.href) === countyCode);
       const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
       const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
       return {
         countyCode,
-        countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        countyHref: getCountyHrefFromConstituencyHref(item.href),
         countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
         city: item.city,
         county: item.county,
@@ -280,13 +277,13 @@ export default async function DashboardPage() {
     .sort((a, b) => Math.abs(b.diffPercent) - Math.abs(a.diffPercent) || b.total - a.total)
     .slice(0, 5)
     .map((item) => {
-      const countyCode = item.href.split("/")[3] ?? "";
-      const countyCities = votedCities.filter((city) => city.href.split("/")[3] === countyCode);
+      const countyCode = getCountyCodeFromConstituencyHref(item.href);
+      const countyCities = votedCities.filter((city) => getCountyCodeFromConstituencyHref(city.href) === countyCode);
       const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
       const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
       return {
         countyCode,
-        countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        countyHref: getCountyHrefFromConstituencyHref(item.href),
         countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
         city: item.city,
         county: item.county,
@@ -303,14 +300,14 @@ export default async function DashboardPage() {
   const nationalYesPercent = nationalTotal > 0 ? (nationalYes / nationalTotal) * 100 : 50;
   const indicatorCities = [...votedCities]
     .map((item) => {
-      const countyCode = item.href.split("/")[3] ?? "";
-      const countyCities = votedCities.filter((city) => city.href.split("/")[3] === countyCode);
+      const countyCode = getCountyCodeFromConstituencyHref(item.href);
+      const countyCities = votedCities.filter((city) => getCountyCodeFromConstituencyHref(city.href) === countyCode);
       const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
       const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
       const cityYesPercent = item.total > 0 ? (item.yes / item.total) * 100 : 50;
       return {
         countyCode,
-        countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        countyHref: getCountyHrefFromConstituencyHref(item.href),
         countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
         city: item.city,
         county: item.county,
@@ -327,7 +324,7 @@ export default async function DashboardPage() {
   const countyAggregates = Array.from(
     votedCities.reduce(
       (map, item) => {
-        const countyCode = item.href.split("/")[3] ?? "";
+        const countyCode = getCountyCodeFromConstituencyHref(item.href);
         const current = map.get(countyCode) ?? { yes: 0, no: 0, totalVotes: 0, countyName: item.county };
         current.yes += item.yes;
         current.no += item.no;

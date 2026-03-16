@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { formatAbsolutePercent } from "../lib/numberFormat";
 
 type BlocCityItem = {
   city: string;
@@ -23,10 +24,6 @@ type CityBlocGridClientProps = {
   initialItems: BlocCityItem[];
   initialHasMore: boolean;
 };
-
-function formatPercent(value: number): string {
-  return `${Math.abs(value).toFixed(1).replace(".", ",")}%`;
-}
 
 export default function CityBlocGridClient({
   bloc,
@@ -96,7 +93,7 @@ export default function CityBlocGridClient({
             </header>
             <div className="preview-trading-card-props">
               <p>Különbség: {item.diff}</p>
-              <p>Eltérés: {formatPercent(item.diffPercent)}</p>
+              <p>Eltérés: {formatAbsolutePercent(item.diffPercent)}</p>
               <p>{item.total} szavazat</p>
             </div>
             <svg viewBox="0 0 100 10" className="preview-ranking-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
@@ -114,4 +111,3 @@ export default function CityBlocGridClient({
     </section>
   );
 }
-

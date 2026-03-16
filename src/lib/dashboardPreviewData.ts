@@ -1,5 +1,7 @@
 import { constituencies, getCounties } from "./constituencies";
+import { getMatrixStatus } from "./matrixStatus";
 import { getDashboardCityStats, getDashboardSummary, getLeadBlocFromCounts, getParliamentEstimate, getScopeVoteCounts } from "./results";
+import { getCountyCodeFromConstituencyHref, getCountyHrefFromConstituencyHref } from "./territoryPaths";
 
 export type LeadOverviewMetric = {
   totalWeightedVotes: number;
@@ -139,26 +141,6 @@ function toPercent(part: number, total: number): number {
   return (part / total) * 100;
 }
 
-function getMatrixStatusText(yesVotes: number, noVotes: number, projectedYesSeats: number, projectedNoSeats: number): string {
-  const voteLead: "yes" | "no" | "tie" = yesVotes === noVotes ? "tie" : yesVotes > noVotes ? "yes" : "no";
-  const projectedOutcome: "yes" | "no" | "tie" =
-    projectedYesSeats === projectedNoSeats ? "tie" : projectedYesSeats > projectedNoSeats ? "yes" : "no";
-
-  if (voteLead === "tie" || projectedOutcome === "tie") {
-    return "Fej fej mellett áll az igen és a nem, a becsült végeredmény is döntetlen.";
-  }
-  if (voteLead === "yes" && projectedOutcome === "yes") {
-    return "Az igenek vannak többségben, és ha most lenne vége, kormányváltás lenne.";
-  }
-  if (voteLead === "yes" && projectedOutcome === "no") {
-    return "Az igenek vannak többségben, de ha most lenne vége, nem lenne kormányváltás.";
-  }
-  if (voteLead === "no" && projectedOutcome === "no") {
-    return "A nemek vannak többségben, és ha most lenne vége, nem lenne kormányváltás.";
-  }
-  return "A nemek vannak többségben, de ha most lenne vége, kormányváltás lenne.";
-}
-
 export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetrics> {
   const districtScopes = constituencies.map((constituency) => `ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`);
   const [summary, districtCounts, cityStats, projection] = await Promise.all([
@@ -178,7 +160,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     yesPercent: toPercent(summary.weightedYes, totalWeightedVotes),
     noPercent: toPercent(summary.weightedNo, totalWeightedVotes),
     leadBloc: getLeadBlocFromCounts(summary.weightedYes, summary.weightedNo),
-    matrixText: getMatrixStatusText(summary.weightedYes, summary.weightedNo, projection.totalYesSeats, projection.totalNoSeats),
+    matrixText: getMatrixStatus(summary.weightedYes, summary.weightedNo, projection.totalYesSeats, projection.totalNoSeats).text,
     marginVotes,
     marginPercent: toPercent(marginVotes, totalWeightedVotes),
   };
@@ -210,7 +192,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
   const votedCities = cityStats.filter((item) => item.total > 0);
   const countyLeadByCode = new Map<string, "yes" | "no" | "neutral">();
   for (const county of counties) {
-    const countyCities = votedCities.filter((item) => item.href.split("/")[3] === county.maz);
+    const countyCities = votedCities.filter((item) => getCountyCodeFromConstituencyHref(item.href) === county.maz);
     const countyYes = countyCities.reduce((acc, item) => acc + item.yes, 0);
     const countyNo = countyCities.reduce((acc, item) => acc + item.no, 0);
     countyLeadByCode.set(county.maz, getLeadBlocFromCounts(countyYes, countyNo));
@@ -219,9 +201,9 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     .sort((left, right) => Math.abs(left.diffPercent) - Math.abs(right.diffPercent) || right.total - left.total)
     .slice(0, 5)
     .map((item) => ({
-      countyCode: item.href.split("/")[3] ?? "",
-      countyHref: `/ogy2026/egyeni-valasztokeruletek/${item.href.split("/")[3] ?? ""}`,
-      countyLeadBloc: countyLeadByCode.get(item.href.split("/")[3] ?? "") ?? "neutral",
+      countyCode: getCountyCodeFromConstituencyHref(item.href),
+      countyHref: getCountyHrefFromConstituencyHref(item.href),
+      countyLeadBloc: countyLeadByCode.get(getCountyCodeFromConstituencyHref(item.href)) ?? "neutral",
       city: item.city,
       county: item.county,
       districtLabel: item.districtLabel,
@@ -235,9 +217,9 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     .sort((left, right) => Math.abs(right.diffPercent) - Math.abs(left.diffPercent) || right.total - left.total)
     .slice(0, 5)
     .map((item) => ({
-      countyCode: item.href.split("/")[3] ?? "",
-      countyHref: `/ogy2026/egyeni-valasztokeruletek/${item.href.split("/")[3] ?? ""}`,
-      countyLeadBloc: countyLeadByCode.get(item.href.split("/")[3] ?? "") ?? "neutral",
+      countyCode: getCountyCodeFromConstituencyHref(item.href),
+      countyHref: getCountyHrefFromConstituencyHref(item.href),
+      countyLeadBloc: countyLeadByCode.get(getCountyCodeFromConstituencyHref(item.href)) ?? "neutral",
       city: item.city,
       county: item.county,
       districtLabel: item.districtLabel,
@@ -353,13 +335,13 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
 
   const topIndicatorCities = [...votedCities]
     .map((item) => {
-      const countyCode = item.href.split("/")[3] ?? "";
+      const countyCode = getCountyCodeFromConstituencyHref(item.href);
       const cityYesPercent = item.total > 0 ? (item.yes / item.total) * 100 : 50;
       return {
         city: item.city,
         county: item.county,
         countyCode,
-        countyHref: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
+        countyHref: getCountyHrefFromConstituencyHref(item.href),
         countyLeadBloc: countyLeadByCode.get(countyCode) ?? "neutral",
         districtLabel: item.districtLabel,
         href: item.href,

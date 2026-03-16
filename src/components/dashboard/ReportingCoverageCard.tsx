@@ -1,12 +1,9 @@
 import { type ReportingCoverageMetric } from "../../lib/dashboardPreviewData";
+import { formatPercent } from "../../lib/numberFormat";
 
 type ReportingCoverageCardProps = {
   metric: ReportingCoverageMetric;
 };
-
-function formatPercent(value: number): string {
-  return `${value.toFixed(1).replace(".", ",")}%`;
-}
 
 function ratioPercent(numerator: number, denominator: number): number {
   if (denominator <= 0) return 0;

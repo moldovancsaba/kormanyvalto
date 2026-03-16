@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { PageShell } from "../../components/PageChrome";
-import { CountyRankingCard } from "../../components/dashboard-preview/CountyRankingCard";
-import { LeadOverviewCard } from "../../components/dashboard-preview/LeadOverviewCard";
-import { ReportingCoverageCard } from "../../components/dashboard-preview/ReportingCoverageCard";
+import { CountyRankingCard } from "../../components/dashboard/CountyRankingCard";
+import { LeadOverviewCard } from "../../components/dashboard/LeadOverviewCard";
+import { ReportingCoverageCard } from "../../components/dashboard/ReportingCoverageCard";
 import { type DashboardPreviewMetrics, getDashboardPreviewMetrics } from "../../lib/dashboardPreviewData";
 import { getSectionNavItems } from "../../lib/navigation";
+import { formatNumber } from "../../lib/numberFormat";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -32,10 +33,6 @@ type PieCardProps = {
   leftTone: "yes" | "no" | "warm" | "cool";
   rightTone: "yes" | "no" | "warm" | "cool";
 };
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("hu-HU").format(value);
-}
 
 function KpiCard({ label, value, detail }: KpiCardProps) {
   return (
@@ -170,7 +167,15 @@ export default async function DashboardPreviewPage() {
       </header>
 
       <div className="dashboard-grid">
-        <LeadOverviewCard metric={metrics.leadOverview} />
+        <LeadOverviewCard
+          statusText={metrics.leadOverview.matrixText}
+          marginVotes={metrics.leadOverview.marginVotes}
+          marginPercent={metrics.leadOverview.marginPercent}
+          yesCount={metrics.leadOverview.weightedYes}
+          noCount={metrics.leadOverview.weightedNo}
+          yesPercent={metrics.leadOverview.yesPercent}
+          noPercent={metrics.leadOverview.noPercent}
+        />
         <ReportingCoverageCard metric={metrics.reportingCoverage} />
         <CountyRankingCard
           title="Aktív vármegyék (preview)"

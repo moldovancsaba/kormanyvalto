@@ -7,7 +7,7 @@ import {
   type ParliamentEstimate,
 } from "../../lib/results";
 import { getSectionNavItems } from "../../lib/navigation";
-import { formatCompactChipNumber } from "../../lib/numberFormat";
+import { formatCompactChipNumber, formatNumber } from "../../lib/numberFormat";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -18,10 +18,6 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/mandatumbecsles",
   socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
 });
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("hu-HU").format(value);
-}
 
 type BreakdownCardProps = {
   title: string;

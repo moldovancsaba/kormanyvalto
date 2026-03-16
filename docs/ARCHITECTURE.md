@@ -32,6 +32,13 @@ Primary scopes:
 - `ogy2026/egyeni-valasztokeruletek/[maz]`
 - `ogy2026/egyeni-valasztokeruletek/[maz]/[evk]`
 
+## Shared Domain Helpers
+
+- `src/lib/numberFormat.ts` - canonical number/percent/chip formatting
+- `src/lib/matrixStatus.ts` - canonical national vote vs projected-outcome matrix text
+- `src/lib/territoryPaths.ts` - canonical county code/href derivation from constituency routes
+- `src/lib/svgPath.ts` - shared SVG path-bound calculation for map/card stamps
+
 ## Map System
 
 Generic engine:
@@ -49,18 +56,17 @@ Design:
 
 Production dashboard:
 - `/dashboard`
-  - includes production-ready ranking and KPI/pie cards (`Csataterek`, `Biztos bástyák`, county/city chart pack)
+  - includes production-ready ranking and KPI/pie cards
 
 Preview dashboard:
 - `/dashboard-preview`
   - contains staging/validation visuals before promotion to production dashboard
-  - currently hosts `Elsöprő győzelmek` card for iteration
 
-Reusable preview data:
+Reusable dashboard visual components:
+- `src/components/dashboard/*`
+
+Preview data builder:
 - `src/lib/dashboardPreviewData.ts`
-
-Reusable preview visual components:
-- `src/components/dashboard-preview/*`
 
 ## Authentication / 3x Voting Mode
 

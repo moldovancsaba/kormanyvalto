@@ -1,6 +1,7 @@
 "use client";
 
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { LeadOverviewCard } from "./dashboard/LeadOverviewCard";
 import { PageHero } from "./PageChrome";
 
 type ClickStore = {
@@ -49,14 +50,6 @@ const defaultAuthState: AuthState = {
   authenticated: false,
   user: null,
 };
-
-function formatNumber(value: number): string {
-  return new Intl.NumberFormat("hu-HU").format(value);
-}
-
-function formatPercent(value: number): string {
-  return `${value.toFixed(1).replace(".", ",")}%`;
-}
 
 export default function VoteWidget({ scope, aggregateMain = false, heroTitle, topActions }: VoteWidgetProps) {
   const [data, setData] = useState<ClickStore>({ yesCount: 0, noCount: 0, history: [] });
@@ -295,35 +288,18 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
       {heroTitle ? <div className="hero-title">{heroTitle}</div> : null}
 
       {aggregateMain ? (
-        <section className="preview-visual-card home-lead-card">
-          <header className="chart-card-head">
-            <h2>Pillanatkép</h2>
-            <p>Összesített igen/nem állás és pillanatnyi különbség.</p>
-          </header>
-
-          <div className="preview-lead-meta">
-            <p className="preview-lead-status">{winnerText}</p>
-            <p className="preview-lead-margin">
-              Különbség: {formatNumber(marginVotes)} szavazat ({formatPercent(marginPercent)})
-            </p>
-          </div>
-
-          <div className="preview-lead-chart" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
-            <svg viewBox="0 0 100 12" className="preview-lead-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-              <rect x="0" y="0" width={yesPercent} height="12" className="preview-tone-yes" />
-              <rect x={yesPercent} y="0" width={noPercent} height="12" className="preview-tone-no" />
-            </svg>
-          </div>
-
-          <div className="preview-lead-values">
-            <a href="/dashboard/igen" className="preview-lead-chip preview-lead-chip-yes" aria-label="Igen városok">
-              igen: <strong>{formatNumber(yesCount)}</strong> ({formatPercent(yesPercent)})
-            </a>
-            <a href="/dashboard/nem" className="preview-lead-chip preview-lead-chip-no" aria-label="Nem városok">
-              nem: <strong>{formatNumber(noCount)}</strong> ({formatPercent(noPercent)})
-            </a>
-          </div>
-        </section>
+        <LeadOverviewCard
+          className="home-lead-card"
+          statusText={winnerText}
+          marginVotes={marginVotes}
+          marginPercent={marginPercent}
+          yesCount={yesCount}
+          noCount={noCount}
+          yesPercent={yesPercent}
+          noPercent={noPercent}
+          yesHref="/dashboard/igen"
+          noHref="/dashboard/nem"
+        />
       ) : (
         <section className="barometer" aria-label="Vezető opció">
           <p className="barometer-label">{winnerText}</p>
