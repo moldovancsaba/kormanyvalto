@@ -1082,6 +1082,10 @@ button:disabled {
   overflow: hidden;
 }
 
+.home-lead-card {
+  margin-bottom: 1rem;
+}
+
 .preview-kpi-card {
   min-height: 0;
 }

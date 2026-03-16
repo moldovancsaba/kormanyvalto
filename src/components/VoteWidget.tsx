@@ -50,6 +50,14 @@ const defaultAuthState: AuthState = {
   user: null,
 };
 
+function formatNumber(value: number): string {
+  return new Intl.NumberFormat("hu-HU").format(value);
+}
+
+function formatPercent(value: number): string {
+  return `${value.toFixed(1).replace(".", ",")}%`;
+}
+
 export default function VoteWidget({ scope, aggregateMain = false, heroTitle, topActions }: VoteWidgetProps) {
   const [data, setData] = useState<ClickStore>({ yesCount: 0, noCount: 0, history: [] });
   const [auth, setAuth] = useState<AuthState>(defaultAuthState);
@@ -62,6 +70,9 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
   const noCount = data.noCount;
   const totalCount = yesCount + noCount;
   const yesPercent = totalCount === 0 ? 50 : (yesCount / totalCount) * 100;
+  const noPercent = totalCount === 0 ? 50 : (noCount / totalCount) * 100;
+  const marginVotes = Math.abs(yesCount - noCount);
+  const marginPercent = totalCount === 0 ? 0 : (marginVotes / totalCount) * 100;
   const cooldownStorageKey = `kv-cooldown-until:${scope}`;
   const mergedVotes = useMemo(
     () =>
@@ -283,18 +294,50 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
       {topActions}
       {heroTitle ? <div className="hero-title">{heroTitle}</div> : null}
 
-      <section className="barometer" aria-label="Vezető opció">
-        <p className="barometer-label">{winnerText}</p>
-        <div className="bar-track" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
-          <svg viewBox="0 0 100 10" className="bar-track-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-            <rect x="0" y="0" width="100" height="10" className="bar-no" />
-            <rect x="0" y="0" width={yesPercent} height="10" className="bar-yes" />
-          </svg>
-        </div>
-        <p className="barometer-stats">
-          igen: {yesCount} | nem: {noCount}
-        </p>
-      </section>
+      {aggregateMain ? (
+        <section className="preview-visual-card home-lead-card">
+          <header className="chart-card-head">
+            <h2>Pillanatkép</h2>
+            <p>Összesített igen/nem állás és pillanatnyi különbség.</p>
+          </header>
+
+          <div className="preview-lead-meta">
+            <p className="preview-lead-status">{winnerText}</p>
+            <p className="preview-lead-margin">
+              Különbség: {formatNumber(marginVotes)} szavazat ({formatPercent(marginPercent)})
+            </p>
+          </div>
+
+          <div className="preview-lead-chart" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
+            <svg viewBox="0 0 100 12" className="preview-lead-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <rect x="0" y="0" width={yesPercent} height="12" className="preview-tone-yes" />
+              <rect x={yesPercent} y="0" width={noPercent} height="12" className="preview-tone-no" />
+            </svg>
+          </div>
+
+          <div className="preview-lead-values">
+            <p>
+              igen: <strong>{formatNumber(yesCount)}</strong> ({formatPercent(yesPercent)})
+            </p>
+            <p>
+              nem: <strong>{formatNumber(noCount)}</strong> ({formatPercent(noPercent)})
+            </p>
+          </div>
+        </section>
+      ) : (
+        <section className="barometer" aria-label="Vezető opció">
+          <p className="barometer-label">{winnerText}</p>
+          <div className="bar-track" role="img" aria-label={`Igen: ${yesCount}, nem: ${noCount}`}>
+            <svg viewBox="0 0 100 10" className="bar-track-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <rect x="0" y="0" width="100" height="10" className="bar-no" />
+              <rect x="0" y="0" width={yesPercent} height="10" className="bar-yes" />
+            </svg>
+          </div>
+          <p className="barometer-stats">
+            igen: {yesCount} | nem: {noCount}
+          </p>
+        </section>
+      )}
 
       <h1>
         Váltani akarsz? Vagy nem?
