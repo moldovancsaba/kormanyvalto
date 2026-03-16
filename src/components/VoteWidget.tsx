@@ -316,12 +316,12 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
           </div>
 
           <div className="preview-lead-values">
-            <p>
+            <a href="/dashboard/igen" className="preview-lead-chip preview-lead-chip-yes" aria-label="Igen városok">
               igen: <strong>{formatNumber(yesCount)}</strong> ({formatPercent(yesPercent)})
-            </p>
-            <p>
+            </a>
+            <a href="/dashboard/nem" className="preview-lead-chip preview-lead-chip-no" aria-label="Nem városok">
               nem: <strong>{formatNumber(noCount)}</strong> ({formatPercent(noPercent)})
-            </p>
+            </a>
           </div>
         </section>
       ) : (
