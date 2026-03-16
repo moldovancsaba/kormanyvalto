@@ -393,11 +393,11 @@ export default async function DashboardPage() {
           mode="closest"
         />
         <ChartCard
-          title="Háborús övezetek"
-          ariaLabel="Háborús övezetek"
-          subtitle="A legtöbb összesített szavazatot kapó EVK-k."
-          tone="warm"
-          items={warZone}
+          title="A béke szigetei"
+          ariaLabel="A béke szigetei"
+          subtitle="A legkevesebb, de már mért aktivitást mutató EVK-k."
+          tone="cool"
+          items={peaceIslands}
           valueLabel={(item) => `${item.total}`}
           valueForBar={(item) => item.total}
         />
@@ -409,13 +409,13 @@ export default async function DashboardPage() {
           mode="indicator"
         />
         <ChartCard
-          title="A béke szigetei"
-          ariaLabel="A béke szigetei"
-          subtitle="A legkevesebb, de már mért aktivitást mutató EVK-k."
-          tone="cool"
-          items={peaceIslands}
-          valueLabel={(item) => `${item.total}`}
-          valueForBar={(item) => item.total}
+          title="Senki nem tudja"
+          ariaLabel="Senki nem tudja"
+          subtitle="A legszorosabb EVK-k, ahol alig van különbség."
+          tone="neutral"
+          items={nobodyKnows}
+          valueLabel={(item) => `${Math.abs(item.diff)}`}
+          valueForBar={(item) => Math.max(1, item.total)}
         />
         <CountyRankingCard
           title="Kiegyensúlyozott vármegyék"
@@ -423,6 +423,22 @@ export default async function DashboardPage() {
           emptyText="Nincs még kiegyensúlyozott vármegyei adat."
           items={balancedCounties}
           mode="balance"
+        />
+        <CityRankingCard
+          title="Biztos bástyák"
+          subtitle="A legnagyobb különbséggel vezető EVK-k."
+          emptyText="Nincs még elég EVK adat a bástya listához."
+          items={strongestBastions}
+          mode="strongest"
+        />
+        <ChartCard
+          title="Háborús övezetek"
+          ariaLabel="Háborús övezetek"
+          subtitle="A legtöbb összesített szavazatot kapó EVK-k."
+          tone="warm"
+          items={warZone}
+          valueLabel={(item) => `${item.total}`}
+          valueForBar={(item) => item.total}
         />
         <ChartCard
           title={
@@ -457,22 +473,6 @@ export default async function DashboardPage() {
           items={noCities}
           valueLabel={(item) => formatSignedDiff(item.diff)}
           valueForBar={(item) => Math.abs(item.diff)}
-        />
-        <ChartCard
-          title="Senki nem tudja"
-          ariaLabel="Senki nem tudja"
-          subtitle="A legszorosabb EVK-k, ahol alig van különbség."
-          tone="neutral"
-          items={nobodyKnows}
-          valueLabel={(item) => `${Math.abs(item.diff)}`}
-          valueForBar={(item) => Math.max(1, item.total)}
-        />
-        <CityRankingCard
-          title="Biztos bástyák"
-          subtitle="A legnagyobb különbséggel vezető EVK-k."
-          emptyText="Nincs még elég EVK adat a bástya listához."
-          items={strongestBastions}
-          mode="strongest"
         />
       </div>
     </PageShell>
