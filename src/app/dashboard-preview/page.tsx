@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import { PageShell } from "../../components/PageChrome";
 import { CountyRankingCard } from "../../components/dashboard/CountyRankingCard";
 import { LeadOverviewCard } from "../../components/dashboard/LeadOverviewCard";
+import { ListVotePreviewCard } from "../../components/dashboard/ListVotePreviewCard";
 import { ReportingCoverageCard } from "../../components/dashboard/ReportingCoverageCard";
 import { type DashboardPreviewMetrics, getDashboardPreviewMetrics } from "../../lib/dashboardPreviewData";
+import { getMatrixStatus } from "../../lib/matrixStatus";
 import { getSectionNavItems } from "../../lib/navigation";
 import { formatNumber } from "../../lib/numberFormat";
+import { createEmptyParliamentEstimate, getParliamentEstimate } from "../../lib/results";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -152,10 +155,58 @@ export default async function DashboardPreviewPage() {
     topUncertainCities: [],
     topIndicatorCities: [],
   };
+  let listVotePreview = {
+    listBasisYes: 0,
+    listBasisNo: 0,
+    listYesSeats: 0,
+    listNoSeats: 0,
+    unresolvedListSeats: 93,
+    yesPercent: 50,
+    noPercent: 50,
+    marginVotes: 0,
+    marginPercent: 0,
+    matrixText: "Nincs még elég adat a listás állás meghatározásához.",
+  };
   try {
-    metrics = await getDashboardPreviewMetrics();
+    const [nextMetrics, listEstimate] = await Promise.all([getDashboardPreviewMetrics(), getParliamentEstimate("projection")]);
+    metrics = nextMetrics;
+    const listTotal = listEstimate.listBasisYes + listEstimate.listBasisNo;
+    const yesPercent = listTotal > 0 ? (listEstimate.listBasisYes / listTotal) * 100 : 50;
+    const noPercent = listTotal > 0 ? (listEstimate.listBasisNo / listTotal) * 100 : 50;
+    const marginVotes = Math.abs(listEstimate.listBasisYes - listEstimate.listBasisNo);
+    const marginPercent = listTotal > 0 ? (marginVotes / listTotal) * 100 : 0;
+    listVotePreview = {
+      listBasisYes: listEstimate.listBasisYes,
+      listBasisNo: listEstimate.listBasisNo,
+      listYesSeats: listEstimate.listYesSeats,
+      listNoSeats: listEstimate.listNoSeats,
+      unresolvedListSeats: listEstimate.unresolvedListSeats,
+      yesPercent,
+      noPercent,
+      marginVotes,
+      marginPercent,
+      matrixText: getMatrixStatus(
+        listEstimate.listBasisYes,
+        listEstimate.listBasisNo,
+        listEstimate.totalYesSeats,
+        listEstimate.totalNoSeats
+      ).text,
+    };
   } catch {
     // Keep zero-value fallback metrics.
+    const fallbackEstimate = createEmptyParliamentEstimate("projection");
+    listVotePreview = {
+      listBasisYes: fallbackEstimate.listBasisYes,
+      listBasisNo: fallbackEstimate.listBasisNo,
+      listYesSeats: fallbackEstimate.listYesSeats,
+      listNoSeats: fallbackEstimate.listNoSeats,
+      unresolvedListSeats: fallbackEstimate.unresolvedListSeats,
+      yesPercent: 50,
+      noPercent: 50,
+      marginVotes: 0,
+      marginPercent: 0,
+      matrixText: "Nincs még elég adat a listás állás meghatározásához.",
+    };
   }
 
   return (
@@ -167,6 +218,7 @@ export default async function DashboardPreviewPage() {
       </header>
 
       <div className="dashboard-grid">
+        <ListVotePreviewCard initialData={listVotePreview} />
         <LeadOverviewCard
           statusText={metrics.leadOverview.matrixText}
           marginVotes={metrics.leadOverview.marginVotes}

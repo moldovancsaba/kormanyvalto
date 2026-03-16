@@ -39,19 +39,29 @@ export function PageActionLinks({ items, small = true }: PageActionLinksProps) {
   return (
     <div className="hero-actions">
       {items.map((item) => {
-        const className = `nav-link-button${small ? " nav-link-button-small" : ""}${item.secondary ? " nav-link-button-secondary" : ""}`;
+        const className = `nav-link-button${small ? " nav-link-button-small" : ""}${item.secondary ? " nav-link-button-secondary" : ""}${item.danger ? " nav-link-button-danger" : ""}`;
+        const content = (
+          <>
+            {item.icon ? (
+              <span className="nav-link-button-icon" aria-hidden="true">
+                {item.icon}
+              </span>
+            ) : null}
+            <span className="nav-link-button-label">{item.label}</span>
+          </>
+        );
 
         if (item.external) {
           return (
             <a key={`${item.href}:${item.label}`} href={item.href} className={className} target="_blank" rel="noreferrer">
-              {item.label}
+              {content}
             </a>
           );
         }
 
         return (
           <Link key={`${item.href}:${item.label}`} href={item.href} className={className}>
-            {item.label}
+            {content}
           </Link>
         );
       })}

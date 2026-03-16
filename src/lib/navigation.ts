@@ -3,10 +3,12 @@ export type NavItem = {
   label: string;
   secondary?: boolean;
   external?: boolean;
+  danger?: boolean;
+  icon?: string;
 };
 
 const PRIMARY_SECTION_ITEMS: NavItem[] = [
-  { href: "/ogy2026/egyeni-valasztokeruletek", label: "OGY 2026 körzetek listája" },
+  { href: "/ogy2026/egyeni-valasztokeruletek", label: "OGY 2026 körzetek listája", danger: true, icon: "⚠" },
   { href: "/mandatumbecsles", label: "Mandátumbecslés" },
   { href: "/dashboard", label: "Grafikon" },
 ];
