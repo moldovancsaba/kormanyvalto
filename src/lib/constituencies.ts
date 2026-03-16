@@ -880,3 +880,8 @@ export function getCounties() {
   }
   return [...map.values()].sort((a, b) => a.maz.localeCompare(b.maz));
 }
+
+export function getCountyCodeByName(countyName: string) {
+  const county = getCounties().find((item) => item.mazNev === countyName);
+  return county?.maz ?? null;
+}

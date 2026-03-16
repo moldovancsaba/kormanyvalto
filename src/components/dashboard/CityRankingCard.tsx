@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCountyCodeByName } from "../../lib/constituencies";
 import { getHungaryCountyMapData } from "../../lib/hungaryCountyMap";
 import { formatAbsolutePercent } from "../../lib/numberFormat";
 import { getSvgPathBounds } from "../../lib/svgPath";
@@ -31,11 +32,20 @@ function getBlocLabel(leadBloc: CityRankingItem["leadBloc"]): string {
   return "döntetlen";
 }
 
-function CountyShapeStamp({ countyCode, leadBloc }: { countyCode: string; leadBloc: "yes" | "no" | "neutral" }) {
+function CountyShapeStamp({
+  countyCode,
+  countyName,
+  leadBloc,
+}: {
+  countyCode: string;
+  countyName: string;
+  leadBloc: "yes" | "no" | "neutral";
+}) {
   const countyMap = getHungaryCountyMapData();
-  const county = countyMap.counties.find((item) => item.countyCode === countyCode);
+  const resolvedCountyCode = getCountyCodeByName(countyName) ?? countyCode;
+  const county = countyMap.counties.find((item) => item.countyCode === resolvedCountyCode);
   if (!county) {
-    return <div className="preview-card-stamp-fallback">{countyCode}</div>;
+    return <div className="preview-card-stamp-fallback">{resolvedCountyCode}</div>;
   }
 
   const bounds = getSvgPathBounds(county.pathData);
@@ -85,7 +95,7 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                 </header>
 
                 <div className="preview-trading-card-media">
-                  <CountyShapeStamp countyCode={item.countyCode} leadBloc={item.countyLeadBloc} />
+                  <CountyShapeStamp countyCode={item.countyCode} countyName={item.county} leadBloc={item.countyLeadBloc} />
                 </div>
 
                 <div className="preview-trading-card-props">
