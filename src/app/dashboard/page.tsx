@@ -95,9 +95,11 @@ function PieCard({
 }: PieCardProps) {
   const total = leftValue + rightValue;
   const leftRatio = total === 0 ? 0.5 : leftValue / total;
+  const rightRatio = total === 0 ? 0.5 : rightValue / total;
   const radius = 44;
   const circumference = 2 * Math.PI * radius;
   const leftArc = Math.max(0, Math.min(circumference, leftRatio * circumference));
+  const rightArc = Math.max(0, Math.min(circumference, rightRatio * circumference));
 
   return (
     <section className="pie-card">
@@ -109,13 +111,21 @@ function PieCard({
         <div className="pie-chart">
           <svg viewBox="0 0 100 100" className="pie-chart-svg" aria-hidden="true" focusable="false">
             <circle cx="50" cy="50" r={radius} className="pie-chart-ring pie-chart-ring-track" />
-            <circle cx="50" cy="50" r={radius} className={`pie-chart-ring pie-chart-ring-${rightTone}`} />
             <circle
               cx="50"
               cy="50"
               r={radius}
               className={`pie-chart-ring pie-chart-ring-${leftTone}`}
               strokeDasharray={`${leftArc} ${circumference - leftArc}`}
+              strokeDashoffset="0"
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              className={`pie-chart-ring pie-chart-ring-${rightTone}`}
+              strokeDasharray={`${rightArc} ${circumference - rightArc}`}
+              strokeDashoffset={-leftArc}
             />
           </svg>
           <div className="pie-hole">

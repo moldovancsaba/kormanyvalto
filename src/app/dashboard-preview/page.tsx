@@ -92,7 +92,7 @@ function PieCard({
               r={radius}
               className={rightClassName}
               strokeDasharray={`${rightLength} ${leftLength}`}
-              strokeDashoffset={circumference * (0.25 + leftPercent)}
+              strokeDashoffset={circumference * 0.25 - leftLength}
             />
           </svg>
           <div className="pie-hole">
