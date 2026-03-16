@@ -7,7 +7,7 @@ import { getCooldownSec, getExistingVoteActor } from "../../../lib/voteEngine";
 import { normalizeScope } from "../../../lib/requestValidation";
 
 export async function GET(req: NextRequest) {
-  const rate = checkRateLimit(req, "api-results", 120, 60_000);
+  const rate = await checkRateLimit(req, "api-results", 120, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Too many requests" },

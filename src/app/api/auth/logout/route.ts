@@ -4,7 +4,7 @@ import { NO_CACHE_HEADERS } from "../../../../lib/http";
 import { checkRateLimit } from "../../../../lib/rateLimit";
 
 export async function GET(req: NextRequest) {
-  const rate = checkRateLimit(req, "api-auth-logout", 30, 60_000);
+  const rate = await checkRateLimit(req, "api-auth-logout", 30, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Too many requests" },

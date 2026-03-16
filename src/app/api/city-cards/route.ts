@@ -7,7 +7,7 @@ import { NO_CACHE_HEADERS } from "../../../lib/http";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const rate = checkRateLimit(req, "api-city-cards", 90, 60_000);
+  const rate = await checkRateLimit(req, "api-city-cards", 90, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Too many requests" },

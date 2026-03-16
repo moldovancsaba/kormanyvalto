@@ -7,7 +7,7 @@ import { getParliamentEstimate } from "../../../lib/results";
 import { getCooldownSec, getExistingVoteActor } from "../../../lib/voteEngine";
 
 export async function GET(req: NextRequest) {
-  const rate = checkRateLimit(req, "api-list-preview", 90, 60_000);
+  const rate = await checkRateLimit(req, "api-list-preview", 90, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Too many requests" },

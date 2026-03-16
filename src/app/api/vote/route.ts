@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unsupported content type" }, { status: 415, headers: NO_CACHE_HEADERS });
     }
 
-    const rate = checkRateLimit(req, "api-vote", 30, 60_000);
+    const rate = await checkRateLimit(req, "api-vote", 30, 60_000);
     if (!rate.allowed) {
       return NextResponse.json(
         { error: "Too many requests" },

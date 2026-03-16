@@ -10,6 +10,7 @@
     "check:styles": "node scripts/check-style-rules.mjs"
   },
   "dependencies": {
+    "@upstash/redis": "^1.37.0",
     "jose": "^6.2.1",
     "mongodb": "^7.1.0",
     "next": "latest",

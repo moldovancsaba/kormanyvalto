@@ -20,7 +20,7 @@ function buildErrorRedirect(req: NextRequest, returnTo: string, reason: string) 
 }
 
 export async function GET(req: NextRequest) {
-  const rate = checkRateLimit(req, "api-auth-callback", 60, 60_000);
+  const rate = await checkRateLimit(req, "api-auth-callback", 60, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Too many requests" },
