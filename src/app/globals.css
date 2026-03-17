@@ -2034,11 +2034,11 @@ button:disabled {
 }
 
 .county-hero-kicker {
-  font-size: 0.8rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--neutral-blue);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--neutral-blue-deep);
 }
 
 .county-hero-overlay h2,
@@ -2047,11 +2047,17 @@ button:disabled {
 }
 
 .county-hero-overlay h2 {
-  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-size: clamp(2rem, 4.8vw, 3.6rem);
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  line-height: 0.92;
 }
 
 .county-hero-overlay p {
-  color: var(--muted);
+  color: var(--ink-strong);
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.15;
 }
 
 .county-map-wrap {

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 import { CountyHeroMap } from "./CountyHeroMap";
+import { constituencies, getCounties } from "../lib/constituencies";
 import type { NavItem } from "../lib/navigation";
+import { getLeadBlocFromCounts, getScopeVoteCounts } from "../lib/results";
 
 type PageHeroProps = {
   showHero?: boolean;
@@ -20,12 +22,52 @@ type PageShellProps = {
   navItems?: NavItem[];
 };
 
-export function PageHero({ showHero = true }: PageHeroProps) {
+export async function PageHero({ showHero = true }: PageHeroProps) {
   if (!showHero) return null;
+
+  const counties = getCounties();
+  const scopes = constituencies.map((c) => `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`);
+
+  let countyStats: Array<{ maz: string; name: string; yes: number; no: number; leadBloc: "yes" | "no" | "neutral" }> = [];
+  try {
+    const counts = await getScopeVoteCounts(scopes);
+    countyStats = counties.map((county) => {
+      const countyConstituencies = constituencies.filter((c) => c.maz === county.maz);
+      const yes = countyConstituencies.reduce((sum, c) => {
+        const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
+        return sum + (counts[scope]?.yes ?? 0);
+      }, 0);
+      const no = countyConstituencies.reduce((sum, c) => {
+        const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
+        return sum + (counts[scope]?.no ?? 0);
+      }, 0);
+      return {
+        maz: county.maz,
+        name: county.mazNev,
+        yes,
+        no,
+        leadBloc: getLeadBlocFromCounts(yes, no),
+      };
+    });
+  } catch {
+    countyStats = counties.map((county) => ({
+      maz: county.maz,
+      name: county.mazNev,
+      yes: 0,
+      no: 0,
+      leadBloc: "neutral" as const,
+    }));
+  }
 
   return (
     <div className="top-logo">
-      <CountyHeroMap />
+      <CountyHeroMap
+        items={countyStats}
+        colorMode="result"
+        overlayLabel="2026 április 12"
+        title="SZAVAZÁS"
+        subtitle="Váltani akarsz? Vagy nem? Kattints!"
+      />
     </div>
   );
 }

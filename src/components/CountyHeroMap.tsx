@@ -22,9 +22,9 @@ export function CountyHeroMap({
   items = [],
   title,
   subtitle,
-  overlayLabel = "Szavazás 2026",
+  overlayLabel = "2026 április 12",
   className = "",
-  colorMode = "county",
+  colorMode = "result",
 }: CountyHeroMapProps) {
   const byMaz = new Map(items.map((item) => [item.maz, item]));
   const countyMap = getHungaryCountyMapData();
