@@ -15,6 +15,7 @@ type CountyHeroMapProps = {
   subtitle?: string;
   overlayLabel?: string;
   className?: string;
+  colorMode?: "county" | "result";
 };
 
 export function CountyHeroMap({
@@ -23,6 +24,7 @@ export function CountyHeroMap({
   subtitle,
   overlayLabel = "Szavazás 2026",
   className = "",
+  colorMode = "county",
 }: CountyHeroMapProps) {
   const byMaz = new Map(items.map((item) => [item.maz, item]));
   const countyMap = getHungaryCountyMapData();
@@ -45,7 +47,10 @@ export function CountyHeroMap({
 
               return (
                 <a key={county.maz} href={`/ogy2026/egyeni-valasztokeruletek/${county.maz}`}>
-                  <path d={countyPath.pathData} className={`county-shape county-shape-${stat.leadBloc}`}>
+                  <path
+                    d={countyPath.pathData}
+                    className={`county-shape ${colorMode === "result" ? `county-shape-${stat.leadBloc}` : `county-shape-county county-shape-county-${county.maz}`}`}
+                  >
                     <title>
                       {stat.name} · igen: {stat.yes} · nem: {stat.no}
                     </title>

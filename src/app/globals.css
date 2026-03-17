@@ -2091,6 +2091,31 @@ button:disabled {
   cursor: pointer;
 }
 
+.county-shape-county {
+  fill: var(--county-color, #5c6b73);
+}
+
+.county-shape-county-01 { fill: #d1495b; }
+.county-shape-county-02 { fill: #edae49; }
+.county-shape-county-03 { fill: #00798c; }
+.county-shape-county-04 { fill: #30638e; }
+.county-shape-county-05 { fill: #8f2d56; }
+.county-shape-county-06 { fill: #3b8b5e; }
+.county-shape-county-07 { fill: #7c6a0a; }
+.county-shape-county-08 { fill: #5c4d7d; }
+.county-shape-county-09 { fill: #0f7173; }
+.county-shape-county-10 { fill: #b56576; }
+.county-shape-county-11 { fill: #6d597a; }
+.county-shape-county-12 { fill: #355070; }
+.county-shape-county-13 { fill: #bc6c25; }
+.county-shape-county-14 { fill: #2a9d8f; }
+.county-shape-county-15 { fill: #e76f51; }
+.county-shape-county-16 { fill: #577590; }
+.county-shape-county-17 { fill: #9c6644; }
+.county-shape-county-18 { fill: #4d908e; }
+.county-shape-county-19 { fill: #90be6d; }
+.county-shape-county-20 { fill: #f4a261; }
+
 .county-shape-yes {
   fill: linear-gradient(180deg, #8fd4e5 0%, #5ab5cd 100%);
   fill: var(--yes-grad-bottom);

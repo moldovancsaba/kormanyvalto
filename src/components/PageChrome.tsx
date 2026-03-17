@@ -25,7 +25,7 @@ export function PageHero({ showHero = true }: PageHeroProps) {
 
   return (
     <div className="top-logo">
-      <CountyHeroMap title="Vármegye térkép" subtitle="Interaktív navigáció a vármegyei oldalakhoz." />
+      <CountyHeroMap />
     </div>
   );
 }
