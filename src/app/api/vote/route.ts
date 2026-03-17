@@ -41,7 +41,31 @@ export async function POST(req: NextRequest) {
     }
 
     const actor = await getVoteActor(req);
-    const initialAssessment = await assessVoteAbuse(req, actor, scope, [rate]);
+    const getFallbackAssessment = () => ({
+      score: 0,
+      trustLevel: "standard" as const,
+      reasons: ["abuse_assessment_fallback"],
+      adjustedCooldownStep: actor.cooldownStep,
+      shouldLogAnomaly: false,
+      shouldRestrict: false,
+      policy: {
+        trustLevel: "standard" as const,
+        cooldownMultiplier: 1,
+        actorWindowLimit: 12,
+        actorWindowMs: 60_000,
+        deny: false,
+        responseCode: 200 as const,
+      },
+      reputation: {
+        actor: 0,
+        ip: 0,
+        subnet: 0,
+        fingerprint: 0,
+        aggregate: 0,
+      },
+    });
+
+    const initialAssessment = await assessVoteAbuse(req, actor, scope, [rate]).catch(() => getFallbackAssessment());
     const abuseRate = await checkRateLimit(
       req,
       "api-vote-actor",
@@ -50,17 +74,17 @@ export async function POST(req: NextRequest) {
       [`actor:${actor.actorId}`, `scope:${scope}`]
     );
     if (!abuseRate.allowed) {
-      await recordAbuseOutcome(req, actor, initialAssessment, "rate_limited");
+      await recordAbuseOutcome(req, actor, initialAssessment, "rate_limited").catch(() => undefined);
       return NextResponse.json(
         { error: "Too many requests" },
         { status: 429, headers: { ...NO_CACHE_HEADERS, "Retry-After": String(abuseRate.retryAfterSec) } }
       );
     }
 
-    const assessment = await assessVoteAbuse(req, actor, scope, [rate, abuseRate]);
-    await logAbuseAssessment(req, actor, scope, assessment);
+    const assessment = await assessVoteAbuse(req, actor, scope, [rate, abuseRate]).catch(() => getFallbackAssessment());
+    await logAbuseAssessment(req, actor, scope, assessment).catch(() => undefined);
     if (assessment.shouldRestrict) {
-      await recordAbuseOutcome(req, actor, assessment, "restricted");
+      await recordAbuseOutcome(req, actor, assessment, "restricted").catch(() => undefined);
       return NextResponse.json(
         { error: "Too many requests" },
         {
@@ -73,7 +97,7 @@ export async function POST(req: NextRequest) {
     const trustedActor = withAdjustedCooldown(actor, assessment.adjustedCooldownStep);
     let reserved = await reserveVoteSlot(trustedActor, scope);
     if (!reserved.allowed) {
-      await recordAbuseOutcome(req, actor, assessment, "cooldown");
+      await recordAbuseOutcome(req, actor, assessment, "cooldown").catch(() => undefined);
       return NextResponse.json(
         { error: "Cooldown active", cooldownSec: reserved.cooldownSec },
         {
@@ -90,11 +114,11 @@ export async function POST(req: NextRequest) {
       mode: trustedActor.mode,
     });
 
-    const anomaly = await detectVoteAnomaly(trustedActor, scope);
+    const anomaly = await detectVoteAnomaly(trustedActor, scope).catch(() => null);
     if (anomaly) {
-      await logVoteAnomaly(req, trustedActor, scope, assessment, anomaly);
+      await logVoteAnomaly(req, trustedActor, scope, assessment, anomaly).catch(() => undefined);
     }
-    await recordAbuseOutcome(req, trustedActor, assessment, "accepted");
+    await recordAbuseOutcome(req, trustedActor, assessment, "accepted").catch(() => undefined);
 
     const response = NextResponse.json(
       {
@@ -120,7 +144,8 @@ export async function POST(req: NextRequest) {
       });
     }
     return response;
-  } catch {
+  } catch (error) {
+    console.error("Vote handling failed", error);
     return NextResponse.json({ error: "Vote handling failed." }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }
