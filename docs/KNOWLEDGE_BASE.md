@@ -1,5 +1,16 @@
 # Knowledge Base
 
+## Product Priority
+
+Status: Critical
+
+Non-negotiable rules:
+
+- User UX and user journey are the number 1 priority.
+- `Kormanyvalto` is a critical app and core user flows must work whatever happens.
+- Vote flow, navigation, and public result viewing must fail gracefully when secondary systems degrade.
+- Security, telemetry, preview tooling, analytics, and anti-abuse controls must be designed to degrade safely without breaking normal user access.
+
 ## Dashboard Preview Standards
 
 Status: Active (confirmed by product owner)
@@ -54,3 +65,4 @@ Before each push to `main`:
 1. `npm run build` must pass.
 2. New visuals must meet the interactive rule above.
 3. Docs and version must be updated when behavior/architecture changes.
+4. Critical user flows must not fail closed because of non-essential dependencies.

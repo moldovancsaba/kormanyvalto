@@ -28,6 +28,11 @@ Owner: Product
 
 `Kormanyvalto` is a Next.js + MongoDB platform where users can vote (`igen` / `nem`) at multiple scopes and view aggregated public mood and seat estimates.
 
+Product priority:
+- user UX and user journey are the number 1 priority,
+- critical user flows must keep working even when secondary systems degrade,
+- security, analytics, and anti-abuse layers must not break the main vote experience for normal users.
+
 Core capabilities:
 - National (`Országos`) vote stream and barometer
 - Hierarchical election navigation (country -> county -> EVK)
@@ -90,6 +95,9 @@ Health checks after deploy:
 - `/dashboard`
 - `/dashboard-preview`
 - county and EVK pages
+
+Critical reliability rule:
+- if a non-essential subsystem fails, the app should degrade gracefully instead of blocking the user journey.
 
 ## Architecture Snapshot
 

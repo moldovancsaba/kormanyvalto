@@ -1,5 +1,12 @@
 # Security Guide
 
+## Security Priority
+
+- User UX and user journey are the number 1 priority.
+- `Kormanyvalto` is a critical app and must keep core user flows available whatever happens.
+- Security controls must protect the system without breaking normal-user access.
+- On the critical path, prefer fail-open or degraded-mode behavior for auxiliary security services unless failing closed is absolutely required to prevent catastrophic abuse.
+
 ## Adaptive Abuse Controls
 
 The application uses low-friction abuse controls instead of CAPTCHA:

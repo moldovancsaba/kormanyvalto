@@ -1,5 +1,11 @@
 # Development Guide
 
+## Core Rule
+
+- User UX and user journey are the number 1 priority.
+- This app is critical; core flows must continue working even when auxiliary systems fail.
+- When designing security, telemetry, analytics, or preview-only features, default to graceful degradation on the critical user path.
+
 ## Prerequisites
 
 - Node.js 18+
@@ -51,6 +57,7 @@ Required before push to `main`:
 - major user-facing changes must update docs,
 - release-impacting changes must bump `package.json` version and add a `docs/CHANGELOG.md` entry,
 - preview visuals must follow interactive standards (`docs/KNOWLEDGE_BASE.md`).
+- critical user flows must not depend on optional sidecars for basic availability.
 
 ## Code Conventions
 

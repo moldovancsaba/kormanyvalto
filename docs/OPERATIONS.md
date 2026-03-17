@@ -1,5 +1,12 @@
 # Operations Guide
 
+## Reliability Doctrine
+
+- User UX and user journey are the number 1 priority.
+- `Kormanyvalto` is a critical app; vote flow and core navigation must keep working whatever happens.
+- In incidents, protect core user availability first and preserve stricter auxiliary controls second.
+- Prefer degraded mode over hard failure for non-essential systems.
+
 ## Deployment Pipeline
 
 - Source of truth branch: `main`
@@ -46,6 +53,12 @@ npm run build
 2. Verify login callback settings and deployed env config
 3. Validate that vote API still accepts non-auth and auth paths correctly
 
+### Critical user-flow regression
+
+1. Confirm `/` still renders and the vote action returns a non-500 response.
+2. If a security, telemetry, or analytics layer is causing user-facing failure, switch the affected logic to degraded mode immediately.
+3. Restore stricter protections only after the core user journey is stable again.
+
 ## Security and Abuse Posture
 
 Current protections include:
@@ -55,6 +68,7 @@ Current protections include:
 
 Operational recommendation:
 - enforce Vercel edge protections (WAF/challenge/rate controls) for traffic spikes.
+- never allow edge/security controls to silently break first-party browser traffic on the critical vote path.
 
 ## Observability Notes
 
