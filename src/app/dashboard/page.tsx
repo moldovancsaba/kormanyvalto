@@ -281,14 +281,22 @@ export default async function DashboardPage() {
 
       <div className="dashboard-grid">
         <CityRankingCard
-          title="Csataterek"
+          title={
+            <Link href="/dashboard/csataterek" className="title-inline-chip title-inline-chip-link title-inline-chip-neutral">
+              Csataterek
+            </Link>
+          }
           subtitle="A legkisebb különbségű EVK-k, ahol minden szavazat számít."
           emptyText="Nincs még elég EVK adat a csatatér listához."
           items={closestBattlegrounds}
           mode="closest"
         />
         <ChartCard
-          title="A béke szigetei"
+          title={
+            <Link href="/dashboard/beke-szigetei" className="title-inline-chip title-inline-chip-link title-inline-chip-neutral">
+              A béke szigetei
+            </Link>
+          }
           ariaLabel="A béke szigetei"
           subtitle="A legkevesebb, de már mért aktivitást mutató EVK-k."
           tone="cool"
@@ -297,7 +305,11 @@ export default async function DashboardPage() {
           valueForBar={(item) => item.total}
         />
         <CityRankingCard
-          title="Előrejelző városok"
+          title={
+            <Link href="/dashboard/elorejelzo-varosok" className="title-inline-chip title-inline-chip-link title-inline-chip-neutral">
+              Előrejelző városok
+            </Link>
+          }
           subtitle="Az EVK-k, ahol a helyi arány a legközelebb áll az aktuális országos arányhoz."
           emptyText="Nincs még elég adat az előrejelző kártyákhoz."
           items={indicatorCities}
@@ -313,14 +325,22 @@ export default async function DashboardPage() {
           valueForBar={(item) => Math.max(1, item.total)}
         />
         <CountyRankingCard
-          title="Kiegyensúlyozott vármegyék"
+          title={
+            <Link href="/dashboard/kiegyensulyozott-varmegyek" className="title-inline-chip title-inline-chip-link title-inline-chip-neutral">
+              Kiegyensúlyozott vármegyék
+            </Link>
+          }
           subtitle="A legszorosabb vármegyei állások."
           emptyText="Nincs még kiegyensúlyozott vármegyei adat."
           items={balancedCounties}
           mode="balance"
         />
         <ChartCard
-          title="Háborús övezetek"
+          title={
+            <Link href="/dashboard/haborus-ovezetek" className="title-inline-chip title-inline-chip-link title-inline-chip-neutral">
+              Háborús övezetek
+            </Link>
+          }
           ariaLabel="Háborús övezetek"
           subtitle="A legtöbb összesített szavazatot kapó EVK-k."
           tone="warm"
@@ -329,7 +349,11 @@ export default async function DashboardPage() {
           valueForBar={(item) => item.total}
         />
         <CityRankingCard
-          title="Biztos bástyák"
+          title={
+            <Link href="/dashboard/biztos-bastyak" className="title-inline-chip title-inline-chip-link title-inline-chip-neutral">
+              Biztos bástyák
+            </Link>
+          }
           subtitle="A legnagyobb különbséggel vezető EVK-k."
           emptyText="Nincs még elég EVK adat a bástya listához."
           items={strongestBastions}

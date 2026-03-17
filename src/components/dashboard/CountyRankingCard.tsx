@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { getCountyCodeByName } from "../../lib/constituencies";
 import { getHungaryCountyMapData } from "../../lib/hungaryCountyMap";
 import { formatAbsolutePercent } from "../../lib/numberFormat";
@@ -14,7 +15,7 @@ type CountyRankingItem = {
 };
 
 type CountyRankingCardProps = {
-  title: string;
+  title: ReactNode;
   subtitle: string;
   emptyText: string;
   items: CountyRankingItem[];
@@ -68,7 +69,7 @@ export function CountyRankingCard({ title, subtitle, emptyText, items, mode }: C
       {items.length === 0 ? (
         <p className="chart-empty">{emptyText}</p>
       ) : (
-        <div className="preview-trading-grid" role="list" aria-label={title}>
+        <div className="preview-trading-grid" role="list" aria-label={typeof title === "string" ? title : "Vármegyei rangsor"}>
           {items.map((item, index) => {
             const barPercent =
               mode === "activity"
