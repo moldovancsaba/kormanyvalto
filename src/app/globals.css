@@ -1847,11 +1847,11 @@ button:disabled {
 .title-inline-chip {
   display: inline-flex;
   align-items: center;
-  padding: 0.08rem 0.45rem;
+  padding: 0.16rem 0.58rem;
   border-radius: var(--radius-pill);
   border: 1px solid rgba(15, 23, 42, 0.28);
   color: var(--on-dark);
-  line-height: 1;
+  line-height: 1.15;
   vertical-align: middle;
   transform: translateY(-1px);
 }
@@ -1866,6 +1866,10 @@ button:disabled {
 
 .title-inline-chip-no {
   background: linear-gradient(180deg, var(--no-grad-top) 0%, var(--no-grad-bottom) 100%);
+}
+
+.title-inline-chip-neutral {
+  background: linear-gradient(180deg, #8b98a7 0%, #5c6b73 100%);
 }
 
 .chart-card-head p {
