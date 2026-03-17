@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PageActionLinks } from "../../../../../components/PageChrome";
+import { PageActionLinks, PageHero } from "../../../../../components/PageChrome";
 import VoteWidget from "../../../../../components/VoteWidget";
 import { constituencies, findConstituency, getSeatLabel } from "../../../../../lib/constituencies";
 import { getSectionNavItems } from "../../../../../lib/navigation";
@@ -20,14 +20,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!item) {
     return buildPageMetadata({
-      title: "Váltani akarsz?",
+      title: `Szavazás 2026 - ${evk}`,
       description: "A keresett választókerület nem érhető el.",
       path: `/ogy2026/egyeni-valasztokeruletek/${maz}/${evk}`,
     });
   }
 
   return buildPageMetadata({
-    title: "Váltani akarsz?",
+    title: `Szavazás 2026 - ${getSeatLabel(item.szekhely)}`,
     description: `${item.mazNev}, ${getSeatLabel(item.szekhely)}`,
     path: `/ogy2026/egyeni-valasztokeruletek/${item.maz}/${item.evk}`,
   });
@@ -47,6 +47,7 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
     <>
       <VoteWidget
         scope={scope}
+        hero={<PageHero />}
         heroTitle={
           <h1>
             {item.evkNev} - {getSeatLabel(item.szekhely)}

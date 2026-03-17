@@ -1,4 +1,4 @@
-import { PageActionLinks } from "../components/PageChrome";
+import { PageActionLinks, PageHero } from "../components/PageChrome";
 import VoteWidget from "../components/VoteWidget";
 import { getRootNavItems } from "../lib/navigation";
 
@@ -7,6 +7,7 @@ export default function HomePage() {
     <VoteWidget
       scope="main"
       aggregateMain
+      hero={<PageHero />}
       topActions={<PageActionLinks items={getRootNavItems()} small={false} />}
     />
   );

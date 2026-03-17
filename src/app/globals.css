@@ -87,14 +87,6 @@ body {
   margin-bottom: 0.8rem;
 }
 
-.top-logo img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--line);
-}
-
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -2010,6 +2002,58 @@ button:disabled {
   margin-bottom: 1rem;
 }
 
+.county-hero {
+  position: relative;
+}
+
+.county-hero-surface {
+  position: relative;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at top left, rgba(46, 103, 202, 0.18), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(255, 94, 0, 0.18), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(231, 238, 251, 0.92) 100%);
+  overflow: hidden;
+}
+
+.county-hero-overlay {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 2;
+  display: grid;
+  gap: 0.2rem;
+  max-width: min(24rem, 58%);
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.county-hero-kicker {
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--neutral-blue);
+}
+
+.county-hero-overlay h2,
+.county-hero-overlay p {
+  margin: 0;
+}
+
+.county-hero-overlay h2 {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.county-hero-overlay p {
+  color: var(--muted);
+}
+
 .county-map-wrap {
   margin-top: 0.8rem;
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -2018,10 +2062,22 @@ button:disabled {
   padding: 0.7rem;
 }
 
+.county-hero-map-wrap {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 1rem 1rem 0.8rem;
+}
+
 .county-map-svg {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.county-hero-map-svg {
+  min-height: 280px;
 }
 
 .county-shape {
@@ -2052,6 +2108,24 @@ button:disabled {
 .county-map-svg a:focus-visible .county-shape {
   transform: translateY(-2px);
   filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.2));
+}
+
+@media (max-width: 720px) {
+  .county-hero-overlay {
+    position: relative;
+    left: auto;
+    top: auto;
+    max-width: none;
+    margin: 0.9rem 0.9rem 0;
+  }
+
+  .county-hero-map-wrap {
+    padding-top: 0.4rem;
+  }
+
+  .county-hero-map-svg {
+    min-height: 220px;
+  }
 }
 
 .chart-column-link:hover .chart-column-label strong,

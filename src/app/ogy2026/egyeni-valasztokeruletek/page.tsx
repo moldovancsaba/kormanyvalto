@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CountyHeroMap } from "../../../components/CountyHeroMap";
 import { PageShell } from "../../../components/PageChrome";
 import { constituencies, getCounties } from "../../../lib/constituencies";
-import { getHungaryCountyMapData } from "../../../lib/hungaryCountyMap";
 import { getSectionNavItems } from "../../../lib/navigation";
 import { getLeadBlocFromCounts, getScopeVoteCounts } from "../../../lib/results";
 import { buildPageMetadata } from "../../../lib/siteMetadata";
@@ -22,39 +22,6 @@ type CountyMapStat = {
   no: number;
   leadBloc: "yes" | "no" | "neutral";
 };
-
-function CountyMapCard({ items }: { items: CountyMapStat[] }) {
-  const byMaz = new Map(items.map((item) => [item.maz, item]));
-  const countyMap = getHungaryCountyMapData();
-  const countyPaths = new Map(countyMap.counties.map((item) => [item.countyCode, item]));
-
-  return (
-    <section className="chart-card chart-card-neutral county-map-card">
-      <header className="chart-card-head">
-        <h2>Vármegye térkép</h2>
-        <p>Aktuális állás vármegyénként (igen / nem / döntetlen).</p>
-      </header>
-      <div className="county-map-wrap">
-        <svg viewBox={countyMap.viewBox} className="county-map-svg" role="img" aria-label="Magyarország vármegyei térkép">
-          {getCounties().map((county) => {
-            const stat = byMaz.get(county.maz) ?? { maz: county.maz, name: county.mazNev, yes: 0, no: 0, leadBloc: "neutral" as const };
-            const countyPath = countyPaths.get(county.maz);
-            if (!countyPath) return null;
-            return (
-              <a key={county.maz} href={`/ogy2026/egyeni-valasztokeruletek/${county.maz}`}>
-                <path d={countyPath.pathData} className={`county-shape county-shape-${stat.leadBloc}`}>
-                  <title>
-                    {stat.name} · igen: {stat.yes} · nem: {stat.no}
-                  </title>
-                </path>
-              </a>
-            );
-          })}
-        </svg>
-      </div>
-    </section>
-  );
-}
 
 export default async function Ogy2026ConstituenciesPage() {
   const counties = getCounties();
@@ -91,7 +58,12 @@ export default async function Ogy2026ConstituenciesPage() {
     <PageShell navItems={getSectionNavItems("/ogy2026/egyeni-valasztokeruletek")}>
       <h1>OGY 2026 vármegyei lista</h1>
       <p className="list-subtitle">Frissítés 120 másodpercenként. Válassz vármegyét.</p>
-      <CountyMapCard items={countyStats} />
+      <CountyHeroMap
+        items={countyStats}
+        title="Vármegye térkép"
+        subtitle="Aktuális állás vármegyénként (igen / nem / döntetlen)."
+        className="chart-card chart-card-neutral"
+      />
 
       <section className="button-list" aria-label="Vármegyék listája">
         {counties.map((county) => {

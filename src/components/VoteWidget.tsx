@@ -2,7 +2,6 @@
 
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { LeadOverviewCard } from "./dashboard/LeadOverviewCard";
-import { PageHero } from "./PageChrome";
 
 type ClickStore = {
   yesCount: number;
@@ -41,6 +40,7 @@ type AuthState = {
 type VoteWidgetProps = {
   scope: string;
   aggregateMain?: boolean;
+  hero?: ReactNode;
   heroTitle?: ReactNode;
   topActions?: ReactNode;
 };
@@ -51,7 +51,7 @@ const defaultAuthState: AuthState = {
   user: null,
 };
 
-export default function VoteWidget({ scope, aggregateMain = false, heroTitle, topActions }: VoteWidgetProps) {
+export default function VoteWidget({ scope, aggregateMain = false, hero, heroTitle, topActions }: VoteWidgetProps) {
   const [data, setData] = useState<ClickStore>({ yesCount: 0, noCount: 0, history: [] });
   const [auth, setAuth] = useState<AuthState>(defaultAuthState);
   const [loading, setLoading] = useState(true);
@@ -283,7 +283,7 @@ export default function VoteWidget({ scope, aggregateMain = false, heroTitle, to
 
   return (
     <main className="app">
-      <PageHero />
+      {hero}
       {topActions}
       {heroTitle ? <div className="hero-title">{heroTitle}</div> : null}
 

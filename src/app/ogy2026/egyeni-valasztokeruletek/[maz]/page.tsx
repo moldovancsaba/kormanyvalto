@@ -23,14 +23,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (countyConstituencies.length === 0) {
     return buildPageMetadata({
-      title: "Váltani akarsz?",
+      title: `Szavazás 2026 - ${maz}`,
       description: "A keresett vármegyei lista nem érhető el.",
       path: `/ogy2026/egyeni-valasztokeruletek/${maz}`,
     });
   }
 
   return buildPageMetadata({
-    title: "Váltani akarsz?",
+    title: `Szavazás 2026 - ${countyConstituencies[0].mazNev}`,
     description: countyConstituencies[0].mazNev,
     path: `/ogy2026/egyeni-valasztokeruletek/${maz}`,
   });
