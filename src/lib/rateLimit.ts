@@ -7,7 +7,7 @@ type Bucket = {
   resetAt: number;
 };
 
-type RateLimitResult = {
+export type RateLimitResult = {
   allowed: boolean;
   remaining: number;
   retryAfterSec: number;
@@ -41,11 +41,29 @@ function getClientIp(req: NextRequest) {
   return "unknown";
 }
 
+function getClientSubnet(ip: string) {
+  if (ip.includes(":")) {
+    const segments = ip.split(":").slice(0, 4);
+    return segments.join(":");
+  }
+
+  const octets = ip.split(".");
+  if (octets.length === 4) {
+    return `${octets[0]}.${octets[1]}.${octets[2]}`;
+  }
+
+  return ip;
+}
+
 function getClientFingerprint(req: NextRequest) {
   const ip = getClientIp(req);
   const ua = req.headers.get("user-agent") || "unknown";
   const language = req.headers.get("accept-language") || "unknown";
   return createHash("sha256").update(`${ip}|${ua.slice(0, 160)}|${language.slice(0, 160)}`).digest("hex");
+}
+
+function normalizeRateKeyPart(value: string) {
+  return createHash("sha256").update(value).digest("hex");
 }
 
 function getRedisClient() {
@@ -65,13 +83,23 @@ function getRedisClient() {
   return globalWithRateLimit._upstashRedis;
 }
 
-function buildRateKey(req: NextRequest, routeKey: string) {
-  return `${routeKey}:${getClientFingerprint(req)}`;
+function buildRateKeys(req: NextRequest, routeKey: string, extraKeys: string[] = []) {
+  const ip = getClientIp(req);
+  const keys = [
+    `${routeKey}:fingerprint:${getClientFingerprint(req)}`,
+    `${routeKey}:ip:${normalizeRateKeyPart(ip)}`,
+    `${routeKey}:subnet:${normalizeRateKeyPart(getClientSubnet(ip))}`,
+  ];
+
+  for (const extraKey of extraKeys) {
+    keys.push(`${routeKey}:extra:${normalizeRateKeyPart(extraKey)}`);
+  }
+
+  return keys;
 }
 
-function checkMemoryRateLimit(req: NextRequest, routeKey: string, limit: number, windowMs: number): RateLimitResult {
+function evaluateBucket(key: string, limit: number, windowMs: number): RateLimitResult {
   const now = Date.now();
-  const key = buildRateKey(req, routeKey);
   const buckets = getBuckets();
 
   if (buckets.size > MAX_BUCKETS) {
@@ -109,44 +137,59 @@ function checkMemoryRateLimit(req: NextRequest, routeKey: string, limit: number,
   };
 }
 
-async function checkRedisRateLimit(req: NextRequest, routeKey: string, limit: number, windowMs: number): Promise<RateLimitResult | null> {
+function checkMemoryRateLimit(req: NextRequest, routeKey: string, limit: number, windowMs: number, extraKeys: string[] = []): RateLimitResult {
+  const results = buildRateKeys(req, routeKey, extraKeys).map((key) => evaluateBucket(key, limit, windowMs));
+  return results.reduce((worst, current) => {
+    if (!current.allowed) return current;
+    if (!worst.allowed) return worst;
+    return current.remaining < worst.remaining ? current : worst;
+  });
+}
+
+async function checkRedisRateLimit(req: NextRequest, routeKey: string, limit: number, windowMs: number, extraKeys: string[] = []): Promise<RateLimitResult | null> {
   const redis = getRedisClient();
   if (!redis) return null;
 
-  const key = `ratelimit:${buildRateKey(req, routeKey)}`;
   const windowSec = Math.max(1, Math.ceil(windowMs / 1000));
 
   try {
-    const count = await redis.incr(key);
-    if (count === 1) {
-      await redis.expire(key, windowSec);
-    }
+    const results: RateLimitResult[] = [];
 
-    const ttl = await redis.ttl(key);
-    const retryAfterSec = ttl > 0 ? ttl : windowSec;
+    for (const rawKey of buildRateKeys(req, routeKey, extraKeys)) {
+      const key = `ratelimit:${rawKey}`;
+      const count = await redis.incr(key);
+      if (count === 1) {
+        await redis.expire(key, windowSec);
+      }
 
-    if (count > limit) {
-      return {
-        allowed: false,
-        remaining: 0,
+      const ttl = await redis.ttl(key);
+      const retryAfterSec = ttl > 0 ? ttl : windowSec;
+
+      if (count > limit) {
+        return {
+          allowed: false,
+          remaining: 0,
+          retryAfterSec,
+          backend: "redis",
+        };
+      }
+
+      results.push({
+        allowed: true,
+        remaining: Math.max(0, limit - count),
         retryAfterSec,
         backend: "redis",
-      };
+      });
     }
 
-    return {
-      allowed: true,
-      remaining: Math.max(0, limit - count),
-      retryAfterSec,
-      backend: "redis",
-    };
+    return results.reduce((worst, current) => (current.remaining < worst.remaining ? current : worst));
   } catch {
     return null;
   }
 }
 
-export async function checkRateLimit(req: NextRequest, routeKey: string, limit: number, windowMs: number) {
-  const redisResult = await checkRedisRateLimit(req, routeKey, limit, windowMs);
+export async function checkRateLimit(req: NextRequest, routeKey: string, limit: number, windowMs: number, extraKeys: string[] = []) {
+  const redisResult = await checkRedisRateLimit(req, routeKey, limit, windowMs, extraKeys);
   if (redisResult) return redisResult;
-  return checkMemoryRateLimit(req, routeKey, limit, windowMs);
+  return checkMemoryRateLimit(req, routeKey, limit, windowMs, extraKeys);
 }

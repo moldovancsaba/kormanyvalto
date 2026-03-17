@@ -4,9 +4,11 @@ import type { ReactNode } from "react";
 import { PageShell } from "../../components/PageChrome";
 import { CityRankingCard } from "../../components/dashboard/CityRankingCard";
 import { CountyRankingCard } from "../../components/dashboard/CountyRankingCard";
+import { KpiCard } from "../../components/dashboard/KpiCard";
+import { PieCard } from "../../components/dashboard/PieCard";
 import { constituencies } from "../../lib/constituencies";
 import { getSectionNavItems } from "../../lib/navigation";
-import { formatCompactChipNumber, formatNumber } from "../../lib/numberFormat";
+import { formatNumber } from "../../lib/numberFormat";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
 import { getCountyCodeFromConstituencyHref, getCountyHrefFromConstituencyHref } from "../../lib/territoryPaths";
 import {
@@ -43,112 +45,6 @@ function formatSignedDiff(value: number) {
 
 function getCityTone(item: CityVoteStat): "yes" | "no" | "neutral" {
   return item.leadBloc;
-}
-
-type KpiCardProps = {
-  label: string;
-  subtitle: string;
-  value: number;
-  valueHint?: string;
-  detail: string;
-};
-
-function KpiCard({ label, subtitle, value, valueHint, detail }: KpiCardProps) {
-  return (
-    <article className="kpi-card">
-      <header className="chart-card-head">
-        <h2>{label}</h2>
-        <p>{subtitle}</p>
-      </header>
-      <div className="kpi-value-chip kpi-value-chip-neutral">
-        <p className="kpi-value chip-number-fit">{formatCompactChipNumber(value)}</p>
-        {valueHint ? <span className="kpi-value-hint">{valueHint}</span> : null}
-      </div>
-      <p className="kpi-detail">{detail}</p>
-    </article>
-  );
-}
-
-type PieCardProps = {
-  title: string;
-  subtitle: string;
-  leftLabel: string;
-  leftValue: number;
-  rightLabel: string;
-  rightValue: number;
-  leftTone: "yes" | "no" | "warm" | "cool";
-  rightTone: "yes" | "no" | "warm" | "cool";
-};
-
-function PieCard({
-  title,
-  subtitle,
-  leftLabel,
-  leftValue,
-  rightLabel,
-  rightValue,
-  leftTone,
-  rightTone,
-}: PieCardProps) {
-  const total = leftValue + rightValue;
-  const leftRatio = total === 0 ? 0.5 : leftValue / total;
-  const rightRatio = total === 0 ? 0.5 : rightValue / total;
-  const radius = 44;
-  const circumference = 2 * Math.PI * radius;
-  const leftArc = Math.max(0, Math.min(circumference, leftRatio * circumference));
-  const rightArc = Math.max(0, Math.min(circumference, rightRatio * circumference));
-
-  return (
-    <section className="pie-card">
-      <header className="chart-card-head">
-        <h2>{title}</h2>
-        <p>{subtitle}</p>
-      </header>
-      <div className="pie-layout">
-        <div className="pie-chart">
-          <svg viewBox="0 0 100 100" className="pie-chart-svg" aria-hidden="true" focusable="false">
-            <circle cx="50" cy="50" r={radius} className="pie-chart-ring pie-chart-ring-track" />
-            <circle
-              cx="50"
-              cy="50"
-              r={radius}
-              className={`pie-chart-ring pie-chart-ring-${leftTone}`}
-              strokeDasharray={`${leftArc} ${circumference - leftArc}`}
-              strokeDashoffset="0"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r={radius}
-              className={`pie-chart-ring pie-chart-ring-${rightTone}`}
-              strokeDasharray={`${rightArc} ${circumference - rightArc}`}
-              strokeDashoffset={-leftArc}
-            />
-          </svg>
-          <div className="pie-hole">
-            <strong>{formatCompactChipNumber(total)}</strong>
-            <span>összesen</span>
-          </div>
-        </div>
-        <div className="pie-legend">
-          <article>
-            <span className={`pie-swatch pie-swatch-${leftTone}`} />
-            <div>
-              <strong>{leftLabel}</strong>
-              <span>{formatNumber(leftValue)}</span>
-            </div>
-          </article>
-          <article>
-            <span className={`pie-swatch pie-swatch-${rightTone}`} />
-            <div>
-              <strong>{rightLabel}</strong>
-              <span>{formatNumber(rightValue)}</span>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-  );
 }
 
 function ChartCard({ title, ariaLabel, subtitle, tone, items, valueLabel, valueForBar }: ChartCardProps) {
@@ -363,6 +259,7 @@ export default async function DashboardPage() {
 
       <section className="dashboard-summary-grid">
         <KpiCard
+          variant="dashboard"
           label="Összes eddigi szavazat"
           subtitle="A teljes rendszer eddigi súlyozott aktivitása."
           value={summary.totalWeightedVotes}
@@ -370,6 +267,7 @@ export default async function DashboardPage() {
           detail={`${formatNumber(summary.totalVoteEvents)} leadott kattintás alapján`}
         />
         <PieCard
+          variant="dashboard"
           title="Összes igen vs összes nem"
           subtitle="A teljes rendszer jelenlegi súlyozott állása."
           leftLabel="igen"

@@ -4,18 +4,30 @@ import { NextRequest } from "next/server";
 import { createRemoteJWKSet, jwtVerify, JWTPayload, SignJWT } from "jose";
 import { SITE_URL } from "../siteMetadata";
 
-export const APP_SESSION_COOKIE = "kv_session";
-export const OAUTH_STATE_COOKIE = "kv_oauth";
-export const ANON_VOTER_COOKIE = "kv_anon";
-
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 const OAUTH_MAX_AGE = 60 * 15;
+const ANON_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+function getCookieName(baseName: string) {
+  return shouldUseSecureCookies() ? `__Host-${baseName}` : baseName;
+}
+
+export const APP_SESSION_COOKIE = getCookieName("kv_session");
+export const OAUTH_STATE_COOKIE = getCookieName("kv_oauth");
+export const ANON_VOTER_COOKIE = getCookieName("kv_anon");
 
 type OAuthStatePayload = {
   state: string;
   nonce: string;
   codeVerifier: string;
   returnTo: string;
+};
+
+type AnonymousActorCookiePayload = {
+  actorId: string;
+  fingerprint: string;
+  exp?: number;
+  iat?: number;
 };
 
 export type AppSession = {
@@ -76,6 +88,12 @@ function getClientIp(req: NextRequest) {
   if (realIp?.trim()) return realIp.trim();
 
   return "";
+}
+
+function getAnonymousCookieFingerprint(req: NextRequest) {
+  const userAgent = req.headers.get("user-agent")?.trim() || "";
+  const language = req.headers.get("accept-language")?.trim() || "";
+  return createHash("sha256").update(`${userAgent.slice(0, 240)}|${language.slice(0, 120)}`).digest("hex");
 }
 
 export function getSsoRedirectUri() {
@@ -172,6 +190,16 @@ export async function readOAuthStateFromRequest(req: NextRequest) {
 
 export async function createAppSessionCookie(session: AppSession) {
   return signToken(session, SESSION_MAX_AGE);
+}
+
+export async function createAnonymousActorCookie(req: NextRequest, actorId: string) {
+  return signToken(
+    {
+      actorId,
+      fingerprint: getAnonymousCookieFingerprint(req),
+    },
+    ANON_COOKIE_MAX_AGE
+  );
 }
 
 export async function readAppSessionFromRequest(req: NextRequest): Promise<AppSession | null> {
@@ -294,7 +322,7 @@ export async function verifyIdToken(idToken: string, expectedNonce?: string) {
   });
 
   const payload = verified.payload;
-  if (expectedNonce && payload.nonce && payload.nonce !== expectedNonce) {
+  if (expectedNonce && payload.nonce !== expectedNonce) {
     throw new Error("Nonce mismatch.");
   }
   if (!payload.sub || !payload.email || !payload.name) {
@@ -314,6 +342,24 @@ export function createAnonymousActorId() {
   return `anon_${randomUUID()}`;
 }
 
-export function getExistingAnonymousActorId(req: NextRequest) {
-  return req.cookies.get(ANON_VOTER_COOKIE)?.value?.trim() || null;
+export async function getExistingAnonymousActorId(req: NextRequest) {
+  const token = req.cookies.get(ANON_VOTER_COOKIE)?.value?.trim();
+  if (!token) {
+    return null;
+  }
+
+  const payload = await verifySignedToken<AnonymousActorCookiePayload & JWTPayload>(token);
+  if (!payload?.actorId || !payload.fingerprint) {
+    return null;
+  }
+
+  if (payload.fingerprint !== getAnonymousCookieFingerprint(req)) {
+    return null;
+  }
+
+  if (!payload.actorId.startsWith("anon_")) {
+    return null;
+  }
+
+  return payload.actorId;
 }

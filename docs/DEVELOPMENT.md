@@ -37,8 +37,13 @@ Open:
 ```bash
 npm run build
 npm run lint
-npm run check:styles
 ```
+
+`npm run lint` is the primary verification gate and runs:
+- `npm run typecheck`
+- `npm run check:styles`
+
+The repository type-check uses `tsconfig.typecheck.json` so it does not depend on generated `.next/types` artifacts existing before a build.
 
 Required before push to `main`:
 - build must pass,

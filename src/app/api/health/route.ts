@@ -15,12 +15,20 @@ export async function GET(req: NextRequest) {
   try {
     const client = await getMongoClient();
     const dbName = getMongoDbName();
-    await client.db(dbName).command({ ping: 1 });
+    const db = client.db(dbName);
+    await db.command({ ping: 1 });
+
+    const abuseSince = new Date(Date.now() - 15 * 60 * 1000);
+    const recentAbuseEvents = await db.collection("abuse_events").countDocuments({ createdAt: { $gte: abuseSince } });
 
     return NextResponse.json({
       ok: true,
       status: "healthy",
       timestamp: new Date().toISOString(),
+      telemetry: {
+        recentAbuseEvents,
+        abuseWindowMinutes: 15,
+      },
     }, { headers: NO_CACHE_HEADERS });
   } catch {
     return NextResponse.json(

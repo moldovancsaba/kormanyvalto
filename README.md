@@ -1,6 +1,6 @@
 # Kormanyvalto
 Status: Active
-Last Updated: 2026-03-15
+Last Updated: 2026-03-17
 Canonical: Yes
 Owner: Product
 
@@ -12,7 +12,7 @@ Owner: Product
 <p align="center"><strong>Election-style civic game platform for OGY 2026 simulation: országos, vármegyei, and EVK voting with analytics and mandate estimation.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v1.1.2-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.1.3-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -83,6 +83,8 @@ npm run build
 npm run lint
 ```
 
+`npm run lint` is the repository verification gate and currently runs TypeScript type-checking plus the style-rule audit.
+
 Health checks after deploy:
 - `/api/health`
 - `/dashboard`
@@ -118,6 +120,10 @@ The app uses a global card system from `src/app/globals.css`:
 - analytics cards: `.chart-card`
 - pie cards: `.pie-card`
 - collectible ranking cards: `.preview-visual-card`, `.preview-trading-card`
+
+Shared implementations:
+- `src/components/dashboard/KpiCard.tsx`
+- `src/components/dashboard/PieCard.tsx`
 
 Rules:
 - no inline style for layout/visual structure,

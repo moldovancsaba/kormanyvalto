@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { getMongoClient, getMongoDbName } from "./mongodb";
 import {
   AppSession,
+  createAnonymousActorCookie,
   createAnonymousActorId,
   getAnonymousFingerprintActorId,
   getExistingAnonymousActorId,
@@ -17,6 +18,7 @@ export type VoteActor = {
   weight: 1 | 3;
   cooldownStep: number;
   shouldSetAnonymousCookie: boolean;
+  anonymousCookieToken: string | null;
   session: AppSession | null;
 };
 
@@ -61,19 +63,22 @@ export async function getVoteActor(req: NextRequest): Promise<VoteActor> {
       weight: 3,
       cooldownStep: 0.2,
       shouldSetAnonymousCookie: false,
+      anonymousCookieToken: null,
       session,
     };
   }
 
-  const existingAnonId = getExistingAnonymousActorId(req);
+  const existingAnonId = await getExistingAnonymousActorId(req);
   const fingerprintActorId = getAnonymousFingerprintActorId(req);
   const actorId = existingAnonId || fingerprintActorId || createAnonymousActorId();
+  const anonymousCookieToken = existingAnonId ? null : await createAnonymousActorCookie(req, actorId);
   return {
     actorId,
     mode: "anonymous",
     weight: 1,
     cooldownStep: 1,
     shouldSetAnonymousCookie: !existingAnonId,
+    anonymousCookieToken,
     session: null,
   };
 }
@@ -87,11 +92,12 @@ export async function getExistingVoteActor(req: NextRequest): Promise<VoteActor 
       weight: 3,
       cooldownStep: 0.2,
       shouldSetAnonymousCookie: false,
+      anonymousCookieToken: null,
       session,
     };
   }
 
-  const anonId = getExistingAnonymousActorId(req);
+  const anonId = await getExistingAnonymousActorId(req);
   const actorId = anonId || getAnonymousFingerprintActorId(req);
   if (!actorId) {
     return null;
@@ -103,6 +109,7 @@ export async function getExistingVoteActor(req: NextRequest): Promise<VoteActor 
     weight: 1,
     cooldownStep: 1,
     shouldSetAnonymousCookie: false,
+    anonymousCookieToken: null,
     session: null,
   };
 }
@@ -121,42 +128,103 @@ export async function getCooldownSec(actorId: string, scope: string) {
 export async function reserveVoteSlot(actor: VoteActor, scope: string) {
   const collection = await getVoteSessionCollection();
   const key = `${actor.actorId}:${scope}`;
-  const existing = await collection.findOne({ _id: key });
   const now = Date.now();
-  const existingCooldownUntilMs = existing ? toEpochMs(existing.cooldownUntil) : 0;
+  const nowDate = new Date(now);
 
-  if (existing && existingCooldownUntilMs > now) {
+  const updated = await collection.findOneAndUpdate(
+    {
+      _id: key,
+      cooldownUntil: { $lte: nowDate },
+    },
+    [
+      {
+        $set: {
+          voteCount: {
+            $add: [{ $ifNull: ["$voteCount", 0] }, 1],
+          },
+        },
+      },
+      {
+        $set: {
+          actorId: actor.actorId,
+          scope,
+          updatedAt: nowDate,
+          cooldownUntil: {
+            $dateAdd: {
+              startDate: nowDate,
+              unit: "millisecond",
+              amount: {
+                $round: [
+                  {
+                    $multiply: [
+                      1000,
+                      {
+                        $add: [
+                          1,
+                          {
+                            $multiply: [{ $subtract: ["$voteCount", 1] }, actor.cooldownStep],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  0,
+                ],
+              },
+            },
+          },
+        },
+      },
+    ],
+    { returnDocument: "after" }
+  );
+
+  if (updated) {
+    const cooldownSec = Number((1 + (updated.voteCount - 1) * actor.cooldownStep).toFixed(1));
     return {
-      allowed: false,
-      cooldownSec: Number(((existingCooldownUntilMs - now) / 1000).toFixed(1)),
-      voteCount: existing.voteCount,
+      allowed: true,
+      cooldownSec,
+      voteCount: updated.voteCount,
     };
   }
 
-  const nextCount = (existing?.voteCount ?? 0) + 1;
-  const cooldownSec = Number((1 + (nextCount - 1) * actor.cooldownStep).toFixed(1));
-  const cooldownUntil = new Date(now + cooldownSec * 1000);
+  const initialCooldownSec = Number((1 + 0 * actor.cooldownStep).toFixed(1));
+  try {
+    await collection.insertOne({
+      _id: key,
+      actorId: actor.actorId,
+      scope,
+      voteCount: 1,
+      cooldownUntil: new Date(now + initialCooldownSec * 1000),
+      updatedAt: nowDate,
+    });
+    return {
+      allowed: true,
+      cooldownSec: initialCooldownSec,
+      voteCount: 1,
+    };
+  } catch {
+    const existing = await collection.findOne({ _id: key });
+    const existingCooldownUntilMs = existing ? toEpochMs(existing.cooldownUntil) : 0;
+    if (existing && existingCooldownUntilMs > now) {
+      return {
+        allowed: false,
+        cooldownSec: Number(((existingCooldownUntilMs - now) / 1000).toFixed(1)),
+        voteCount: existing.voteCount,
+      };
+    }
+    return {
+      allowed: false,
+      cooldownSec: 1,
+      voteCount: existing?.voteCount ?? 0,
+    };
+  }
+}
 
-  await collection.updateOne(
-    { _id: key },
-    {
-      $set: {
-        actorId: actor.actorId,
-        scope,
-        cooldownUntil,
-        updatedAt: new Date(now),
-      },
-      $inc: {
-        voteCount: 1,
-      },
-    },
-    { upsert: true }
-  );
-
+export function withAdjustedCooldown(actor: VoteActor, cooldownStep: number): VoteActor {
   return {
-    allowed: true,
-    cooldownSec,
-    voteCount: nextCount,
+    ...actor,
+    cooldownStep,
   };
 }
 

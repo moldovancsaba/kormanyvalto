@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { APP_SESSION_COOKIE, ANON_VOTER_COOKIE, OAUTH_STATE_COOKIE, isSsoConfigured, normalizeReturnTo } from "../../../../lib/auth";
-import { NO_CACHE_HEADERS } from "../../../../lib/http";
+import { APP_SESSION_COOKIE, ANON_VOTER_COOKIE, OAUTH_STATE_COOKIE, isSsoConfigured, normalizeReturnTo, shouldUseSecureCookies } from "../../../../lib/auth";
+import { isTrustedOrigin, NO_CACHE_HEADERS } from "../../../../lib/http";
 import { checkRateLimit } from "../../../../lib/rateLimit";
 
 export async function GET(req: NextRequest) {
+  const origin = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+  const host = req.headers.get("host");
+  if (!isTrustedOrigin(origin, referer, host)) {
+    return NextResponse.json({ error: "Invalid origin" }, { status: 403, headers: NO_CACHE_HEADERS });
+  }
+
   const rate = await checkRateLimit(req, "api-auth-logout", 30, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(
@@ -20,8 +27,8 @@ export async function GET(req: NextRequest) {
       )
     : NextResponse.redirect(new URL(returnTo, req.url), { headers: NO_CACHE_HEADERS });
 
-  response.cookies.set(APP_SESSION_COOKIE, "", { path: "/", maxAge: 0 });
-  response.cookies.set(OAUTH_STATE_COOKIE, "", { path: "/", maxAge: 0 });
-  response.cookies.set(ANON_VOTER_COOKIE, "", { path: "/", maxAge: 0 });
+  response.cookies.set(APP_SESSION_COOKIE, "", { httpOnly: true, sameSite: "strict", secure: shouldUseSecureCookies(), path: "/", maxAge: 0 });
+  response.cookies.set(OAUTH_STATE_COOKIE, "", { httpOnly: true, sameSite: "lax", secure: shouldUseSecureCookies(), path: "/", maxAge: 0 });
+  response.cookies.set(ANON_VOTER_COOKIE, "", { httpOnly: true, sameSite: "strict", secure: shouldUseSecureCookies(), path: "/", maxAge: 0 });
   return response;
 }

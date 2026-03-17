@@ -56,11 +56,11 @@ Design:
 
 Production dashboard:
 - `/dashboard`
-  - includes production-ready ranking and KPI/pie cards
+  - includes production-ready ranking cards and shared KPI/pie cards
 
 Preview dashboard:
 - `/dashboard-preview`
-  - contains staging/validation visuals before promotion to production dashboard
+  - contains staging/validation visuals before promotion to production dashboard, while reusing the shared KPI/pie primitives where behavior matches
 
 Reusable dashboard visual components:
 - `src/components/dashboard/*`

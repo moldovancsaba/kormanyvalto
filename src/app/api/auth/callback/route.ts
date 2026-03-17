@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
   if (!isSsoConfigured()) {
     const response = NextResponse.redirect(buildErrorRedirect(req, returnTo, "sso_not_configured"), { headers: NO_CACHE_HEADERS });
-    response.cookies.set(OAUTH_STATE_COOKIE, "", { path: "/", maxAge: 0 });
+    response.cookies.set(OAUTH_STATE_COOKIE, "", { httpOnly: true, sameSite: "lax", secure: shouldUseSecureCookies(), path: "/", maxAge: 0 });
     return response;
   }
 
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     const response = NextResponse.redirect(buildErrorRedirect(req, returnTo, error ? "oauth_failed" : "invalid_state"), {
       headers: NO_CACHE_HEADERS,
     });
-    response.cookies.set(OAUTH_STATE_COOKIE, "", { path: "/", maxAge: 0 });
+    response.cookies.set(OAUTH_STATE_COOKIE, "", { httpOnly: true, sameSite: "lax", secure: shouldUseSecureCookies(), path: "/", maxAge: 0 });
     return response;
   }
 
@@ -58,16 +58,16 @@ export async function GET(req: NextRequest) {
     const response = NextResponse.redirect(new URL(returnTo, req.url), { headers: NO_CACHE_HEADERS });
     response.cookies.set(APP_SESSION_COOKIE, sessionToken, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "strict",
       secure: shouldUseSecureCookies(),
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     });
-    response.cookies.set(OAUTH_STATE_COOKIE, "", { path: "/", maxAge: 0 });
+    response.cookies.set(OAUTH_STATE_COOKIE, "", { httpOnly: true, sameSite: "lax", secure: shouldUseSecureCookies(), path: "/", maxAge: 0 });
     return response;
   } catch {
     const response = NextResponse.redirect(buildErrorRedirect(req, returnTo, "auth_failed"), { headers: NO_CACHE_HEADERS });
-    response.cookies.set(OAUTH_STATE_COOKIE, "", { path: "/", maxAge: 0 });
+    response.cookies.set(OAUTH_STATE_COOKIE, "", { httpOnly: true, sameSite: "lax", secure: shouldUseSecureCookies(), path: "/", maxAge: 0 });
     return response;
   }
 }

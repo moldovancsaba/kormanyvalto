@@ -7,10 +7,17 @@ import {
   normalizeReturnTo,
   shouldUseSecureCookies,
 } from "../../../../lib/auth";
-import { NO_CACHE_HEADERS } from "../../../../lib/http";
+import { isTrustedOrigin, NO_CACHE_HEADERS } from "../../../../lib/http";
 import { checkRateLimit } from "../../../../lib/rateLimit";
 
 export async function GET(req: NextRequest) {
+  const origin = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+  const host = req.headers.get("host");
+  if (!isTrustedOrigin(origin, referer, host)) {
+    return NextResponse.json({ error: "Invalid origin" }, { status: 403, headers: NO_CACHE_HEADERS });
+  }
+
   const rate = await checkRateLimit(req, "api-auth-login", 30, 60_000);
   if (!rate.allowed) {
     return NextResponse.json(

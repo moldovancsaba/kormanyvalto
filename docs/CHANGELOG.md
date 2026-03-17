@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.3 - 2026-03-17
+
+### Fixed
+- Replaced the broken `next lint` script with a stable repository lint gate based on `tsc --noEmit` plus the style-rule check.
+
+### Changed
+- Pinned `next`, `react`, and `react-dom` to the installed runtime versions instead of using `latest`.
+- Extracted shared dashboard KPI and pie cards into reusable components so `/dashboard` and `/dashboard-preview` no longer carry duplicate local implementations.
+
+### Documentation
+- Updated README and development guidance to match the current verification flow and shared dashboard card ownership.
+
 ## 1.1.2 - 2026-03-15
 
 ### Changed
