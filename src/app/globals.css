@@ -2055,8 +2055,8 @@ button:disabled {
 
 .county-hero-overlay p {
   color: var(--ink-strong);
-  font-size: clamp(1rem, 2vw, 1.35rem);
-  font-weight: 700;
+  font-size: clamp(0.92rem, 1.7vw, 1.18rem);
+  font-weight: 500;
   line-height: 1.15;
 }
 
