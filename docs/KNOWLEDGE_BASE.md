@@ -11,6 +11,20 @@ Non-negotiable rules:
 - Vote flow, navigation, and public result viewing must fail gracefully when secondary systems degrade.
 - Security, telemetry, preview tooling, analytics, and anti-abuse controls must be designed to degrade safely without breaking normal user access.
 
+## Documentation Governance
+
+Status: Active
+
+Rules:
+- Every active user-facing behavior must have a source-of-truth document.
+- Audit reports and remediation plans are not substitutes for active implementation docs.
+- Historical documents must not be treated as current behavior contracts.
+- Current behavior contracts primarily live in:
+  - `docs/WORKFLOWS.md`
+  - `docs/DESIGN_SYSTEM.md`
+  - `docs/ARCHITECTURE.md`
+  - `docs/OPERATIONS.md`
+
 ## Dashboard Preview Standards
 
 Status: Active (confirmed by product owner)

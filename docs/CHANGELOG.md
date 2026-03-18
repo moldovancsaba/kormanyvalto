@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.4 - 2026-03-18
+
+### Added
+- Added `docs/WORKFLOWS.md` as the active source-of-truth document for runtime user journeys and vote-button behavior.
+- Added `docs/DESIGN_SYSTEM.md` as the active source-of-truth document for shared visual/state contracts.
+
+### Changed
+- Updated README, architecture, development, knowledge-base, and operations docs to reflect the live hero, vote interaction behavior, and documentation governance rules.
+
+### Governance
+- Established explicit documentation ownership for active workflows, design-system behavior, and release synchronization.
+
 ## 1.1.3 - 2026-03-17
 
 ### Fixed

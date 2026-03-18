@@ -140,6 +140,9 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
     }
   };
 
+  // Warm the vote route and fetch the predicted next cooldown so the first
+  // click can move directly from the temporary `szavaztál` state into the
+  // countdown label without a visible plain-label gap.
   useEffect(() => {
     const warmVoteAction = async () => {
       try {
@@ -283,6 +286,8 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
     setSubmitting(true);
     setError(null);
     setFlashVote(type);
+    // Start the predicted cooldown immediately so the countdown is already
+    // active while the temporary success flash is still visible.
     applyCooldown(nextCooldownSec);
     await new Promise<void>((resolve) => {
       window.requestAnimationFrame(() => {

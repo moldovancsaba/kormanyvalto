@@ -1,18 +1,14 @@
 # Kormanyvalto
 Status: Active
-Last Updated: 2026-03-17
+Last Updated: 2026-03-18
 Canonical: Yes
 Owner: Product
-
-<p align="center">
-  <img src="public/images/hero_vote.png" alt="Kormanyvalto hero" width="360" />
-</p>
 
 <h1 align="center">Kormanyvalto</h1>
 <p align="center"><strong>Election-style civic game platform for OGY 2026 simulation: országos, vármegyei, and EVK voting with analytics and mandate estimation.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v1.1.3-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.1.4-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -48,7 +44,7 @@ Core capabilities:
 - `/dashboard` - production analytics dashboard (`Csataterek`, `Biztos bástyák`, county/city chart pack, KPI + pie)
 - `/dashboard-preview` - preview board for upcoming visuals (includes staging charts like `Elsöprő győzelmek`; intentionally not linked from navigation)
 - `/mandatumbecsles` - mandate estimate and parliament visualization
-- `/ogy2026/egyeni-valasztokeruletek` - county list + county map
+- `/ogy2026/egyeni-valasztokeruletek` - county list below the shared interactive county-result hero
 - `/ogy2026/egyeni-valasztokeruletek/[maz]` - county EVK list
 - `/ogy2026/egyeni-valasztokeruletek/[maz]/[evk]` - EVK vote page
 
@@ -108,6 +104,8 @@ Main system areas:
 - `src/lib/svgRegionMap.ts` - generic SVG region map loader
 - `src/lib/hungaryCountyMap.ts` - Hungary county adapter for map dataset
 - `src/lib/dashboardPreviewData.ts` - reusable data builders for preview visuals
+- `src/components/VoteWidget.tsx` - canonical vote interaction state machine
+- `src/components/PageChrome.tsx` - canonical shared hero shell
 
 ## Visual and UX Governance
 
@@ -120,6 +118,12 @@ Preview rule (active):
 - shared global CSS + reusable components required.
 
 See: `docs/KNOWLEDGE_BASE.md`
+
+Active runtime workflow docs:
+- `docs/WORKFLOWS.md`
+
+Active design-system docs:
+- `docs/DESIGN_SYSTEM.md`
 
 ## UI Card System
 
@@ -145,6 +149,8 @@ Rules:
 - [docs/CHANGELOG.md](docs/CHANGELOG.md) - version history and shipped deltas
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) - local setup and coding workflow
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - technical architecture and data flow
+- [docs/WORKFLOWS.md](docs/WORKFLOWS.md) - active user journeys and vote UX contract
+- [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) - active design-system and shared visual rules
 - [docs/OPERATIONS.md](docs/OPERATIONS.md) - deploy, runtime checks, incident checklist
 
 ## Deployment

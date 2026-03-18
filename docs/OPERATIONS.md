@@ -1,5 +1,9 @@
 # Operations Guide
 
+Status: Active
+Last Updated: 2026-03-18
+Canonical: Yes
+
 ## Reliability Doctrine
 
 - User UX and user journey are the number 1 priority.
@@ -84,3 +88,5 @@ Before shipping user-visible changes:
 - update `README.md` when product behavior changes
 - update `docs/KNOWLEDGE_BASE.md` when policy/rules change
 - update `docs/CHANGELOG.md` for released deltas
+- update `docs/WORKFLOWS.md` when runtime user journeys change
+- update `docs/DESIGN_SYSTEM.md` when shared visual/state contracts change

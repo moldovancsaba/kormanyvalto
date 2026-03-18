@@ -1,5 +1,9 @@
 # Development Guide
 
+Status: Active
+Last Updated: 2026-03-18
+Canonical: Yes
+
 ## Core Rule
 
 - User UX and user journey are the number 1 priority.
@@ -69,6 +73,41 @@ Required before push to `main`:
 - Do not duplicate formatting helpers in route/component files.
 - Do not parse county/district route data with ad-hoc `split()` logic when a shared helper exists.
 
+## Documentation Requirements
+
+Documentation is mandatory.
+
+If you change any of the following, update the matching source-of-truth doc in the same change-set:
+- user-facing workflows: `docs/WORKFLOWS.md`
+- design-system or shared visual behavior: `docs/DESIGN_SYSTEM.md`
+- architecture or core data flow: `docs/ARCHITECTURE.md`
+- operational behavior: `docs/OPERATIONS.md`
+- security behavior: `docs/SECURITY.md`
+- shipped release delta: `docs/CHANGELOG.md`
+
+Examples:
+- vote button UX or timing changes
+- hero/map behavior changes
+- dashboard ownership changes
+- metadata/share-title changes
+- degraded-mode reliability behavior
+
+## Code Comment Standard
+
+Comment non-obvious behavior, not syntax.
+
+Required comment targets:
+- state machines
+- optimistic UI behavior
+- fail-open / degraded-mode paths
+- unusual data contracts
+- cross-file coupling that is not obvious from names alone
+
+Avoid:
+- comments that restate the next line
+- vague comments like `ignore errors` without why that is safe
+- stale comments that describe old behavior
+
 ## Shared Helpers
 
 Prefer these shared helpers before writing local logic:
@@ -114,6 +153,11 @@ For `/dashboard-preview`:
 - every data point clickable when destination exists,
 - county/city/EVK chips linked where available,
 - portable components so visuals can move into production pages without rewrite.
+
+## Active References
+
+- runtime workflows: `docs/WORKFLOWS.md`
+- design-system contracts: `docs/DESIGN_SYSTEM.md`
 
 ## Recommended Commit Hygiene
 
