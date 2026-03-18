@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.3 - 2026-03-18
+
+### Changed
+- Normalized the recent 3x VOTE card states so active, available, and unavailable variants use a more consistent visual grammar and information hierarchy.
+
+### Documentation
+- Updated the design-system contract for 3x state consistency.
+
 ## 1.2.2 - 2026-03-18
 
 ### Changed

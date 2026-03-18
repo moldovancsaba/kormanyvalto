@@ -97,6 +97,7 @@ Contract:
 - trust messaging should be scannable in short fact blocks, not dense warning paragraphs
 - the panel must distinguish benefit, verification purpose, and non-retention/privacy boundaries
 - authenticated and unauthenticated 3x states should still feel like the same component family
+- available, active, and unavailable 3x states should reuse one consistent card grammar instead of switching visual voice
 
 ### Hero system
 

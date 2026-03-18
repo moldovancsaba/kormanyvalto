@@ -179,6 +179,7 @@ h1 {
 .boost-card-meta {
   margin: 0.55rem 0 0;
   font-weight: 700;
+  color: var(--neutral-blue-deep);
 }
 
 .boost-fact-grid {
@@ -221,24 +222,6 @@ h1 {
 .boost-card-warning {
   background: var(--warning-card-bg);
   border: 2px solid var(--warning-card-border);
-}
-
-.boost-warning-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.65rem;
-}
-
-.boost-warning-header h2 {
-  margin: 0;
-  color: var(--warning-card-header);
-  font-size: 1.3rem;
-  letter-spacing: 0.02em;
-}
-
-.boost-warning-icon {
-  color: var(--warning-card-header);
 }
 
 .boost-privacy-strong {

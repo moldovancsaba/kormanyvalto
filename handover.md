@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.2.2`
+- Current released version: `1.2.3`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -59,11 +59,10 @@ Main files:
 - `docs/DEVELOPMENT.md`
 - `README.md`
 
-### 3x vote trust/transparency
+### 3x card consistency cleanup
 
-- The 3x VOTE panel now explains the benefit, login purpose, and privacy boundary in short fact blocks.
-- Anonymous voting remains explicitly available even when Google login fails or is unavailable.
-- Login failure copy now points users back to the working anonymous path.
+- The recent 3x VOTE states now use a more consistent card grammar across active, available, and unavailable variants.
+- Anonymous fallback and trust boundaries remain explicit, but the visual voice is more uniform.
 
 Main files:
 - `src/components/VoteWidget.tsx`

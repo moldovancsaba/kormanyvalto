@@ -448,7 +448,8 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
       {auth.authenticated && auth.user ? (
         <section className="boost-card" aria-label="3x vote állapot">
           <p className="boost-card-title">3x VOTE aktív</p>
-          <p className="boost-card-meta">{auth.user.name}</p>
+          <p className="boost-card-copy">Google-belépéssel erősített mód. Az anonim szavazás ettől függetlenül továbbra is elérhető.</p>
+          <p className="boost-card-meta">Belépve: {auth.user.name}</p>
           <div className="boost-fact-grid" aria-label="3x vote előnyök">
             <article className="boost-fact-card">
               <p className="boost-fact-label">Mit kapsz</p>
@@ -458,20 +459,15 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
               <p className="boost-fact-label">Cooldown</p>
               <p className="boost-fact-value">A várakozás csak +0.2 másodperccel nő.</p>
             </article>
+            <article className="boost-fact-card">
+              <p className="boost-fact-label">Mit nem tárolunk</p>
+              <p className="boost-fact-value">A Google-fiókod adatait nem használjuk külön célra vagy marketinghez.</p>
+            </article>
           </div>
-          <p className="boost-card-copy">
-            A Google-belépést csak arra használjuk, hogy megerősítsük: valódi felhasználó szavaz. A szavazás anonim útja továbbra is működik.
-          </p>
         </section>
       ) : auth.configured ? (
         <section className="boost-card boost-card-warning" aria-label="3x vote belépés">
-          <header className="boost-warning-header">
-            <span className="material-symbols-rounded boost-warning-icon" aria-hidden="true">
-              warning
-            </span>
-            <h2>FIGYELEM</h2>
-          </header>
-
+          <p className="boost-card-title">3x VOTE elérhető</p>
           <p className="boost-privacy-strong">Az anonim szavazás most is működik. A Google-belépés csak a 3x VOTE bónusz módhoz kell.</p>
 
           <div className="boost-fact-grid" aria-label="3x vote tudnivalók">
@@ -500,6 +496,12 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
         <section className="boost-card boost-card-muted" aria-label="3x vote állapot">
           <p className="boost-card-title">3x VOTE</p>
           <p className="boost-card-copy">A Google belépés még nincs bekapcsolva ehhez az oldalhoz, de anonim módban ugyanúgy tudsz szavazni.</p>
+          <div className="boost-fact-grid" aria-label="3x vote állapot">
+            <article className="boost-fact-card">
+              <p className="boost-fact-label">Jelenlegi mód</p>
+              <p className="boost-fact-value">Normál anonim szavazás aktív.</p>
+            </article>
+          </div>
         </section>
       )}
 
