@@ -133,6 +133,7 @@ Rules:
 - If a vote is accepted but the follow-up summary refresh fails, the UI must say the vote was saved and offer a retry instead of implying the vote was lost.
 - Vote/result read failures should offer an immediate retry path on the same screen.
 - Retry actions should use the same direct button grammar as navigation actions, for example `Újrapróbálás`.
+- Native browser/network fetch errors must be normalized into Hungarian user-facing fallback copy instead of leaking raw strings like `Load failed`.
 
 ## Vote History Contract
 

@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.3.2`
+- Current released version: `1.3.4`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -72,6 +72,7 @@ Main files:
 - Dashboard and mandate analytics cards now use shorter, more direct labels so card copy matches the newer page-intro voice.
 - Route metadata titles now track the same naming grammar as visible page titles, and dashboard detail empty states now use one shared fallback wording family.
 - Navigation and utility buttons now use more consistent microcopy across the EVK flow and voting surfaces.
+- Vote and list-preview error states now normalize raw browser fetch errors into Hungarian user-facing copy.
 
 Main files:
 - `src/components/PageChrome.tsx`

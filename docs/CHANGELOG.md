@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.4 - 2026-03-18
+
+### Fixed
+- Vote and list-preview surfaces no longer leak raw browser fetch errors like `Load failed`; network failures now fall back to Hungarian user-facing error copy.
+
+### Documentation
+- Updated workflow and design-system docs for the normalized error-copy contract.
+
 ## 1.3.3 - 2026-03-18
 
 ### Changed

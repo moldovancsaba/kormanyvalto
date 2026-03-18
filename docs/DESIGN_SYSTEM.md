@@ -171,6 +171,7 @@ Non-negotiable rules:
 - no stalled `szavaztál` state
 - no flash color that conflicts with the intended red danger-button design
 - degraded-state vote messaging should stay inline on the same screen and include a clear retry action when data refresh fails
+- degraded-state copy must stay in the app's Hungarian UI voice even when the browser throws a native English fetch error
 
 ## Governance
 

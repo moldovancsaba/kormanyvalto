@@ -21,6 +21,23 @@ type ListVotePreviewCardProps = {
   initialData: ListVotePreviewData;
 };
 
+function toUserFacingErrorMessage(error: unknown, fallback: string) {
+  if (!(error instanceof Error)) {
+    return fallback;
+  }
+
+  const message = error.message.trim();
+  if (!message) {
+    return fallback;
+  }
+
+  if (message === "Load failed" || message === "Failed to fetch") {
+    return fallback;
+  }
+
+  return message;
+}
+
 export function ListVotePreviewCard({ initialData }: ListVotePreviewCardProps) {
   const [data, setData] = useState<ListVotePreviewData>(initialData);
   const [error, setError] = useState<string | null>(null);
@@ -113,7 +130,7 @@ export function ListVotePreviewCard({ initialData }: ListVotePreviewCardProps) {
 
       await refresh();
     } catch (voteError) {
-      setError(voteError instanceof Error ? voteError.message : "Nem sikerült menteni a szavazatot.");
+      setError(toUserFacingErrorMessage(voteError, "Nem sikerült menteni a szavazatot."));
     } finally {
       setSubmitting(false);
     }
