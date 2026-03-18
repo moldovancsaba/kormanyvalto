@@ -56,6 +56,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
   const [auth, setAuth] = useState<AuthState>(defaultAuthState);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [flashVote, setFlashVote] = useState<"yes" | "no" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cooldownLeft, setCooldownLeft] = useState(0);
   const [returnTo, setReturnTo] = useState("/");
@@ -245,6 +246,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
 
     setSubmitting(true);
     setError(null);
+    setFlashVote(type);
 
     try {
       const res = await fetch("/api/vote", {
@@ -271,11 +273,20 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
         }
       }
     } catch (voteError) {
+      setFlashVote(null);
       setError(voteError instanceof Error ? voteError.message : "Nem sikerült menteni a szavazatot.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (!flashVote) return;
+    const timer = window.setTimeout(() => {
+      setFlashVote(null);
+    }, 720);
+    return () => window.clearTimeout(timer);
+  }, [flashVote]);
 
   const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
   const logoutHref = `/api/auth/logout?returnTo=${encodeURIComponent(returnTo)}`;
@@ -325,7 +336,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
 
       <div className="buttons" aria-label="Válasz gombok">
         <button
-          className="vote-btn vote-btn-yes"
+          className={`vote-btn vote-btn-yes${flashVote === "yes" ? " vote-btn-flash vote-btn-flash-yes" : ""}`}
           type="button"
           onClick={() => addClick("yes")}
           disabled={submitting || loading || cooldownLeft > 0}
@@ -333,7 +344,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
           {cooldownLeft > 0 ? `igen${voteSuffix} (${cooldownLeft.toFixed(1)}s)` : `igen${voteSuffix}`}
         </button>
         <button
-          className="vote-btn vote-btn-no"
+          className={`vote-btn vote-btn-no${flashVote === "no" ? " vote-btn-flash vote-btn-flash-no" : ""}`}
           type="button"
           onClick={() => addClick("no")}
           disabled={submitting || loading || cooldownLeft > 0}
