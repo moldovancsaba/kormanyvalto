@@ -23,7 +23,7 @@ export default async function DashboardBiztosBastyakPage() {
       <CityRankingCard
         title="Biztos bástyák"
         subtitle="Teljes lista a legnagyobb különbséggel vezető EVK-k 20%-ából."
-        emptyText="Nincs még elég EVK adat a biztos bástyák listához."
+        emptyText="Még nincs elég EVK adat ehhez a listához."
         items={items}
         mode="strongest"
       />

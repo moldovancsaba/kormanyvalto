@@ -23,7 +23,7 @@ export default async function DashboardKiegyensulyozottVarmegyekPage() {
       <CountyRankingCard
         title="Kiegyensúlyozott vármegyék"
         subtitle="Teljes lista ugyanabban a sorrendben, mint a dashboard blokk."
-        emptyText="Nincs még kiegyensúlyozott vármegyei adat."
+        emptyText="Még nincs elég vármegyei adat ehhez a listához."
         items={items}
         mode="balance"
       />

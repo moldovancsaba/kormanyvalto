@@ -123,6 +123,7 @@ Contract:
 - intro structure should be eyebrow -> title -> short orientation copy where appropriate
 - national voting, dashboard pages, dashboard detail pages, county navigation pages, mandate analytics, preview pages, and legal pages should reuse the same intro family
 - when a route supplies the page intro, embedded cards or list clients should not render another page-level `h1`
+- metadata/browser titles should track the same naming grammar as the visible route title
 
 ### Dashboard cards
 
@@ -149,6 +150,7 @@ Contract:
 - bloc-list routes should let the route-level intro own page orientation and keep the list client focused on card/grid rendering
 - preview dashboard routes should keep the same language and label grammar as production dashboard routes instead of mixing in standalone prototype naming
 - dashboard and mandate cards should use short, direct labels that match the product voice established by page intros instead of older report-style phrasing
+- related empty states should reuse one concise wording family when they describe the same missing-data condition
 
 ## Vote Interaction Visual Contract
 

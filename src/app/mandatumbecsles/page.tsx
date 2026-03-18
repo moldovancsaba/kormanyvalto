@@ -13,8 +13,8 @@ import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMet
 export const revalidate = 120;
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Váltani akarsz?",
-  description: "Mandátumbecslés",
+  title: "Parlamenti patkó",
+  description: "Mandátumbecslés két nézettel a mostani és lezárt állás összevetéséhez.",
   path: "/mandatumbecsles",
   socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
 });

@@ -23,7 +23,7 @@ export default async function DashboardHaborusOvezetekPage() {
       <CityRankingCard
         title="Háborús övezetek"
         subtitle="Teljes lista a legmagasabb aktivitású EVK-k 20%-ából."
-        emptyText="Nincs még elég EVK adat a háborús övezetek listához."
+        emptyText="Még nincs elég EVK adat ehhez a listához."
         items={items}
         mode="activity-high"
       />

@@ -18,6 +18,7 @@ If code changes the runtime user journey, update this file in the same change-se
 - Major pages should establish local context immediately with a visible page title and short orientation copy.
 - Route-level page intros own the page title hierarchy; embedded cards and infinite-scroll list components must not reintroduce a second page-level heading above the content they render.
 - Route-scoped vote pages should supply their own local intro/context and disable the national default heading inside `VoteWidget`.
+- Route metadata titles should match the visible page-title language closely enough that browser/tab titles do not contradict the on-page heading.
 
 ## Primary Journeys
 
@@ -198,3 +199,4 @@ Rules:
 - If dashboard ranking metrics fail, pages should still render their surrounding shell with empty ranking states rather than crash.
 - `/dashboard-preview` should keep the same Hungarian page-title and card-label grammar as production dashboard routes; preview status belongs in route context, not repeated English or `(preview)` suffixes on every card.
 - Dashboard and mandate analytics labels should prefer short, direct state names over report-style wording so card copy matches the newer page-intro tone.
+- Comparable dashboard empty states should reuse the same fallback wording family instead of route-by-route phrasing drift.

@@ -23,7 +23,7 @@ export default async function DashboardCsataterekPage() {
       <CityRankingCard
         title="Csataterek"
         subtitle="Teljes lista a legszorosabb EVK-k 20%-ából."
-        emptyText="Nincs még elég EVK adat a csatatér listához."
+        emptyText="Még nincs elég EVK adat ehhez a listához."
         items={items}
         mode="closest"
       />

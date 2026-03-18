@@ -9,7 +9,7 @@ export const revalidate = 120;
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "A béke szigetei",
+  title: "Béke szigetei",
   description: "A legalacsonyabb aktivitású EVK-k teljes listája, a legalacsonyabb 20%-ból.",
   path: "/dashboard/beke-szigetei",
   socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
@@ -19,11 +19,11 @@ export default async function DashboardBekeSzigeteiPage() {
   const items = await getPeaceIslandDetailItems().catch(() => []);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
-      <PageIntro eyebrow="Grafikon" title="A béke szigetei" intro="A legalacsonyabb aktivitású EVK-k teljes listája." />
+      <PageIntro eyebrow="Grafikon" title="Béke szigetei" intro="A legalacsonyabb aktivitású EVK-k teljes listája." />
       <CityRankingCard
-        title="A béke szigetei"
+        title="Béke szigetei"
         subtitle="Teljes lista a legalacsonyabb aktivitású EVK-k 20%-ából."
-        emptyText="Nincs még elég EVK adat a béke szigetei listához."
+        emptyText="Még nincs elég EVK adat ehhez a listához."
         items={items}
         mode="activity-low"
       />

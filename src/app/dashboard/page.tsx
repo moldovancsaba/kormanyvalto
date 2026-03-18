@@ -193,7 +193,7 @@ export default async function DashboardPage() {
             </Link>
           }
           subtitle="A legkisebb különbségű EVK-k, ahol minden szavazat számít."
-          emptyText="Nincs még elég EVK adat a csatatér listához."
+          emptyText="Még nincs elég EVK adat ehhez a listához."
           items={closestBattlegrounds}
           mode="closest"
         />
@@ -217,7 +217,7 @@ export default async function DashboardPage() {
             </Link>
           }
           subtitle="Az EVK-k, ahol a helyi arány a legközelebb áll az aktuális országos arányhoz."
-          emptyText="Nincs még elég adat az előrejelző kártyákhoz."
+          emptyText="Még nincs elég EVK adat ehhez a listához."
           items={indicatorCities}
           mode="indicator"
         />
@@ -237,7 +237,7 @@ export default async function DashboardPage() {
             </Link>
           }
           subtitle="A legszorosabb vármegyei állások."
-          emptyText="Nincs még kiegyensúlyozott vármegyei adat."
+          emptyText="Még nincs elég vármegyei adat ehhez a listához."
           items={balancedCounties}
           mode="balance"
         />
@@ -261,7 +261,7 @@ export default async function DashboardPage() {
             </Link>
           }
           subtitle="A legnagyobb különbséggel vezető EVK-k."
-          emptyText="Nincs még elég EVK adat a bástya listához."
+          emptyText="Még nincs elég EVK adat ehhez a listához."
           items={strongestBastions}
           mode="strongest"
         />

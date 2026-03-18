@@ -26,7 +26,7 @@ export default async function DashboardElorejelzoVarosokPage() {
       <CityRankingCard
         title="Előrejelző városok"
         subtitle="Teljes lista az országos arányhoz 20 százalékponton belül álló EVK-król."
-        emptyText="Nincs még elég adat az előrejelző városok listához."
+        emptyText="Még nincs elég EVK adat ehhez a listához."
         items={items}
         mode="indicator"
         nationalYesPercent={nationalYesPercent}

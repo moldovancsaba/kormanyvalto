@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.3.0`
+- Current released version: `1.3.1`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -70,6 +70,7 @@ Main files:
 - The national home vote page now uses the same shared page-intro ownership model instead of relying on widget-owned heading copy.
 - `/dashboard-preview` now uses the same Hungarian page and card naming grammar as the production dashboard, with preview status expressed at the route level.
 - Dashboard and mandate analytics cards now use shorter, more direct labels so card copy matches the newer page-intro voice.
+- Route metadata titles now track the same naming grammar as visible page titles, and dashboard detail empty states now use one shared fallback wording family.
 
 Main files:
 - `src/components/PageChrome.tsx`
@@ -78,6 +79,8 @@ Main files:
 - `src/app/dashboard-preview/page.tsx`
 - `src/app/dashboard/page.tsx`
 - `src/app/mandatumbecsles/page.tsx`
+- `src/app/dashboard/*/page.tsx`
+- `src/app/ogy2026/egyeni-valasztokeruletek/page.tsx`
 - `src/components/CityBlocGridClient.tsx`
 - `src/app/globals.css`
 - `docs/WORKFLOWS.md`

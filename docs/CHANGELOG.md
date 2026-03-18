@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.1 - 2026-03-18
+
+### Changed
+- Aligned remaining route metadata titles with the visible page-title grammar.
+- Normalized dashboard detail empty states onto a shared concise missing-data wording style.
+- Renamed the `Béke szigetei` route/title family consistently across metadata and page copy.
+
+### Documentation
+- Updated workflow, design-system, and handover docs for metadata-title and empty-state consistency.
+
 ## 1.3.0 - 2026-03-18
 
 ### Changed
