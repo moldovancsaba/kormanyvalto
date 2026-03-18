@@ -68,6 +68,17 @@ Implementation:
 - `src/components/PageChrome.tsx`
 - `src/components/CountyHeroMap.tsx`
 
+### Shared route loading contract
+
+- Route transitions use a branded full-page loading screen.
+- The loader uses the existing yes/no/neutral palette.
+- The loader must respect reduced-motion preferences.
+
+Implementation:
+- `src/components/AppLoader.tsx`
+- `src/app/loading.tsx`
+- `src/app/globals.css`
+
 ### Primary EVK nav label
 
 - Shared label: `⚠ EVK 2026 ⚠`

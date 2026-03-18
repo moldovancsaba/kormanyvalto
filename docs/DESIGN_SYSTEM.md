@@ -125,6 +125,19 @@ Contract:
 - when a route supplies the page intro, embedded cards or list clients should not render another page-level `h1`
 - metadata/browser titles should track the same naming grammar as the visible route title
 
+### Route loading screen
+
+Implementation:
+- `src/components/AppLoader.tsx`
+- `src/app/loading.tsx`
+- `src/app/globals.css`
+
+Contract:
+- route loading should show a branded full-page loader instead of a blank white transition
+- loader motion should use the app's existing yes/no/neutral palette, not unrelated colors
+- loading copy should stay short and in Hungarian
+- loader animation must respect reduced-motion preferences
+
 ### Dashboard cards
 
 Shared implementations:

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.5 - 2026-03-18
+
+### Added
+- Added a shared App Router loading screen with branded animated bars so route transitions show a visible loading state instead of a blank page.
+
+### Documentation
+- Updated workflow and design-system docs for the shared route-loading contract.
+
 ## 1.3.4 - 2026-03-18
 
 ### Fixed

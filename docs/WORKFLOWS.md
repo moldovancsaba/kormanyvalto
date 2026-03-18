@@ -36,6 +36,7 @@ Flow:
 6. Immediate feedback appears before the vote request completes.
 7. Cooldown state appears after the success flash.
 8. Results and history update from the accepted response.
+9. While route content is still streaming, a shared branded loading screen appears instead of a blank page.
 
 Implementation:
 - `src/components/VoteWidget.tsx`
@@ -80,6 +81,7 @@ Flow:
 3. A shared page intro establishes the county -> EVK identity stack directly under the hero and action row.
 4. Vote interaction uses the same state machine as the national page.
 5. User can navigate back to county context, the full county list, or source data without losing orientation.
+6. While route content is still streaming, the shared branded loading screen stays visible.
 
 Implementation:
 - `src/app/ogy2026/egyeni-valasztokeruletek/[maz]/[evk]/page.tsx`

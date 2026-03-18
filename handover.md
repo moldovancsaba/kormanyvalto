@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.3.4`
+- Current released version: `1.3.5`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -73,8 +73,11 @@ Main files:
 - Route metadata titles now track the same naming grammar as visible page titles, and dashboard detail empty states now use one shared fallback wording family.
 - Navigation and utility buttons now use more consistent microcopy across the EVK flow and voting surfaces.
 - Vote and list-preview error states now normalize raw browser fetch errors into Hungarian user-facing copy.
+- Route transitions now show a shared branded loading screen instead of a blank page.
 
 Main files:
+- `src/components/AppLoader.tsx`
+- `src/app/loading.tsx`
 - `src/components/PageChrome.tsx`
 - `src/components/VoteWidget.tsx`
 - `src/app/page.tsx`
