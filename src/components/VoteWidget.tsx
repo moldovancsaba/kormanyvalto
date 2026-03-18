@@ -130,6 +130,27 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
   };
 
   useEffect(() => {
+    const warmVoteAction = async () => {
+      try {
+        await fetch(`/api/vote?scope=${encodeURIComponent(scope)}`, {
+          method: "HEAD",
+          cache: "no-store",
+        });
+      } catch {
+        // Ignore warmup errors.
+      }
+    };
+
+    const idle = window.setTimeout(() => {
+      void warmVoteAction();
+    }, 250);
+
+    return () => {
+      window.clearTimeout(idle);
+    };
+  }, [scope]);
+
+  useEffect(() => {
     setReturnTo(window.location.pathname + window.location.search + window.location.hash);
 
     const authError = new URLSearchParams(window.location.search).get("authError");
@@ -247,6 +268,11 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
     setSubmitting(true);
     setError(null);
     setFlashVote(type);
+    await new Promise<void>((resolve) => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => resolve());
+      });
+    });
 
     try {
       const res = await fetch("/api/vote", {
