@@ -52,6 +52,9 @@ Flow:
 4. Selecting a county opens a county context page that explains the next step and lists the EVK choices.
 5. Selecting an EVK opens the vote page for that constituency.
 
+Navigation label:
+- shared primary-nav button text: `⚠ EVK 2026 ⚠`
+
 Implementation:
 - `src/components/CountyHeroMap.tsx`
 - `src/components/PageChrome.tsx`

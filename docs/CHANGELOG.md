@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.4 - 2026-03-18
+
+### Changed
+- Renamed the shared EVK primary navigation label to `⚠ EVK 2026 ⚠`.
+
+### Documentation
+- Updated the workflow and handover docs to reflect the shared EVK nav label.
+
 ## 1.2.3 - 2026-03-18
 
 ### Changed

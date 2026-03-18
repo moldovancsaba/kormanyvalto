@@ -68,6 +68,11 @@ Implementation:
 - `src/components/PageChrome.tsx`
 - `src/components/CountyHeroMap.tsx`
 
+### Primary EVK nav label
+
+- Shared label: `⚠ EVK 2026 ⚠`
+- Implementation: `src/lib/navigation.ts`
+
 ### Dashboard builder contract
 
 - Shared ranking builder layer: `src/lib/dashboardDetailData.ts`

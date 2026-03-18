@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.2.3`
+- Current released version: `1.2.4`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -59,14 +59,12 @@ Main files:
 - `docs/DEVELOPMENT.md`
 - `README.md`
 
-### 3x card consistency cleanup
+### EVK navigation label update
 
-- The recent 3x VOTE states now use a more consistent card grammar across active, available, and unavailable variants.
-- Anonymous fallback and trust boundaries remain explicit, but the visual voice is more uniform.
+- The shared primary navigation label for the constituency flow is now `⚠ EVK 2026 ⚠`.
 
 Main files:
-- `src/components/VoteWidget.tsx`
-- `src/app/globals.css`
+- `src/lib/navigation.ts`
 - `docs/WORKFLOWS.md`
 
 ## Short Roadmap
