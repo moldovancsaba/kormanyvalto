@@ -4,7 +4,7 @@ import { addVote, type VoteType } from "../../../lib/results";
 import { isTrustedOrigin, NO_CACHE_HEADERS } from "../../../lib/http";
 import { checkRateLimit } from "../../../lib/rateLimit";
 import { ANON_VOTER_COOKIE, shouldUseSecureCookies } from "../../../lib/auth";
-import { getCooldownSec, getVoteActor, reserveVoteSlot, withAdjustedCooldown } from "../../../lib/voteEngine";
+import { getCooldownSec, getNextCooldownSec, getVoteActor, reserveVoteSlot, withAdjustedCooldown } from "../../../lib/voteEngine";
 import { normalizeScope } from "../../../lib/requestValidation";
 
 export async function HEAD(req: NextRequest) {
@@ -12,6 +12,7 @@ export async function HEAD(req: NextRequest) {
     const scope = normalizeScope(new URL(req.url).searchParams.get("scope")) || "main";
     const actor = await getVoteActor(req);
     const cooldownSec = await getCooldownSec(actor.actorId, scope);
+    const nextCooldownSec = await getNextCooldownSec(actor.actorId, scope, actor.cooldownStep);
 
     return new NextResponse(null, {
       status: 204,
@@ -19,6 +20,7 @@ export async function HEAD(req: NextRequest) {
         ...NO_CACHE_HEADERS,
         "X-Warmup": "vote",
         "X-Cooldown-Sec": String(cooldownSec),
+        "X-Next-Cooldown-Sec": String(nextCooldownSec),
       },
     });
   } catch {

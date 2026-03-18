@@ -125,6 +125,13 @@ export async function getCooldownSec(actorId: string, scope: string) {
   return remainingMs > 0 ? Number((remainingMs / 1000).toFixed(1)) : 0;
 }
 
+export async function getNextCooldownSec(actorId: string, scope: string, cooldownStep: number) {
+  const collection = await getVoteSessionCollection();
+  const session = await collection.findOne({ _id: `${actorId}:${scope}` });
+  const voteCount = session?.voteCount ?? 0;
+  return Number((1 + voteCount * cooldownStep).toFixed(1));
+}
+
 export async function reserveVoteSlot(actor: VoteActor, scope: string) {
   const collection = await getVoteSessionCollection();
   const key = `${actor.actorId}:${scope}`;

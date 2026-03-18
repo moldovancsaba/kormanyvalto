@@ -59,6 +59,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
   const [flashVote, setFlashVote] = useState<"yes" | "no" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cooldownLeft, setCooldownLeft] = useState(0);
+  const [nextCooldownSec, setNextCooldownSec] = useState(1);
   const [returnTo, setReturnTo] = useState("/");
   const yesCount = data.yesCount;
   const noCount = data.noCount;
@@ -68,6 +69,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
   const marginVotes = Math.abs(yesCount - noCount);
   const marginPercent = totalCount === 0 ? 0 : (marginVotes / totalCount) * 100;
   const cooldownStorageKey = `kv-cooldown-until:${scope}`;
+  const voteCooldownStep = auth.authenticated ? 0.2 : 1;
   const mergedVotes = useMemo(
     () =>
       (data.history || []).slice(0, 20).map((item) => ({
@@ -129,13 +131,26 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
     setCooldownLeft(normalized);
   };
 
+  const clearCooldown = () => {
+    setCooldownLeft(0);
+    try {
+      localStorage.removeItem(cooldownStorageKey);
+    } catch {
+      // ignore localStorage errors
+    }
+  };
+
   useEffect(() => {
     const warmVoteAction = async () => {
       try {
-        await fetch(`/api/vote?scope=${encodeURIComponent(scope)}`, {
+        const response = await fetch(`/api/vote?scope=${encodeURIComponent(scope)}`, {
           method: "HEAD",
           cache: "no-store",
         });
+        const headerValue = Number(response.headers.get("X-Next-Cooldown-Sec"));
+        if (!Number.isNaN(headerValue) && headerValue > 0) {
+          setNextCooldownSec(headerValue);
+        }
       } catch {
         // Ignore warmup errors.
       }
@@ -268,6 +283,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
     setSubmitting(true);
     setError(null);
     setFlashVote(type);
+    applyCooldown(nextCooldownSec);
     await new Promise<void>((resolve) => {
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => resolve());
@@ -290,15 +306,21 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
       }
 
       if (aggregateMain) {
+        if (typeof payload?.cooldownSec === "number") {
+          applyCooldown(payload.cooldownSec);
+          setNextCooldownSec(Number((payload.cooldownSec + voteCooldownStep).toFixed(1)));
+        }
         await reloadResults();
       } else {
         const next = payload as ClickStore;
         setData(next);
         if (typeof next.cooldownSec === "number") {
           applyCooldown(next.cooldownSec);
+          setNextCooldownSec(Number((next.cooldownSec + voteCooldownStep).toFixed(1)));
         }
       }
     } catch (voteError) {
+      clearCooldown();
       setFlashVote(null);
       setError(voteError instanceof Error ? voteError.message : "Nem sikerült menteni a szavazatot.");
     } finally {
