@@ -90,6 +90,7 @@ Reusable dashboard visual components:
 
 Preview data builder:
 - `src/lib/dashboardPreviewData.ts`
+- shared ranking builder layer: `src/lib/dashboardDetailData.ts`
 
 ## Vote Interaction Architecture
 
@@ -106,6 +107,21 @@ Behavior summary:
 - POST response reconciles optimistic state with server truth,
 - flash state transitions into countdown state without a plain-label gap,
 - vote path should degrade gracefully if non-essential protection sidecars fail.
+
+## Dashboard Data Builder Contract
+
+Current shared ranking builder layer:
+- `src/lib/dashboardDetailData.ts`
+
+Responsibilities:
+- county-enriched city ranking assembly,
+- balanced county aggregation,
+- top dashboard ranking slices reused by production dashboard and preview,
+- development-time county identity assertions.
+
+Current direction:
+- `/dashboard` and `/dashboard-preview` should share ranking-builder contracts,
+- preview should only own metrics that are genuinely preview-specific.
 
 ## Authentication / 3x Voting Mode
 

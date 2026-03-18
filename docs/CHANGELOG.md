@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.5 - 2026-03-18
+
+### Changed
+- Unified `/dashboard` and `/dashboard-preview` ranking assembly around the shared builder layer in `src/lib/dashboardDetailData.ts`.
+- Added development-time county identity integrity assertions for dashboard ranking payloads.
+
+### Documentation
+- Updated architecture, development, and dashboard consistency planning docs to reflect the shared builder layer and current roadmap state.
+
 ## 1.1.4 - 2026-03-18
 
 ### Added

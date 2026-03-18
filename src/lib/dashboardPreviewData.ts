@@ -1,7 +1,7 @@
 import { constituencies, getCounties } from "./constituencies";
+import { getBalancedCountyDetailItems, getDashboardTopMetrics } from "./dashboardDetailData";
 import { getMatrixStatus } from "./matrixStatus";
-import { getDashboardCityStats, getDashboardSummary, getLeadBlocFromCounts, getParliamentEstimate, getScopeVoteCounts } from "./results";
-import { getCountyCodeFromConstituencyHref, getCountyHrefFromConstituencyHref } from "./territoryPaths";
+import { getDashboardSummary, getLeadBlocFromCounts, getParliamentEstimate, getScopeVoteCounts } from "./results";
 
 export type LeadOverviewMetric = {
   totalWeightedVotes: number;
@@ -143,11 +143,12 @@ function toPercent(part: number, total: number): number {
 
 export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetrics> {
   const districtScopes = constituencies.map((constituency) => `ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`);
-  const [summary, districtCounts, cityStats, projection] = await Promise.all([
+  const [summary, districtCounts, projection, dashboardTopMetrics, balancedCountyItems] = await Promise.all([
     getDashboardSummary(),
     getScopeVoteCounts(districtScopes),
-    getDashboardCityStats(),
     getParliamentEstimate("projection"),
+    getDashboardTopMetrics(),
+    getBalancedCountyDetailItems(),
   ]);
 
   const totalWeightedVotes = summary.weightedYes + summary.weightedNo;
@@ -189,46 +190,9 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     hasNationalVotes: summary.totalVoteEvents > 0,
   };
 
-  const votedCities = cityStats.filter((item) => item.total > 0);
-  const countyLeadByCode = new Map<string, "yes" | "no" | "neutral">();
-  for (const county of counties) {
-    const countyCities = votedCities.filter((item) => getCountyCodeFromConstituencyHref(item.href) === county.maz);
-    const countyYes = countyCities.reduce((acc, item) => acc + item.yes, 0);
-    const countyNo = countyCities.reduce((acc, item) => acc + item.no, 0);
-    countyLeadByCode.set(county.maz, getLeadBlocFromCounts(countyYes, countyNo));
-  }
-  const topClosestCities = [...votedCities]
-    .sort((left, right) => Math.abs(left.diffPercent) - Math.abs(right.diffPercent) || right.total - left.total)
-    .slice(0, 5)
-    .map((item) => ({
-      countyCode: getCountyCodeFromConstituencyHref(item.href),
-      countyHref: getCountyHrefFromConstituencyHref(item.href),
-      countyLeadBloc: countyLeadByCode.get(getCountyCodeFromConstituencyHref(item.href)) ?? "neutral",
-      city: item.city,
-      county: item.county,
-      districtLabel: item.districtLabel,
-      href: item.href,
-      totalVotes: item.total,
-      marginPercent: item.diffPercent,
-      leadBloc: item.leadBloc,
-    }));
-
-  const topStrongestCities = [...votedCities]
-    .sort((left, right) => Math.abs(right.diffPercent) - Math.abs(left.diffPercent) || right.total - left.total)
-    .slice(0, 5)
-    .map((item) => ({
-      countyCode: getCountyCodeFromConstituencyHref(item.href),
-      countyHref: getCountyHrefFromConstituencyHref(item.href),
-      countyLeadBloc: countyLeadByCode.get(getCountyCodeFromConstituencyHref(item.href)) ?? "neutral",
-      city: item.city,
-      county: item.county,
-      districtLabel: item.districtLabel,
-      href: item.href,
-      totalVotes: item.total,
-      marginPercent: item.diffPercent,
-      leadBloc: item.leadBloc,
-    }));
-
+  // Preview keeps ownership of coverage/list-vote preview metrics, but ranking
+  // sections should reuse the shared dashboard builder contracts so preview
+  // cannot silently drift from production ordering or county identity logic.
   const countyAggregateList = counties.map((county) => {
     const countyConstituencies = constituencies.filter((constituency) => constituency.maz === county.maz);
     let yesVotes = 0;
@@ -255,15 +219,16 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     .filter((item) => item.totalVotes > 0)
     .sort((left, right) => right.totalVotes - left.totalVotes || left.countyName.localeCompare(right.countyName, "hu"))
     .slice(0, 5);
+  const topBalancedCounties = balancedCountyItems.slice(0, 5).map((item) => ({
+    countyName: item.countyName,
+    countyCode: item.countyCode,
+    href: item.href,
+    totalVotes: item.totalVotes,
+    marginPercent: item.marginPercent,
+    leadBloc: item.leadBloc,
+  }));
 
-  const topBalancedCounties = [...countyAggregateList]
-    .filter((item) => item.totalVotes > 0)
-    .sort((left, right) => Math.abs(left.marginPercent) - Math.abs(right.marginPercent) || right.totalVotes - left.totalVotes)
-    .slice(0, 5);
-
-  const topWarZones = [...votedCities]
-    .sort((left, right) => right.total - left.total || left.city.localeCompare(right.city, "hu"))
-    .slice(0, 5)
+  const topWarZones = dashboardTopMetrics.warZone
     .map((item) => ({
       city: item.city,
       county: item.county,
@@ -275,9 +240,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
       leadBloc: item.leadBloc,
     }));
 
-  const topPeaceIslands = [...votedCities]
-    .sort((left, right) => left.total - right.total || left.city.localeCompare(right.city, "hu"))
-    .slice(0, 5)
+  const topPeaceIslands = dashboardTopMetrics.peaceIslands
     .map((item) => ({
       city: item.city,
       county: item.county,
@@ -289,10 +252,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
       leadBloc: item.leadBloc,
     }));
 
-  const topYesCities = [...votedCities]
-    .filter((item) => item.leadBloc === "yes")
-    .sort((left, right) => right.diff - left.diff || right.total - left.total)
-    .slice(0, 5)
+  const topYesCities = dashboardTopMetrics.yesCities
     .map((item) => ({
       city: item.city,
       county: item.county,
@@ -304,10 +264,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
       leadBloc: item.leadBloc,
     }));
 
-  const topNoCities = [...votedCities]
-    .filter((item) => item.leadBloc === "no")
-    .sort((left, right) => left.diff - right.diff || right.total - left.total)
-    .slice(0, 5)
+  const topNoCities = dashboardTopMetrics.noCities
     .map((item) => ({
       city: item.city,
       county: item.county,
@@ -319,9 +276,7 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
       leadBloc: item.leadBloc,
     }));
 
-  const topUncertainCities = [...votedCities]
-    .sort((left, right) => Math.abs(left.diffPercent) - Math.abs(right.diffPercent) || right.total - left.total)
-    .slice(0, 5)
+  const topUncertainCities = dashboardTopMetrics.nobodyKnows
     .map((item) => ({
       city: item.city,
       county: item.county,
@@ -333,28 +288,23 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
       leadBloc: item.leadBloc,
     }));
 
-  const topIndicatorCities = [...votedCities]
-    .map((item) => {
-      const countyCode = getCountyCodeFromConstituencyHref(item.href);
-      const cityYesPercent = item.total > 0 ? (item.yes / item.total) * 100 : 50;
-      return {
-        city: item.city,
-        county: item.county,
-        countyCode,
-        countyHref: getCountyHrefFromConstituencyHref(item.href),
-        countyLeadBloc: countyLeadByCode.get(countyCode) ?? "neutral",
-        districtLabel: item.districtLabel,
-        href: item.href,
-        totalVotes: item.total,
-        marginPercent: item.diffPercent,
-        diff: item.diff,
-        diffPercent: item.diffPercent,
-        leadBloc: item.leadBloc,
-        indicatorDistance: Math.abs(cityYesPercent - nationalYesPercent),
-      };
-    })
-    .sort((left, right) => left.indicatorDistance - right.indicatorDistance || right.totalVotes - left.totalVotes)
-    .slice(0, 5);
+  const topClosestCities = dashboardTopMetrics.closestBattlegrounds.slice(0, 5);
+  const topStrongestCities = dashboardTopMetrics.strongestBastions.slice(0, 5);
+  const topIndicatorCities = dashboardTopMetrics.indicatorCities.slice(0, 5).map((item) => ({
+    city: item.city,
+    county: item.county,
+    countyCode: item.countyCode,
+    countyHref: item.countyHref,
+    countyLeadBloc: item.countyLeadBloc,
+    districtLabel: item.districtLabel,
+    href: item.href,
+    totalVotes: item.totalVotes,
+    marginPercent: item.marginPercent,
+    diff: item.diff,
+    diffPercent: item.marginPercent,
+    leadBloc: item.leadBloc,
+    indicatorDistance: item.indicatorDistance ?? Math.abs((item.totalVotes > 0 ? (item.yes / (item.yes + item.no)) * 100 : 50) - dashboardTopMetrics.nationalYesPercent),
+  }));
 
   return {
     leadOverview,

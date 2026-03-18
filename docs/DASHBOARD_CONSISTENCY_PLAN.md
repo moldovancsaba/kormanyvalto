@@ -8,7 +8,7 @@ Eliminate dashboard inconsistencies by enforcing one canonical county identity a
 
 ## Phase 1. Canonical Identity Layer
 
-Status: partially complete
+Status: complete in active code
 
 Tasks:
 - keep `src/lib/territoryPaths.ts` as the only path parser,
@@ -25,6 +25,8 @@ Rule:
 
 ## Phase 2. Shared Dashboard Card Builders
 
+Status: substantially complete
+
 Tasks:
 - extract county-enriched city-card builder from route files,
 - extract county-card builder from route files,
@@ -37,6 +39,8 @@ Benefits:
 - less route-level duplication.
 
 ## Phase 3. Integrity Assertions
+
+Status: started
 
 Tasks:
 - add runtime assertions in dev/build paths for dashboard card payloads,
@@ -73,7 +77,7 @@ Tasks:
 
 ## Immediate Next Steps
 
-1. Extract shared county-enriched dashboard item builders.
-2. Add integrity assertions for county identity consistency.
-3. Remove remaining route-local county aggregation duplication.
+1. Add automated regression tests for dashboard county identity and ranking outputs.
+2. Reduce remaining preview-only assembly to preview-specific metrics only.
+3. Tighten renderer contracts to rely on one canonical county identity path.
 4. Run another full dashboard consistency sweep and update this report.

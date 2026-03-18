@@ -6,17 +6,14 @@ import { CityRankingCard } from "../../components/dashboard/CityRankingCard";
 import { CountyRankingCard } from "../../components/dashboard/CountyRankingCard";
 import { KpiCard } from "../../components/dashboard/KpiCard";
 import { PieCard } from "../../components/dashboard/PieCard";
-import { constituencies } from "../../lib/constituencies";
+import { CountyBalanceDetailItem, CityRankingDetailItem, getDashboardTopMetrics } from "../../lib/dashboardDetailData";
 import { getSectionNavItems } from "../../lib/navigation";
 import { formatNumber } from "../../lib/numberFormat";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMetadata";
-import { getCountyCodeFromConstituencyHref, getCountyHrefFromConstituencyHref } from "../../lib/territoryPaths";
 import {
   CityVoteStat,
   DashboardSummary,
-  getDashboardCityStats,
   getDashboardSummary,
-  getLeadBlocFromCounts,
 } from "../../lib/results";
 
 export const revalidate = 120;
@@ -100,7 +97,15 @@ function ChartCard({ title, ariaLabel, subtitle, tone, items, valueLabel, valueF
 }
 
 export default async function DashboardPage() {
-  let stats: CityVoteStat[] = [];
+  let warZone: CityVoteStat[] = [];
+  let peaceIslands: CityVoteStat[] = [];
+  let yesCities: CityVoteStat[] = [];
+  let noCities: CityVoteStat[] = [];
+  let nobodyKnows: CityVoteStat[] = [];
+  let closestBattlegrounds: CityRankingDetailItem[] = [];
+  let strongestBastions: CityRankingDetailItem[] = [];
+  let indicatorCities: CityRankingDetailItem[] = [];
+  let balancedCounties: CountyBalanceDetailItem[] = [];
   let summary: DashboardSummary = {
     totalWeightedVotes: 0,
     totalVoteEvents: 0,
@@ -113,14 +118,30 @@ export default async function DashboardPage() {
     regularVoteEvents: 0,
   };
   try {
-    const [cityStats, summaryStats] = await Promise.all([
-      getDashboardCityStats(),
+    const [dashboardTopMetrics, summaryStats] = await Promise.all([
+      getDashboardTopMetrics(),
       getDashboardSummary(),
     ]);
-    stats = cityStats;
+    warZone = dashboardTopMetrics.warZone;
+    peaceIslands = dashboardTopMetrics.peaceIslands;
+    yesCities = dashboardTopMetrics.yesCities;
+    noCities = dashboardTopMetrics.noCities;
+    nobodyKnows = dashboardTopMetrics.nobodyKnows;
+    closestBattlegrounds = dashboardTopMetrics.closestBattlegrounds;
+    strongestBastions = dashboardTopMetrics.strongestBastions;
+    indicatorCities = dashboardTopMetrics.indicatorCities;
+    balancedCounties = dashboardTopMetrics.balancedCounties;
     summary = summaryStats;
   } catch {
-    stats = [];
+    warZone = [];
+    peaceIslands = [];
+    yesCities = [];
+    noCities = [];
+    nobodyKnows = [];
+    closestBattlegrounds = [];
+    strongestBastions = [];
+    indicatorCities = [];
+    balancedCounties = [];
     summary = {
       totalWeightedVotes: 0,
       totalVoteEvents: 0,
@@ -133,119 +154,6 @@ export default async function DashboardPage() {
       regularVoteEvents: 0,
     };
   }
-  const votedCities = stats.filter((item) => item.total > 0);
-
-  const warZone = [...votedCities].sort((a, b) => b.total - a.total || a.city.localeCompare(b.city, "hu")).slice(0, 5);
-  const peaceIslands = [...votedCities].sort((a, b) => a.total - b.total || a.city.localeCompare(b.city, "hu")).slice(0, 5);
-  const yesCities = [...votedCities]
-    .filter((item) => item.leadBloc === "yes")
-    .sort((a, b) => b.diff - a.diff || b.total - a.total)
-    .slice(0, 5);
-  const noCities = [...votedCities]
-    .filter((item) => item.leadBloc === "no")
-    .sort((a, b) => a.diff - b.diff || b.total - a.total)
-    .slice(0, 5);
-  const nobodyKnows = [...votedCities]
-    .sort((a, b) => Math.abs(a.diffPercent) - Math.abs(b.diffPercent) || b.total - a.total)
-    .slice(0, 5);
-  const closestBattlegrounds = [...votedCities]
-    .sort((a, b) => Math.abs(a.diffPercent) - Math.abs(b.diffPercent) || b.total - a.total)
-    .slice(0, 5)
-    .map((item) => {
-      const countyCode = getCountyCodeFromConstituencyHref(item.href);
-      const countyCities = votedCities.filter((city) => getCountyCodeFromConstituencyHref(city.href) === countyCode);
-      const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
-      const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
-      return {
-        countyCode,
-        countyHref: getCountyHrefFromConstituencyHref(item.href),
-        countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
-        city: item.city,
-        county: item.county,
-        districtLabel: item.districtLabel,
-        href: item.href,
-        totalVotes: item.total,
-        marginPercent: item.diffPercent,
-        leadBloc: item.leadBloc,
-      };
-    });
-  const strongestBastions = [...votedCities]
-    .sort((a, b) => Math.abs(b.diffPercent) - Math.abs(a.diffPercent) || b.total - a.total)
-    .slice(0, 5)
-    .map((item) => {
-      const countyCode = getCountyCodeFromConstituencyHref(item.href);
-      const countyCities = votedCities.filter((city) => getCountyCodeFromConstituencyHref(city.href) === countyCode);
-      const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
-      const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
-      return {
-        countyCode,
-        countyHref: getCountyHrefFromConstituencyHref(item.href),
-        countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
-        city: item.city,
-        county: item.county,
-        districtLabel: item.districtLabel,
-        href: item.href,
-        totalVotes: item.total,
-        marginPercent: item.diffPercent,
-        leadBloc: item.leadBloc,
-      };
-    });
-  const nationalYes = votedCities.reduce((sum, item) => sum + item.yes, 0);
-  const nationalNo = votedCities.reduce((sum, item) => sum + item.no, 0);
-  const nationalTotal = nationalYes + nationalNo;
-  const nationalYesPercent = nationalTotal > 0 ? (nationalYes / nationalTotal) * 100 : 50;
-  const indicatorCities = [...votedCities]
-    .map((item) => {
-      const countyCode = getCountyCodeFromConstituencyHref(item.href);
-      const countyCities = votedCities.filter((city) => getCountyCodeFromConstituencyHref(city.href) === countyCode);
-      const countyYes = countyCities.reduce((acc, city) => acc + city.yes, 0);
-      const countyNo = countyCities.reduce((acc, city) => acc + city.no, 0);
-      const cityYesPercent = item.total > 0 ? (item.yes / item.total) * 100 : 50;
-      return {
-        countyCode,
-        countyHref: getCountyHrefFromConstituencyHref(item.href),
-        countyLeadBloc: getLeadBlocFromCounts(countyYes, countyNo),
-        city: item.city,
-        county: item.county,
-        districtLabel: item.districtLabel,
-        href: item.href,
-        totalVotes: item.total,
-        marginPercent: item.diffPercent,
-        indicatorDistance: Math.abs(cityYesPercent - nationalYesPercent),
-        leadBloc: item.leadBloc,
-      };
-    })
-    .sort((a, b) => a.indicatorDistance - b.indicatorDistance || b.totalVotes - a.totalVotes)
-    .slice(0, 5);
-  const countyAggregates = Array.from(
-    votedCities.reduce(
-      (map, item) => {
-        const countyCode = getCountyCodeFromConstituencyHref(item.href);
-        const current = map.get(countyCode) ?? { yes: 0, no: 0, totalVotes: 0, countyName: item.county };
-        current.yes += item.yes;
-        current.no += item.no;
-        current.totalVotes += item.total;
-        map.set(countyCode, current);
-        return map;
-      },
-      new Map<string, { yes: number; no: number; totalVotes: number; countyName: string }>()
-    )
-  ).map(([countyCode, data]) => {
-    const totalVotes = data.yes + data.no;
-    const marginPercent = totalVotes > 0 ? ((data.yes - data.no) / totalVotes) * 100 : 0;
-    return {
-      countyName: data.countyName,
-      countyCode,
-      href: `/ogy2026/egyeni-valasztokeruletek/${countyCode}`,
-      totalVotes: data.totalVotes,
-      marginPercent,
-      leadBloc: getLeadBlocFromCounts(data.yes, data.no),
-    };
-  });
-  const balancedCounties = [...countyAggregates]
-    .filter((item) => item.totalVotes > 0)
-    .sort((left, right) => Math.abs(left.marginPercent) - Math.abs(right.marginPercent) || right.totalVotes - left.totalVotes)
-    .slice(0, 5);
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>

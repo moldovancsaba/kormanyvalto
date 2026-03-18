@@ -8,7 +8,7 @@ Owner: Product
 <p align="center"><strong>Election-style civic game platform for OGY 2026 simulation: országos, vármegyei, and EVK voting with analytics and mandate estimation.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v1.1.4-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.1.5-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>

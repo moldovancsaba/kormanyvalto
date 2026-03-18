@@ -89,6 +89,7 @@ Examples:
 - vote button UX or timing changes
 - hero/map behavior changes
 - dashboard ownership changes
+- dashboard builder-layer ownership changes
 - metadata/share-title changes
 - degraded-mode reliability behavior
 
@@ -102,6 +103,7 @@ Required comment targets:
 - fail-open / degraded-mode paths
 - unusual data contracts
 - cross-file coupling that is not obvious from names alone
+- integrity assertions that are meant to catch drift before UI regressions ship
 
 Avoid:
 - comments that restate the next line
