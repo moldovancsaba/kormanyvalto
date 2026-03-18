@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.2.4`
+- Current released version: `1.2.5`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -59,12 +59,14 @@ Main files:
 - `docs/DEVELOPMENT.md`
 - `README.md`
 
-### EVK navigation label update
+### Shared page-intro rollout
 
-- The shared primary navigation label for the constituency flow is now `⚠ EVK 2026 ⚠`.
+- Major routes now open with a consistent local page intro instead of dropping directly into cards or long legal text.
+- Dashboard detail pages, county navigation pages, and legal pages now share the same intro hierarchy.
 
 Main files:
-- `src/lib/navigation.ts`
+- `src/components/PageChrome.tsx`
+- `src/app/globals.css`
 - `docs/WORKFLOWS.md`
 
 ## Short Roadmap

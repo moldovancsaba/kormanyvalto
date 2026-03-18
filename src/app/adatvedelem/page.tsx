@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../components/PageChrome";
+import { PageIntro, PageShell } from "../../components/PageChrome";
 import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata } from "../../lib/siteMetadata";
 
@@ -12,7 +12,7 @@ export const metadata: Metadata = buildPageMetadata({
 export default function PrivacyPolicyPage() {
   return (
     <PageShell pageClassName="legal-page" narrow navItems={getSectionNavItems()}>
-      <h1>Adatvédelmi tájékoztató</h1>
+      <PageIntro eyebrow="Jogi" title="Adatvédelmi tájékoztató" intro="Hogyan kezeljük a játék működéséhez szükséges technikai és belépési adatokat." />
       <div className="legal-copy">
         <section className="boost-card boost-card-warning" aria-label="Adatvédelmi figyelmeztetés">
           <header className="boost-warning-header">

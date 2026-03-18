@@ -15,6 +15,7 @@ If code changes the runtime user journey, update this file in the same change-se
 - User UX and user journey are the number 1 priority.
 - Core flows must remain available even when secondary systems degrade.
 - The app should prefer degraded behavior over frozen or ambiguous behavior.
+- Major pages should establish local context immediately with a visible page title and short orientation copy.
 
 ## Primary Journeys
 

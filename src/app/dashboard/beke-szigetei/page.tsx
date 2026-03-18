@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../../components/PageChrome";
+import { PageIntro, PageShell } from "../../../components/PageChrome";
 import { CityRankingCard } from "../../../components/dashboard/CityRankingCard";
 import { getSectionNavItems } from "../../../lib/navigation";
 import { getPeaceIslandDetailItems } from "../../../lib/dashboardDetailData";
@@ -19,6 +19,7 @@ export default async function DashboardBekeSzigeteiPage() {
   const items = await getPeaceIslandDetailItems().catch(() => []);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
+      <PageIntro eyebrow="Grafikon" title="A béke szigetei" intro="A legalacsonyabb aktivitású EVK-k teljes listája." />
       <CityRankingCard
         title="A béke szigetei"
         subtitle="Teljes lista a legalacsonyabb aktivitású EVK-k 20%-ából."

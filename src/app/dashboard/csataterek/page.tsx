@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../../components/PageChrome";
+import { PageIntro, PageShell } from "../../../components/PageChrome";
 import { CityRankingCard } from "../../../components/dashboard/CityRankingCard";
 import { getSectionNavItems } from "../../../lib/navigation";
 import { getClosestBattlegroundDetailItems } from "../../../lib/dashboardDetailData";
@@ -19,6 +19,7 @@ export default async function DashboardCsataterekPage() {
   const items = await getClosestBattlegroundDetailItems().catch(() => []);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
+      <PageIntro eyebrow="Grafikon" title="Csataterek" intro="A legszorosabb EVK-k teljes listája, ahol minden szavazat számít." />
       <CityRankingCard
         title="Csataterek"
         subtitle="Teljes lista a legszorosabb EVK-k 20%-ából."

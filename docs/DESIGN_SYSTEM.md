@@ -112,6 +112,17 @@ Contract:
 - hero map is navigation, not a static image
 - EVK vote pages may replace the main hero title with a county -> EVK context stack, but must preserve clear hierarchy and orientation
 
+### Page intros
+
+Implementation:
+- `src/components/PageChrome.tsx`
+- `src/app/globals.css`
+
+Contract:
+- major routes should open with a clear local page intro, not jump directly into a card or body copy
+- intro structure should be eyebrow -> title -> short orientation copy where appropriate
+- dashboard detail pages, county navigation pages, and legal pages should reuse the same intro family
+
 ### Dashboard cards
 
 Shared implementations:

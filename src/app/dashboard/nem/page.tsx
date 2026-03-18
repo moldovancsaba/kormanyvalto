@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../../components/PageChrome";
+import { PageIntro, PageShell } from "../../../components/PageChrome";
 import CityBlocGridClient from "../../../components/CityBlocGridClient";
 import { getCityRankingDetailItemsByBloc, type CityRankingDetailItem } from "../../../lib/dashboardDetailData";
 import { getSectionNavItems } from "../../../lib/navigation";
@@ -29,6 +29,7 @@ export default async function DashboardNemCitiesPage() {
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
+      <PageIntro eyebrow="Grafikon" title="A nem városok" intro="A nem vezetésű városok teljes listája görgetéses betöltéssel." />
       <CityBlocGridClient
         bloc="no"
         title="A nem városok"

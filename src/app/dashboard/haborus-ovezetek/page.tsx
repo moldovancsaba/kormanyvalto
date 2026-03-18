@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../../components/PageChrome";
+import { PageIntro, PageShell } from "../../../components/PageChrome";
 import { CityRankingCard } from "../../../components/dashboard/CityRankingCard";
 import { getSectionNavItems } from "../../../lib/navigation";
 import { getWarZoneDetailItems } from "../../../lib/dashboardDetailData";
@@ -19,6 +19,7 @@ export default async function DashboardHaborusOvezetekPage() {
   const items = await getWarZoneDetailItems().catch(() => []);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
+      <PageIntro eyebrow="Grafikon" title="Háborús övezetek" intro="A legmagasabb aktivitású EVK-k teljes listája." />
       <CityRankingCard
         title="Háborús övezetek"
         subtitle="Teljes lista a legmagasabb aktivitású EVK-k 20%-ából."

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../components/PageChrome";
+import { PageIntro, PageShell } from "../../components/PageChrome";
 import { getSectionNavItems } from "../../lib/navigation";
 import { buildPageMetadata } from "../../lib/siteMetadata";
 
@@ -12,7 +12,7 @@ export const metadata: Metadata = buildPageMetadata({
 export default function TermsPage() {
   return (
     <PageShell pageClassName="legal-page" narrow navItems={getSectionNavItems()}>
-      <h1>Felhasználási feltételek</h1>
+      <PageIntro eyebrow="Jogi" title="Felhasználási feltételek" intro="A játék használatának alapfeltételei, határai és felelősségi szabályai." />
       <div className="legal-copy">
         <p>
           A kormanyvalto.com egy játék és közösségi interakciós felület. Az oldalon leadott szavazatok nem minősülnek

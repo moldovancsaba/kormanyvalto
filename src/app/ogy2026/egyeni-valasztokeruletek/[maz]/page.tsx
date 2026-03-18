@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageShell } from "../../../../components/PageChrome";
+import { PageIntro, PageShell } from "../../../../components/PageChrome";
 import { getConstituenciesByCounty, getCounties, getSeatLabel } from "../../../../lib/constituencies";
 import { getScopeVoteCounts } from "../../../../lib/results";
 import { getSectionNavItems } from "../../../../lib/navigation";
@@ -61,8 +61,11 @@ export default async function CountyPage({ params }: PageProps) {
         { href: "/ogy2026/egyeni-valasztokeruletek", label: "Vissza a vármegyékhez" },
       ])}
     >
-      <h1>{countyName}</h1>
-      <p className="list-subtitle">2. lépés: válassz egyéni választókerületet. Innen jutsz el a szavazóoldalra.</p>
+      <PageIntro
+        eyebrow="EVK 2026"
+        title={countyName}
+        intro="2. lépés: válassz egyéni választókerületet. Innen jutsz el a szavazóoldalra."
+      />
 
       <section className="context-panel" aria-label="Vármegyei navigációs összefoglaló">
         <p className="context-panel-eyebrow">Vármegyei nézet</p>

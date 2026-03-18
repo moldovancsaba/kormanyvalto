@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageShell } from "../../../components/PageChrome";
+import { PageIntro, PageShell } from "../../../components/PageChrome";
 import { constituencies, getCounties } from "../../../lib/constituencies";
 import { getSectionNavItems } from "../../../lib/navigation";
 import { getScopeVoteCounts } from "../../../lib/results";
@@ -27,8 +27,11 @@ export default async function Ogy2026ConstituenciesPage() {
 
   return (
     <PageShell navItems={getSectionNavItems("/ogy2026/egyeni-valasztokeruletek")}>
-      <h1>OGY 2026 vármegyei lista</h1>
-      <p className="list-subtitle">1. lépés: válassz vármegyét. Utána megmutatjuk az adott vármegye összes egyéni körzetét.</p>
+      <PageIntro
+        eyebrow="EVK 2026"
+        title="Vármegyék"
+        intro="1. lépés: válassz vármegyét. Utána megmutatjuk az adott vármegye összes egyéni körzetét."
+      />
 
       <section className="button-list" aria-label="Vármegyék listája">
         {counties.map((county) => {

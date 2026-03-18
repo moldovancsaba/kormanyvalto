@@ -14,6 +14,12 @@ type PageActionLinksProps = {
   small?: boolean;
 };
 
+type PageIntroProps = {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+};
+
 type PageShellProps = {
   children: ReactNode;
   pageClassName?: string;
@@ -105,6 +111,16 @@ export function PageActionLinks({ items, small = true }: PageActionLinksProps) {
         );
       })}
     </div>
+  );
+}
+
+export function PageIntro({ eyebrow, title, intro }: PageIntroProps) {
+  return (
+    <header className="page-intro">
+      {eyebrow ? <p className="page-intro-eyebrow">{eyebrow}</p> : null}
+      <h1>{title}</h1>
+      {intro ? <p className="page-intro-copy">{intro}</p> : null}
+    </header>
   );
 }
 

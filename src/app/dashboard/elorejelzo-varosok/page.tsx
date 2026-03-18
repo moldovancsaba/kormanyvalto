@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../../components/PageChrome";
+import { PageIntro, PageShell } from "../../../components/PageChrome";
 import { CityRankingCard } from "../../../components/dashboard/CityRankingCard";
 import { getSectionNavItems } from "../../../lib/navigation";
 import { getIndicatorCityDetailItems, getNationalYesPercent } from "../../../lib/dashboardDetailData";
@@ -22,6 +22,7 @@ export default async function DashboardElorejelzoVarosokPage() {
   ]);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
+      <PageIntro eyebrow="Grafikon" title="Előrejelző városok" intro="Azok az EVK-k, ahol a helyi arány a legközelebb áll az országos arányhoz." />
       <CityRankingCard
         title="Előrejelző városok"
         subtitle="Teljes lista az országos arányhoz 20 százalékponton belül álló EVK-król."

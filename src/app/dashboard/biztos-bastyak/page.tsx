@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../../components/PageChrome";
+import { PageIntro, PageShell } from "../../../components/PageChrome";
 import { CityRankingCard } from "../../../components/dashboard/CityRankingCard";
 import { getSectionNavItems } from "../../../lib/navigation";
 import { getStrongestBastionDetailItems } from "../../../lib/dashboardDetailData";
@@ -19,6 +19,7 @@ export default async function DashboardBiztosBastyakPage() {
   const items = await getStrongestBastionDetailItems().catch(() => []);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
+      <PageIntro eyebrow="Grafikon" title="Biztos bástyák" intro="A legnagyobb különbséggel vezető EVK-k teljes listája." />
       <CityRankingCard
         title="Biztos bástyák"
         subtitle="Teljes lista a legnagyobb különbséggel vezető EVK-k 20%-ából."

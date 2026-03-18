@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.5 - 2026-03-18
+
+### Changed
+- Added a shared page-intro pattern so major routes open with a clearer local title and orientation copy instead of dropping directly into cards or legal text.
+- Applied the new intro pattern to dashboard detail pages, county navigation pages, and legal pages.
+
+### Documentation
+- Updated workflow and design-system docs for the shared page-intro contract.
+
 ## 1.2.4 - 2026-03-18
 
 ### Changed

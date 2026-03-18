@@ -613,6 +613,28 @@ button:disabled {
   text-align: center;
 }
 
+.page-intro {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+  text-align: center;
+}
+
+.page-intro-eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-intro-copy {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
 .context-panel {
   margin: 0 0 1rem;
   padding: 0.95rem 1rem;
