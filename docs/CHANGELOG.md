@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.7 - 2026-03-18
+
+### Changed
+- Moved EVK vote-page identity onto the shared page-intro pattern so the county -> EVK vote flow uses the same page-title hierarchy as the rest of the app.
+- Updated `VoteWidget` so route-scoped vote pages can provide their own intro/context without inheriting the national default heading.
+
+### Documentation
+- Updated workflow, design-system, architecture, and handover docs for the shared vote-page intro contract.
+
 ## 1.2.6 - 2026-03-18
 
 ### Changed

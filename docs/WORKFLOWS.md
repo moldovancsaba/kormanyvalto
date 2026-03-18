@@ -17,6 +17,7 @@ If code changes the runtime user journey, update this file in the same change-se
 - The app should prefer degraded behavior over frozen or ambiguous behavior.
 - Major pages should establish local context immediately with a visible page title and short orientation copy.
 - Route-level page intros own the page title hierarchy; embedded cards and infinite-scroll list components must not reintroduce a second page-level heading above the content they render.
+- Route-scoped vote pages should supply their own local intro/context and disable the national default heading inside `VoteWidget`.
 
 ## Primary Journeys
 
@@ -70,7 +71,7 @@ Route:
 Flow:
 1. User lands on an EVK page.
 2. The shared county-result hero remains visible.
-3. The hero title area is replaced by a clearer county -> EVK identity stack.
+3. A shared page intro establishes the county -> EVK identity stack directly under the hero and action row.
 4. Vote interaction uses the same state machine as the national page.
 5. User can navigate back to county context, the full county list, or source data without losing orientation.
 

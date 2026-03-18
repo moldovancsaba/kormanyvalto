@@ -110,7 +110,7 @@ Contract:
 - hero text is top-left overlay content
 - hero uses county result colors
 - hero map is navigation, not a static image
-- EVK vote pages may replace the main hero title with a county -> EVK context stack, but must preserve clear hierarchy and orientation
+- EVK vote pages should keep the hero map generic and place county -> EVK context in the shared page-intro area below the action row
 
 ### Page intros
 

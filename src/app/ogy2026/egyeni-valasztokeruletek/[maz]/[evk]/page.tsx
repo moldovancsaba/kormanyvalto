@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PageActionLinks, PageHero } from "../../../../../components/PageChrome";
+import { PageActionLinks, PageHero, PageIntro } from "../../../../../components/PageChrome";
 import VoteWidget from "../../../../../components/VoteWidget";
 import { constituencies, findConstituency, getSeatLabel } from "../../../../../lib/constituencies";
 import { getSectionNavItems } from "../../../../../lib/navigation";
@@ -48,13 +48,14 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
       <VoteWidget
         scope={scope}
         hero={<PageHero />}
-        heroTitle={
-          <div className="hero-context">
-            <p className="hero-context-eyebrow">{item.mazNev}</p>
-            <h1>{getSeatLabel(item.szekhely)}</h1>
-            <p className="hero-context-subtitle">{item.evkNev}</p>
-          </div>
+        pageIntro={
+          <PageIntro
+            eyebrow={item.mazNev}
+            title={getSeatLabel(item.szekhely)}
+            intro={`${item.evkNev}. Ezen az oldalon ehhez az EVK-hoz adhatsz le igen vagy nem szavazatot.`}
+          />
         }
+        showDefaultHeading={false}
         topActions={
           <PageActionLinks
             items={[

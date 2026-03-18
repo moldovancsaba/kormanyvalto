@@ -41,8 +41,9 @@ type VoteWidgetProps = {
   scope: string;
   aggregateMain?: boolean;
   hero?: ReactNode;
-  heroTitle?: ReactNode;
   topActions?: ReactNode;
+  pageIntro?: ReactNode;
+  showDefaultHeading?: boolean;
 };
 
 const defaultAuthState: AuthState = {
@@ -51,7 +52,14 @@ const defaultAuthState: AuthState = {
   user: null,
 };
 
-export default function VoteWidget({ scope, aggregateMain = false, hero, heroTitle, topActions }: VoteWidgetProps) {
+export default function VoteWidget({
+  scope,
+  aggregateMain = false,
+  hero,
+  topActions,
+  pageIntro,
+  showDefaultHeading = true,
+}: VoteWidgetProps) {
   const [data, setData] = useState<ClickStore>({ yesCount: 0, noCount: 0, history: [] });
   const [auth, setAuth] = useState<AuthState>(defaultAuthState);
   const [loading, setLoading] = useState(true);
@@ -379,7 +387,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
     <main className="app">
       {hero}
       {topActions}
-      {heroTitle ? <div className="hero-title">{heroTitle}</div> : null}
+      {pageIntro}
 
       {aggregateMain ? (
         <LeadOverviewCard
@@ -409,11 +417,13 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
         </section>
       )}
 
-      <h1>
-        Váltani akarsz? Vagy nem?
-        <br />
-        Egyszerű kérdés. Egyszerű válasz?
-      </h1>
+      {showDefaultHeading ? (
+        <h1>
+          Váltani akarsz? Vagy nem?
+          <br />
+          Egyszerű kérdés. Egyszerű válasz?
+        </h1>
+      ) : null}
 
       {error ? (
         <div className="status-stack" role="status" aria-live="polite">

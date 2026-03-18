@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.2.6`
+- Current released version: `1.2.7`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -66,9 +66,11 @@ Main files:
 - Main dashboard, dashboard preview, and mandate estimate pages now use that same intro family.
 - Embedded dashboard bloc-list clients no longer duplicate the route title with a second page-level heading.
 - Privacy/3x explainer content now reuses the same trust-card fact grammar as the live vote flow.
+- EVK vote pages now provide county -> EVK context through the shared page-intro pattern instead of a route-local hero-title override.
 
 Main files:
 - `src/components/PageChrome.tsx`
+- `src/components/VoteWidget.tsx`
 - `src/components/CityBlocGridClient.tsx`
 - `src/app/globals.css`
 - `docs/WORKFLOWS.md`
