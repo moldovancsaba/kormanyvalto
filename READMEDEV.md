@@ -62,7 +62,7 @@ Implementation:
 - Hero text:
   - `2026 április 12`
   - `SZAVAZÁS`
-  - `Váltani akarsz? Vagy nem? Kattints!`
+  - `Váltani akarsz? Vagy nem? Válassz.`
 
 Implementation:
 - `src/components/PageChrome.tsx`
@@ -98,7 +98,8 @@ If you ship the change, update:
 
 ## Current Follow-Up Issue
 
-- GitHub issue: `#1 Dashboard builder regression tests and preview-only cleanup`
+- GitHub issue `#1` is already shipped in code and regression coverage.
+- Current focus is documentation truthfulness, degraded-state confidence on analytics surfaces, and first-delivery readiness.
 
 ## Anti-Drift Rules
 

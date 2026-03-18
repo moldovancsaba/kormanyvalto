@@ -86,7 +86,10 @@ At minimum track:
 
 Before shipping user-visible changes:
 - update `README.md` when product behavior changes
-- update `docs/KNOWLEDGE_BASE.md` when policy/rules change
+- update the active SSOT docs when behavior changes:
+  - `docs/WORKFLOWS.md`
+  - `docs/DESIGN_SYSTEM.md`
+  - `docs/ARCHITECTURE.md`
 - update `docs/CHANGELOG.md` for released deltas
 - update `docs/WORKFLOWS.md` when runtime user journeys change
 - update `docs/DESIGN_SYSTEM.md` when shared visual/state contracts change

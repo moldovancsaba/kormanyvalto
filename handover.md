@@ -90,23 +90,20 @@ Main files:
 
 ## Short Roadmap
 
-1. Vote flow reliability and degraded-state UX.
-   - keep voting fail-open when auth/session, summary refresh, or secondary reads fail
-   - make retry paths immediate and explicit
-2. County and EVK navigation clarity.
-   - reduce ambiguity between county list, EVK list, and vote page back-paths
-   - tighten copy and action hierarchy around the hero and page titles
-3. Trust and transparency around 3x voting mode.
-   - make the multiplier, cooldown advantage, and privacy boundaries easier to scan
-   - ensure login failure states are actionable
-4. Operational confidence pass on analytics pages.
-   - review `dashboard` and `mandatumbecsles` for degraded empty/error states
-   - add regression coverage where route-local behavior still matters
+1. Delivery truth pass.
+   - keep the active docs in sync with shipped code
+   - remove stale guidance that still points to completed follow-ups as future work
+2. Analytics reliability hardening.
+   - add route-level regression coverage where analytics pages still rely on local composition
+   - verify degraded empty/error states on `dashboard` and `mandatumbecsles`
+3. Delivery packaging.
+   - final review of README, handover, and operations docs for client-facing readiness
+   - keep release metadata synchronized on each shipped slice
 
 ## Current Open Follow-Up
 
-GitHub issue:
-- `#1 Dashboard builder regression tests and preview-only cleanup`
+GitHub issue status:
+- `#1 Dashboard builder regression tests and preview-only cleanup` is completed in code and covered by `tests/dashboardDetailData.test.ts`
 
 Project board:
 - `MVP Factory Board`
@@ -115,8 +112,18 @@ Project board:
 ## Recommended Next Step
 
 Work next on:
-- roadmap slice 4: degraded-state review on dashboard and mandate pages,
-- then extend regression coverage where route-local empty/error behavior still matters.
+- analytics degraded-state verification and broader regression coverage,
+- then final delivery review against the active SSOT docs.
+
+## Core Function Status
+
+- National voting: implemented and live.
+- County -> EVK -> vote journey: implemented and live.
+- 3x Google-authenticated mode: implemented and live as an optional sidecar.
+- Dashboard shared builder layer: implemented and regression-tested.
+- Dashboard preview boundary: implemented; preview owns only preview-specific metrics.
+- Mandate estimate: implemented and live.
+- Main remaining delivery risk: documentation drift and incomplete route-level regression coverage, not missing core user journeys.
 
 ## Important Active Docs
 
@@ -131,6 +138,14 @@ Work next on:
 ## Rules For The Next Agent
 
 - Do not treat old audit/remediation docs as the active behavior contract.
+- Treat the active SSOT set as:
+  - `docs/WORKFLOWS.md`
+  - `docs/DESIGN_SYSTEM.md`
+  - `docs/ARCHITECTURE.md`
+  - `docs/OPERATIONS.md`
+  - `docs/SECURITY.md`
+  - `READMEDEV.md`
+  - `handover.md`
 - Update docs when behavior changes.
 - Bump version and changelog for shipped behavior/architecture changes.
 - Keep critical flows fail-open where appropriate.

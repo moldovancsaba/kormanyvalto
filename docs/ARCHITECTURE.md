@@ -58,7 +58,7 @@ Current model:
 Canonical hero copy:
 - `2026 április 12`
 - `SZAVAZÁS`
-- `Váltani akarsz? Vagy nem? Kattints!`
+- `Váltani akarsz? Vagy nem? Válassz.`
 
 Detailed user-facing contract lives in `docs/WORKFLOWS.md`.
 

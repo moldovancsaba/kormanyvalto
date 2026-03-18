@@ -145,7 +145,7 @@ Rules:
 Canonical hero text:
 - `2026 április 12`
 - `SZAVAZÁS`
-- `Váltani akarsz? Vagy nem? Kattints!`
+- `Váltani akarsz? Vagy nem? Válassz.`
 
 Rules:
 - The hero is interactive.

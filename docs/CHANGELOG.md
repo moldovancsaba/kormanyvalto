@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.3 - 2026-03-18
+
+### Changed
+- Corrected active documentation drift so the SSOT docs, README files, and handover now reflect the shipped hero copy, verification gate, delivery stage, and current roadmap.
+
+### Documentation
+- Updated the active truth set to reflect actual implementation status for national voting, EVK flow, 3x mode, dashboard builders, and mandate estimation.
+
 ## 1.3.2 - 2026-03-18
 
 ### Changed

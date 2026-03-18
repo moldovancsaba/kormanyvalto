@@ -8,7 +8,7 @@ Owner: Product
 <p align="center"><strong>Election-style civic game platform for OGY 2026 simulation: országos, vármegyei, and EVK voting with analytics and mandate estimation.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v1.1.5-2563EB?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.3.2-2563EB?style=for-the-badge" alt="Version">
   <img src="https://img.shields.io/badge/platform-Web%20App-0F172A?style=for-the-badge" alt="Platform">
   <img src="https://img.shields.io/badge/stack-Next.js%20%7C%20MongoDB-0EA5E9?style=for-the-badge" alt="Stack">
 </p>
@@ -39,11 +39,19 @@ Core capabilities:
 - 199-seat mandate estimation (106 EVK + 93 list)
 - County map visualization with reusable SVG region engine
 
+Current delivery stage:
+- core vote flow is implemented and live,
+- county -> EVK -> vote navigation is implemented and live,
+- 3x Google-authenticated mode is implemented as an optional sidecar,
+- dashboard shared builder layer and regression coverage are implemented,
+- mandate estimate route is implemented and live,
+- current risk is documentation drift and final delivery hardening, not missing core user journeys.
+
 ## Main Routes
 
 - `/` - national vote page
 - `/dashboard` - production analytics dashboard (`Csataterek`, `Biztos bástyák`, county/city chart pack, KPI + pie)
-- `/dashboard-preview` - preview board for upcoming visuals (includes staging charts like `Elsöprő győzelmek`; intentionally not linked from navigation)
+- `/dashboard-preview` - preview board for unpublished dashboard modules and validation visuals
 - `/mandatumbecsles` - mandate estimate and parliament visualization
 - `/ogy2026/egyeni-valasztokeruletek` - county list below the shared interactive county-result hero
 - `/ogy2026/egyeni-valasztokeruletek/[maz]` - county EVK list
@@ -85,7 +93,7 @@ npm run build
 npm run lint
 ```
 
-`npm run lint` is the repository verification gate and currently runs TypeScript type-checking plus the style-rule audit.
+`npm run lint` is the repository verification gate and currently runs TypeScript type-checking, the style-rule audit, and dashboard regression tests.
 
 Health checks after deploy:
 - `/api/health`
@@ -104,7 +112,8 @@ Main system areas:
 - `src/lib/results.ts` - vote aggregation, history shaping, mandate data logic
 - `src/lib/svgRegionMap.ts` - generic SVG region map loader
 - `src/lib/hungaryCountyMap.ts` - Hungary county adapter for map dataset
-- `src/lib/dashboardPreviewData.ts` - reusable data builders for preview visuals
+- `src/lib/dashboardPreviewData.ts` - preview-only metrics for unpublished dashboard visuals
+- `src/lib/dashboardDetailData.ts` - shared dashboard ranking builder and canonical county identity layer
 - `src/components/VoteWidget.tsx` - canonical vote interaction state machine
 - `src/components/PageChrome.tsx` - canonical shared hero shell
 
@@ -117,8 +126,6 @@ Preview rule (active):
 - no hardcoded chart values,
 - no inline style for new visual modules,
 - shared global CSS + reusable components required.
-
-See: `docs/KNOWLEDGE_BASE.md`
 
 Active runtime workflow docs:
 - `docs/WORKFLOWS.md`
@@ -146,7 +153,6 @@ Rules:
 
 ## Documentation Map
 
-- [docs/KNOWLEDGE_BASE.md](docs/KNOWLEDGE_BASE.md) - active product/engineering rules
 - [docs/CHANGELOG.md](docs/CHANGELOG.md) - version history and shipped deltas
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) - local setup and coding workflow
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - technical architecture and data flow
@@ -158,6 +164,10 @@ Rules:
 
 - [handover.md](handover.md) - current repo state, recent completed work, next recommended step
 - [READMEDEV.md](READMEDEV.md) - developer quick reference and anti-drift rules
+
+SSOT note:
+- treat `docs/WORKFLOWS.md`, `docs/DESIGN_SYSTEM.md`, `docs/ARCHITECTURE.md`, `docs/OPERATIONS.md`, `docs/SECURITY.md`, `READMEDEV.md`, and `handover.md` as the active truth set,
+- do not treat older audit/remediation docs as live behavior contracts.
 
 ## Deployment
 

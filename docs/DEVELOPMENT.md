@@ -52,6 +52,7 @@ npm run lint
 `npm run lint` is the primary verification gate and runs:
 - `npm run typecheck`
 - `npm run check:styles`
+- `npm run test:dashboard`
 
 The repository type-check uses `tsconfig.typecheck.json` so it does not depend on generated `.next/types` artifacts existing before a build.
 
@@ -61,6 +62,7 @@ Required before push to `main`:
 - major user-facing changes must update docs,
 - release-impacting changes must bump `package.json` version and add a `docs/CHANGELOG.md` entry,
 - preview visuals must follow interactive standards (`docs/KNOWLEDGE_BASE.md`).
+- preview visuals must follow the active workflow and design-system contracts (`docs/WORKFLOWS.md`, `docs/DESIGN_SYSTEM.md`).
 - critical user flows must not depend on optional sidecars for basic availability.
 
 ## Code Conventions
