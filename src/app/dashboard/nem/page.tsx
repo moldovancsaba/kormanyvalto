@@ -36,6 +36,7 @@ export default async function DashboardNemCitiesPage() {
         subtitle="Teljes lista: görgetéskor 10-es blokkokban töltődik."
         initialItems={items}
         initialHasMore={hasMore}
+        showHeader={false}
       />
     </PageShell>
   );

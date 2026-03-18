@@ -15,44 +15,22 @@ export default function PrivacyPolicyPage() {
       <PageIntro eyebrow="Jogi" title="Adatvédelmi tájékoztató" intro="Hogyan kezeljük a játék működéséhez szükséges technikai és belépési adatokat." />
       <div className="legal-copy">
         <section className="boost-card boost-card-warning" aria-label="Adatvédelmi figyelmeztetés">
-          <header className="boost-warning-header">
-            <span className="material-symbols-rounded boost-warning-icon" aria-hidden="true">
-              warning
-            </span>
-            <h2>FIGYELEM</h2>
-          </header>
-
-          <p className="boost-privacy-strong">Nem gyűjtünk és nem tárolunk személyes adatokat.</p>
-          <p className="boost-card-copy">
-            A Google-belépést kizárólag arra használjuk, hogy megerősítsük: valódi felhasználó szavaz.
-          </p>
-          <p className="boost-card-copy">
-            A rendszer nem menti el a Google-fiókod adatait, és azokat nem használjuk semmilyen más célra.
-          </p>
-
-          <hr className="boost-card-divider" />
-
-          <header className="boost-subsection-header">
-            <span className="material-symbols-rounded boost-subsection-icon" aria-hidden="true">
-              flash_on
-            </span>
-            <h3>3x SZAVAZAT GOOGLE-BELÉPÉSSEL</h3>
-          </header>
-
-          <ul className="boost-benefits-list">
-            <li>
-              <span className="material-symbols-rounded boost-benefit-icon" aria-hidden="true">
-                brightness_alert
-              </span>
-              <span className="boost-benefit-highlight">minden szavazatod 3x súllyal számít</span>
-            </li>
-            <li>
-              <span className="material-symbols-rounded boost-benefit-icon" aria-hidden="true">
-                siren
-              </span>
-              <span className="boost-benefit-highlight">a várakozási idő lassabban növekszik</span>
-            </li>
-          </ul>
+          <p className="boost-card-title">3x VOTE és adatvédelem</p>
+          <p className="boost-privacy-strong">Az anonim szavazás alapból működik. A Google-belépés csak a 3x VOTE bónusz módhoz kell.</p>
+          <div className="boost-fact-grid" aria-label="Adatvédelmi tudnivalók">
+            <article className="boost-fact-card boost-fact-card-warning">
+              <p className="boost-fact-label">Mit kapsz</p>
+              <p className="boost-fact-value">Minden szavazatod 3x súllyal számít, és a várakozás lassabban nő.</p>
+            </article>
+            <article className="boost-fact-card boost-fact-card-warning">
+              <p className="boost-fact-label">Mit használunk</p>
+              <p className="boost-fact-value">Csak a belépési igazolást arra, hogy valódi felhasználó szavaz.</p>
+            </article>
+            <article className="boost-fact-card boost-fact-card-warning">
+              <p className="boost-fact-label">Mit nem tárolunk</p>
+              <p className="boost-fact-value">A Google-fiókod adatait nem használjuk külön célra, marketinghez vagy nyilvános megjelenítésre.</p>
+            </article>
+          </div>
         </section>
 
         <p>

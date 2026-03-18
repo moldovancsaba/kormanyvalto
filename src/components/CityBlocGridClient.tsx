@@ -11,6 +11,7 @@ type CityBlocGridClientProps = {
   subtitle: string;
   initialItems: CityRankingDetailItem[];
   initialHasMore: boolean;
+  showHeader?: boolean;
 };
 
 function getBlocLabel(leadBloc: CityRankingDetailItem["leadBloc"]): string {
@@ -25,6 +26,7 @@ export default function CityBlocGridClient({
   subtitle,
   initialItems,
   initialHasMore,
+  showHeader = true,
 }: CityBlocGridClientProps) {
   const [items, setItems] = useState<CityRankingDetailItem[]>(initialItems);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -67,10 +69,12 @@ export default function CityBlocGridClient({
 
   return (
     <section className="preview-visual-card">
-      <header className="chart-card-head">
-        <h1>{title}</h1>
-        <p>{subtitle}</p>
-      </header>
+      {showHeader ? (
+        <header className="chart-card-head">
+          <h1>{title}</h1>
+          <p>{subtitle}</p>
+        </header>
+      ) : null}
 
       <div className="preview-trading-grid" role="list" aria-label={title}>
         {items.map((item, index) => (

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { PageShell } from "../../components/PageChrome";
+import { PageIntro, PageShell } from "../../components/PageChrome";
 import { CityRankingCard } from "../../components/dashboard/CityRankingCard";
 import { CountyRankingCard } from "../../components/dashboard/CountyRankingCard";
 import { KpiCard } from "../../components/dashboard/KpiCard";
@@ -157,13 +157,11 @@ export default async function DashboardPage() {
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
-      <header className="dashboard-hero">
-        <p className="dashboard-eyebrow">Grafikon</p>
-        <h1>Általános hangulat</h1>
-        <p className="dashboard-intro">
-          A legforróbb egyéni körzetek, a legcsendesebb körzetközpontok, és azok a helyek, ahol az igen és a nem fej fej mellett halad.
-        </p>
-      </header>
+      <PageIntro
+        eyebrow="Grafikon"
+        title="Általános hangulat"
+        intro="A legforróbb egyéni körzetek, a legcsendesebb körzetközpontok, és azok a helyek, ahol az igen és a nem fej fej mellett halad."
+      />
 
       <section className="dashboard-summary-grid">
         <KpiCard

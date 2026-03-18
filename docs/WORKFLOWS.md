@@ -16,6 +16,7 @@ If code changes the runtime user journey, update this file in the same change-se
 - Core flows must remain available even when secondary systems degrade.
 - The app should prefer degraded behavior over frozen or ambiguous behavior.
 - Major pages should establish local context immediately with a visible page title and short orientation copy.
+- Route-level page intros own the page title hierarchy; embedded cards and infinite-scroll list components must not reintroduce a second page-level heading above the content they render.
 
 ## Primary Journeys
 
@@ -173,6 +174,7 @@ Rules:
   - what login is used for,
   - what is not stored.
 - Login failure copy must point the user back to an available anonymous voting path.
+- Privacy/legal explainer pages should reuse the same 3x trust-card fact grammar as the live vote flow so trust messaging does not shift voice between routes.
 
 ## Reliability Rules
 

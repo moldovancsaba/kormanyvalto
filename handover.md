@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.2.5`
+- Current released version: `1.2.6`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -63,9 +63,13 @@ Main files:
 
 - Major routes now open with a consistent local page intro instead of dropping directly into cards or long legal text.
 - Dashboard detail pages, county navigation pages, and legal pages now share the same intro hierarchy.
+- Main dashboard, dashboard preview, and mandate estimate pages now use that same intro family.
+- Embedded dashboard bloc-list clients no longer duplicate the route title with a second page-level heading.
+- Privacy/3x explainer content now reuses the same trust-card fact grammar as the live vote flow.
 
 Main files:
 - `src/components/PageChrome.tsx`
+- `src/components/CityBlocGridClient.tsx`
 - `src/app/globals.css`
 - `docs/WORKFLOWS.md`
 

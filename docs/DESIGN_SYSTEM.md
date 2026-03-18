@@ -121,7 +121,8 @@ Implementation:
 Contract:
 - major routes should open with a clear local page intro, not jump directly into a card or body copy
 - intro structure should be eyebrow -> title -> short orientation copy where appropriate
-- dashboard detail pages, county navigation pages, and legal pages should reuse the same intro family
+- dashboard pages, dashboard detail pages, county navigation pages, mandate analytics, preview pages, and legal pages should reuse the same intro family
+- when a route supplies the page intro, embedded cards or list clients should not render another page-level `h1`
 
 ### Dashboard cards
 
@@ -145,6 +146,7 @@ Contract:
 - county silhouette stamps in ranking cards resolve from canonical `countyCode` props supplied by shared builders
 - renderer components must not recover county identity from display names when canonical ids are already available
 - dashboard bloc list pages should keep the same ranking-card visual language even when items stream in via infinite scroll
+- bloc-list routes should let the route-level intro own page orientation and keep the list client focused on card/grid rendering
 
 ## Vote Interaction Visual Contract
 

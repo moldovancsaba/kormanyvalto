@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../components/PageChrome";
+import { PageIntro, PageShell } from "../../components/PageChrome";
 import { KpiCard } from "../../components/dashboard/KpiCard";
 import { CountyRankingCard } from "../../components/dashboard/CountyRankingCard";
 import { LeadOverviewCard } from "../../components/dashboard/LeadOverviewCard";
@@ -103,11 +103,7 @@ export default async function DashboardPreviewPage() {
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
-      <header className="dashboard-hero">
-        <p className="dashboard-eyebrow">Dashboard Preview</p>
-        <h1>Előnézet</h1>
-        <p className="dashboard-intro">Csak a még nem publikált modulok és kísérleti panelek.</p>
-      </header>
+      <PageIntro eyebrow="Dashboard Preview" title="Előnézet" intro="Csak a még nem publikált modulok és kísérleti panelek." />
 
       <div className="dashboard-grid">
         <ListVotePreviewCard initialData={listVotePreview} />

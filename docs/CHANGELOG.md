@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.6 - 2026-03-18
+
+### Changed
+- Extended the shared page-intro hierarchy to the main dashboard, dashboard preview, and mandate estimate pages so those routes follow the same local title/orientation pattern as the rest of the app.
+- Removed duplicate page-level headings from the `/dashboard/igen` and `/dashboard/nem` infinite-scroll list routes by letting the route own the title and the grid client focus on list rendering.
+- Reworked the privacy page's 3x/data-protection explainer onto the same trust-card fact-block grammar used in the live vote flow.
+
+### Documentation
+- Updated workflow, design-system, architecture, and handover docs for the canonical page-intro ownership and shared trust-card usage.
+
 ## 1.2.5 - 2026-03-18
 
 ### Changed

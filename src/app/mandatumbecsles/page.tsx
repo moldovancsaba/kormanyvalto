@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "../../components/PageChrome";
+import { PageIntro, PageShell } from "../../components/PageChrome";
 import ParliamentHemicycle from "../../components/ParliamentHemicycle";
 import {
   createEmptyParliamentEstimate,
@@ -79,14 +79,11 @@ export default async function ParliamentEstimatePage() {
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/mandatumbecsles")}>
-      <header className="dashboard-hero">
-        <p className="dashboard-eyebrow">Mandátumbecslés</p>
-        <h1>Parlamenti patkó</h1>
-        <p className="dashboard-intro">
-          Két nézet ugyanarra az adatra: az első azt mutatja, mi történne, ha most zárna le a játék, a második pedig
-          a jelenlegi szigorú állást hagyja nyitottnak, ahol még döntetlen vagy adat nélküli körzet van.
-        </p>
-      </header>
+      <PageIntro
+        eyebrow="Mandátumbecslés"
+        title="Parlamenti patkó"
+        intro="Két nézet ugyanarra az adatra: az első azt mutatja, mi történne, ha most zárna le a játék, a második pedig a jelenlegi szigorú állást hagyja nyitottnak, ahol még döntetlen vagy adat nélküli körzet van."
+      />
 
       <section className="kpi-grid">
         <article className="kpi-card">
