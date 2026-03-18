@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.2.0`
+- Current released version: `1.2.1`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -59,17 +59,13 @@ Main files:
 - `docs/DEVELOPMENT.md`
 - `README.md`
 
-### County/EVK navigation clarity
+### Vote history historical-state fix
 
-- County list now uses explicit step-based copy so the route reads as step 1 of the flow.
-- County pages now explain that the next action is choosing an EVK and include a county context panel.
-- EVK vote pages now use a clearer county -> EVK title hierarchy and expose both county-level and full-list back paths.
+- Vote history county, city, and `Országos` chips now reflect the result state that existed immediately after each recorded vote.
+- History chips no longer inherit the latest present-day aggregate color for older records.
 
 Main files:
-- `src/app/ogy2026/egyeni-valasztokeruletek/page.tsx`
-- `src/app/ogy2026/egyeni-valasztokeruletek/[maz]/page.tsx`
-- `src/app/ogy2026/egyeni-valasztokeruletek/[maz]/[evk]/page.tsx`
-- `src/app/globals.css`
+- `src/lib/results.ts`
 - `docs/WORKFLOWS.md`
 
 ## Short Roadmap

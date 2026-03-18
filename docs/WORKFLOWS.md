@@ -121,6 +121,12 @@ Rules:
 - If a vote is accepted but the follow-up summary refresh fails, the UI must say the vote was saved and offer a retry instead of implying the vote was lost.
 - Vote/result read failures should offer an immediate retry path on the same screen.
 
+## Vote History Contract
+
+Rules:
+- History chips for `Országos`, county, and city labels must reflect the result state that existed immediately after that recorded vote.
+- History chips must not be recolored from the latest present-day aggregate if that historical result was different.
+
 ## Hero Contract
 
 Canonical hero text:

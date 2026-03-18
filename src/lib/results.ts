@@ -261,35 +261,12 @@ export async function getResults(
     }
   }
 
-  const scopeTally = new Map<string, { yes: number; no: number }>();
-  const countyTally = new Map<string, { yes: number; no: number }>();
-  const districtTally = new Map<string, { yes: number; no: number }>();
   const addTally = (map: Map<string, { yes: number; no: number }>, key: string, type: VoteType, weight: number) => {
     const current = map.get(key) || { yes: 0, no: 0 };
     if (type === "yes") current.yes += weight;
     else current.no += weight;
     map.set(key, current);
   };
-
-  for (const vote of votes) {
-    const voteScope = vote.scope ?? "main";
-    const weight = getVoteWeight(vote);
-    addTally(scopeTally, voteScope, vote.type, weight);
-
-    const districtMatch = voteScope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})\/(\d{2})$/);
-    if (districtMatch) {
-      const [, maz] = districtMatch;
-      addTally(districtTally, voteScope, vote.type, weight);
-      addTally(countyTally, maz, vote.type, weight);
-      continue;
-    }
-
-    const countyMatch = voteScope.match(/^ogy2026\/egyeni-valasztokeruletek\/(\d{2})$/);
-    if (countyMatch) {
-      const [, maz] = countyMatch;
-      addTally(countyTally, maz, vote.type, weight);
-    }
-  }
 
   const historyItems = votes.slice(0, 30).map((vote) => {
     const normalizedScope = vote.scope ?? "main";
@@ -300,41 +277,46 @@ export async function getResults(
     };
   });
 
-  const historyCountyMaz = [...new Set(historyItems.map((item) => item.meta.maz).filter((value): value is string => Boolean(value)))];
-  const historyDistrictScopes = [
-    ...new Set(
-      historyItems
-        .filter((item) => item.meta.maz && item.meta.evk)
-        .map((item) => `ogy2026/egyeni-valasztokeruletek/${item.meta.maz}/${item.meta.evk}`)
-    ),
-  ];
+  const historySnapshots = new Array<{
+    scopeYes: number;
+    scopeNo: number;
+    countyYes?: number;
+    countyNo?: number;
+    districtYes?: number;
+    districtNo?: number;
+  }>(votes.length);
 
-  const countyDistrictScopes = constituencies
-    .filter((item) => historyCountyMaz.includes(item.maz))
-    .map((item) => `ogy2026/egyeni-valasztokeruletek/${item.maz}/${item.evk}`);
+  const historicalScopeTally = new Map<string, { yes: number; no: number }>();
+  const historicalCountyTally = new Map<string, { yes: number; no: number }>();
+  const historicalDistrictTally = new Map<string, { yes: number; no: number }>();
 
-  const [districtGlobalCounts] = await Promise.all([getScopeVoteCounts([...new Set([...countyDistrictScopes, ...historyDistrictScopes])])]);
-  const countyGlobalTotals = new Map<string, { yes: number; no: number }>();
-  for (const maz of historyCountyMaz) {
-    const scopesForCounty = constituencies.filter((item) => item.maz === maz).map((item) => `ogy2026/egyeni-valasztokeruletek/${item.maz}/${item.evk}`);
-    const total = scopesForCounty.reduce(
-      (acc, scopeKey) => {
-        const stat = districtGlobalCounts[scopeKey] ?? { yes: 0, no: 0, total: 0, yesPercent: 50 };
-        acc.yes += stat.yes;
-        acc.no += stat.no;
-        return acc;
-      },
-      { yes: 0, no: 0 }
-    );
-    countyGlobalTotals.set(maz, total);
+  for (let index = votes.length - 1; index >= 0; index -= 1) {
+    const vote = votes[index];
+    const normalizedScope = vote.scope ?? "main";
+    const meta = getScopeMeta(normalizedScope);
+    const weight = getVoteWeight(vote);
+
+    addTally(historicalScopeTally, normalizedScope, vote.type, weight);
+
+    if (meta.maz && meta.evk) {
+      addTally(historicalDistrictTally, normalizedScope, vote.type, weight);
+      addTally(historicalCountyTally, meta.maz, vote.type, weight);
+    } else if (meta.maz) {
+      addTally(historicalCountyTally, meta.maz, vote.type, weight);
+    }
+
+    historySnapshots[index] = {
+      scopeYes: historicalScopeTally.get(normalizedScope)?.yes ?? 0,
+      scopeNo: historicalScopeTally.get(normalizedScope)?.no ?? 0,
+      countyYes: meta.maz ? historicalCountyTally.get(meta.maz)?.yes ?? 0 : undefined,
+      countyNo: meta.maz ? historicalCountyTally.get(meta.maz)?.no ?? 0 : undefined,
+      districtYes: meta.maz && meta.evk ? historicalDistrictTally.get(normalizedScope)?.yes ?? 0 : undefined,
+      districtNo: meta.maz && meta.evk ? historicalDistrictTally.get(normalizedScope)?.no ?? 0 : undefined,
+    };
   }
 
-  const history = historyItems.map(({ vote, normalizedScope, meta }) => {
-    const tally = scopeTally.get(normalizedScope) || { yes: 0, no: 0 };
-    const countyAggregate = meta.maz ? countyTally.get(meta.maz) : undefined;
-    const districtAggregate = meta.maz && meta.evk ? districtTally.get(normalizedScope) : undefined;
-    const countyGlobal = meta.maz ? countyGlobalTotals.get(meta.maz) : undefined;
-    const districtGlobal = meta.maz && meta.evk ? districtGlobalCounts[normalizedScope] : undefined;
+  const history = historyItems.map(({ vote, normalizedScope, meta }, index) => {
+    const snapshot = historySnapshots[index] ?? { scopeYes: 0, scopeNo: 0 };
     return {
       type: vote.type,
       timestamp: vote.timestamp,
@@ -344,14 +326,12 @@ export async function getResults(
       sourceCity: meta.sourceCity,
       sourceCountyHref: meta.sourceCountyHref,
       sourceCityHref: meta.sourceCityHref,
-      sourceCountyTone: getLeadBlocFromCounts(
-        countyGlobal?.yes ?? countyAggregate?.yes ?? tally.yes,
-        countyGlobal?.no ?? countyAggregate?.no ?? tally.no
-      ),
-      sourceCityTone: districtGlobal
-        ? getLeadBlocFromCounts(districtGlobal.yes, districtGlobal.no)
-        : districtAggregate
-          ? getLeadBlocFromCounts(districtAggregate.yes, districtAggregate.no)
+      sourceCountyTone: meta.maz
+        ? getLeadBlocFromCounts(snapshot.countyYes ?? snapshot.scopeYes, snapshot.countyNo ?? snapshot.scopeNo)
+        : getLeadBlocFromCounts(snapshot.scopeYes, snapshot.scopeNo),
+      sourceCityTone:
+        meta.maz && meta.evk && typeof snapshot.districtYes === "number" && typeof snapshot.districtNo === "number"
+          ? getLeadBlocFromCounts(snapshot.districtYes, snapshot.districtNo)
           : undefined,
       weight: getVoteWeight(vote),
       mode: (vote.mode === "google" ? "google" : "anonymous") as VoteMode,
