@@ -110,6 +110,31 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
     []
   );
 
+  const loadResults = async () => {
+    const resultsRes = await fetch(`/api/results?scope=${encodeURIComponent(scope)}${aggregateMain ? "&aggregate=1" : ""}`, {
+      cache: "no-store",
+    });
+    if (!resultsRes.ok) {
+      throw new Error("Nem sikerült betölteni az adatokat.");
+    }
+
+    const nextResults = (await resultsRes.json()) as ClickStore;
+    setData(nextResults);
+    if (typeof nextResults.cooldownSec === "number") {
+      applyCooldown(nextResults.cooldownSec);
+    }
+  };
+
+  const loadAuthSession = async () => {
+    const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
+    if (!sessionRes.ok) {
+      throw new Error("Nem sikerült betölteni a belépési állapotot.");
+    }
+
+    const nextSession = (await sessionRes.json()) as AuthState;
+    setAuth(nextSession);
+  };
+
   const applyCooldown = (seconds: number) => {
     const normalized = Math.max(0, Number(seconds.toFixed(1)));
     if (normalized <= 0) {
@@ -186,35 +211,17 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
   useEffect(() => {
     const load = async () => {
       try {
-        const [resultsRes, sessionRes] = await Promise.all([
-          fetch(`/api/results?scope=${encodeURIComponent(scope)}${aggregateMain ? "&aggregate=1" : ""}`, {
-            cache: "no-store",
-          }),
-          fetch("/api/auth/session", { cache: "no-store" }),
-        ]);
-
-        if (!resultsRes.ok) {
-          throw new Error("Nem sikerült betölteni az adatokat.");
-        }
-
-        const nextResults = (await resultsRes.json()) as ClickStore;
-        setData(nextResults);
-        if (typeof nextResults.cooldownSec === "number") {
-          applyCooldown(nextResults.cooldownSec);
-        }
-
-        if (sessionRes.ok) {
-          const nextSession = (await sessionRes.json()) as AuthState;
-          setAuth(nextSession);
-        }
+        await loadResults();
       } catch {
         setError("Nem sikerült betölteni az adatokat.");
       } finally {
         setLoading(false);
       }
+
+      loadAuthSession().catch(() => undefined);
     };
 
-    load();
+    void load();
   }, [scope, aggregateMain]);
 
   useEffect(() => {
@@ -267,16 +274,20 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
   }, [cooldownLeft, cooldownStorageKey]);
 
   const reloadResults = async () => {
-    const refresh = await fetch(`/api/results?scope=${encodeURIComponent(scope)}${aggregateMain ? "&aggregate=1" : ""}`, {
-      cache: "no-store",
-    });
-    if (!refresh.ok) {
+    try {
+      await loadResults();
+      setError(null);
+    } catch {
       throw new Error("Nem sikerült frissíteni az adatokat.");
     }
-    const next = (await refresh.json()) as ClickStore;
-    setData(next);
-    if (typeof next.cooldownSec === "number") {
-      applyCooldown(next.cooldownSec);
+  };
+
+  const retryResultsLoad = async () => {
+    setError(null);
+    try {
+      await reloadResults();
+    } catch (retryError) {
+      setError(retryError instanceof Error ? retryError.message : "Nem sikerült frissíteni az adatokat.");
     }
   };
 
@@ -311,11 +322,18 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
       }
 
       if (aggregateMain) {
+        if (payload) {
+          setData(payload);
+        }
         if (typeof payload?.cooldownSec === "number") {
           applyCooldown(payload.cooldownSec);
           setNextCooldownSec(Number((payload.cooldownSec + voteCooldownStep).toFixed(1)));
         }
-        await reloadResults();
+        try {
+          await reloadResults();
+        } catch {
+          setError("A szavazat mentve lett, de az összesítés frissítése most nem sikerült.");
+        }
       } else {
         const next = payload as ClickStore;
         setData(next);
@@ -397,7 +415,16 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
         Egyszerű kérdés. Egyszerű válasz?
       </h1>
 
-      {error ? <p className="error">{error}</p> : null}
+      {error ? (
+        <div className="status-stack" role="status" aria-live="polite">
+          <p className="error">{error}</p>
+          {error.includes("betölteni") || error.includes("frissítése") ? (
+            <button type="button" className="nav-link-button nav-link-button-small nav-link-button-secondary" onClick={() => void retryResultsLoad()}>
+              újrapróbálás
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="buttons" aria-label="Válasz gombok">
         <button

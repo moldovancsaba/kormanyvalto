@@ -106,6 +106,8 @@ Behavior summary:
 - cooldown is started optimistically on click,
 - POST response reconciles optimistic state with server truth,
 - flash state transitions into countdown state without a plain-label gap,
+- auth/session reads are treated as sidecars and should not block the core vote/results experience,
+- post-vote summary refresh failures should degrade to retryable inline messaging rather than a false negative vote failure,
 - vote path should degrade gracefully if non-essential protection sidecars fail.
 
 ## Dashboard Data Builder Contract

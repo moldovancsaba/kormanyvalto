@@ -117,6 +117,9 @@ Rules:
 - If the vote request fails, optimistic cooldown must be cleared.
 - Error copy must help the user path without exposing internals.
 - Auxiliary protection failures must not break ordinary voting if degraded behavior exists.
+- Auth/session reads must not block result loading or ordinary anonymous voting.
+- If a vote is accepted but the follow-up summary refresh fails, the UI must say the vote was saved and offer a retry instead of implying the vote was lost.
+- Vote/result read failures should offer an immediate retry path on the same screen.
 
 ## Hero Contract
 

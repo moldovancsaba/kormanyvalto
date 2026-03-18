@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.9 - 2026-03-18
+
+### Changed
+- Hardened the primary vote flow so auth-session reads no longer block the main results load.
+- Updated vote UX degradation behavior so accepted votes keep their saved state even if the follow-up summary refresh fails, with an inline retry action instead of a false failure.
+
+### Documentation
+- Updated workflow, design-system, and architecture docs for the fail-open vote refresh contract.
+
 ## 1.1.8 - 2026-03-18
 
 ### Changed

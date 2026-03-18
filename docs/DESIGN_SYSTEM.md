@@ -140,6 +140,7 @@ Non-negotiable rules:
 - no ambiguous intermediate label
 - no stalled `szavaztál` state
 - no flash color that conflicts with the intended red danger-button design
+- degraded-state vote messaging should stay inline on the same screen and include a clear retry action when data refresh fails
 
 ## Governance
 

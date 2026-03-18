@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.1.8`
+- Current released version: `1.1.9`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -59,19 +59,31 @@ Main files:
 - `docs/DEVELOPMENT.md`
 - `README.md`
 
-### Dashboard consistency sweep
+### Vote reliability hardening
 
-- Automated regression tests cover dashboard county identity and ranking order.
-- Dashboard renderers trust canonical county ids instead of county-name recovery.
-- `/dashboard-preview` computes only preview-specific metrics plus active-county activity.
-- `/dashboard/kiegyensulyozott-varmegyek` now uses the shared county ranking card.
-- `/dashboard/igen` and `/dashboard/nem` now page through canonical county-enriched ranking items and preserve county links, county codes, and county tones.
+- Auth/session reads no longer block the main results load in `VoteWidget`.
+- Accepted votes now stay trustworthy even when the follow-up summary refresh fails.
+- Inline retry action is available when vote/result refresh reads degrade.
 
 Main files:
-- `src/lib/dashboardDetailData.ts`
-- `src/lib/dashboardPreviewData.ts`
-- `src/components/CityBlocGridClient.tsx`
-- `tests/dashboardDetailData.test.ts`
+- `src/components/VoteWidget.tsx`
+- `src/app/globals.css`
+- `docs/WORKFLOWS.md`
+
+## Short Roadmap
+
+1. Vote flow reliability and degraded-state UX.
+   - keep voting fail-open when auth/session, summary refresh, or secondary reads fail
+   - make retry paths immediate and explicit
+2. County and EVK navigation clarity.
+   - reduce ambiguity between county list, EVK list, and vote page back-paths
+   - tighten copy and action hierarchy around the hero and page titles
+3. Trust and transparency around 3x voting mode.
+   - make the multiplier, cooldown advantage, and privacy boundaries easier to scan
+   - ensure login failure states are actionable
+4. Operational confidence pass on analytics pages.
+   - review `dashboard` and `mandatumbecsles` for degraded empty/error states
+   - add regression coverage where route-local behavior still matters
 
 ## Current Open Follow-Up
 
@@ -85,8 +97,8 @@ Project board:
 ## Recommended Next Step
 
 Work next on:
-- extending regression coverage if any new dashboard ranking or pagination surface is promoted,
-- otherwise shift focus back to the next highest-value UX or reliability issue.
+- continuing roadmap slice 1 with clearer vote-load skeleton/error states or cooldown/trust messaging,
+- then move to county and EVK navigation clarity.
 
 ## Important Active Docs
 
