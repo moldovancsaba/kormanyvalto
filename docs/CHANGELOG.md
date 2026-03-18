@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.2 - 2026-03-18
+
+### Changed
+- Reworked the 3x VOTE panel into clearer trust-first fact blocks so the benefit, login purpose, and privacy boundary are easier to scan.
+- Made Google login failure and unavailable-state copy more actionable while keeping anonymous voting explicitly available.
+
+### Documentation
+- Added the 3x vote trust contract to workflow, design-system, and architecture docs.
+
 ## 1.2.1 - 2026-03-18
 
 ### Fixed

@@ -138,6 +138,7 @@ Current direction:
 - Auth/session endpoints under `/api/auth/*`
 - Vote mode/weight behavior is reflected in aggregation and charts
 - UI includes trust-first communication around login usage
+- Google login is a sidecar capability for 3x voting mode, not a prerequisite for ordinary voting
 
 ## Styling System
 

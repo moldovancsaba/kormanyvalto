@@ -160,6 +160,16 @@ Implementation:
 - `src/app/ogy2026/egyeni-valasztokeruletek/[maz]/page.tsx`
 - `src/app/ogy2026/egyeni-valasztokeruletek/[maz]/[evk]/page.tsx`
 
+## 3x Vote Trust Contract
+
+Rules:
+- Anonymous voting must remain usable even if Google login is unavailable or fails.
+- The 3x VOTE panel must state clearly:
+  - what the user gains,
+  - what login is used for,
+  - what is not stored.
+- Login failure copy must point the user back to an available anonymous voting path.
+
 ## Reliability Rules
 
 - Vote flow must fail open against non-essential sidecars where possible.

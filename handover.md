@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.2.1`
+- Current released version: `1.2.2`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -59,13 +59,15 @@ Main files:
 - `docs/DEVELOPMENT.md`
 - `README.md`
 
-### Vote history historical-state fix
+### 3x vote trust/transparency
 
-- Vote history county, city, and `Országos` chips now reflect their own result state that existed immediately after each recorded vote.
-- History chips no longer inherit the latest present-day aggregate color for older records.
+- The 3x VOTE panel now explains the benefit, login purpose, and privacy boundary in short fact blocks.
+- Anonymous voting remains explicitly available even when Google login fails or is unavailable.
+- Login failure copy now points users back to the working anonymous path.
 
 Main files:
-- `src/lib/results.ts`
+- `src/components/VoteWidget.tsx`
+- `src/app/globals.css`
 - `docs/WORKFLOWS.md`
 
 ## Short Roadmap
@@ -95,8 +97,8 @@ Project board:
 ## Recommended Next Step
 
 Work next on:
-- roadmap slice 3: trust and transparency around 3x voting mode,
-- then roadmap slice 4: degraded-state review on dashboard and mandate pages.
+- roadmap slice 4: degraded-state review on dashboard and mandate pages,
+- then extend regression coverage where route-local empty/error behavior still matters.
 
 ## Important Active Docs
 

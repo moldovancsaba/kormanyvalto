@@ -87,6 +87,17 @@ Contract:
 Important:
 - the `szavaztál` flash state intentionally reuses this red danger-button language
 
+### 3x trust cards
+
+Implementation:
+- `src/components/VoteWidget.tsx`
+- `src/app/globals.css`
+
+Contract:
+- trust messaging should be scannable in short fact blocks, not dense warning paragraphs
+- the panel must distinguish benefit, verification purpose, and non-retention/privacy boundaries
+- authenticated and unauthenticated 3x states should still feel like the same component family
+
 ### Hero system
 
 Implementation:

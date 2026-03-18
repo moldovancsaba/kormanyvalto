@@ -198,11 +198,11 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
 
     const authError = new URLSearchParams(window.location.search).get("authError");
     if (authError) {
-      const authMessages: Record<string, string> = {
-        sso_not_configured: "A 3x VOTE belépés még nincs bekapcsolva.",
-        oauth_failed: "A Google belépés nem sikerült.",
-        invalid_state: "A belépési kérés lejárt vagy érvénytelen.",
-        auth_failed: "A Google belépés nem sikerült.",
+    const authMessages: Record<string, string> = {
+        sso_not_configured: "A 3x VOTE belépés még nincs bekapcsolva. Anonim módban továbbra is tudsz szavazni.",
+        oauth_failed: "A Google belépés most nem sikerült. Szavazhatsz tovább anonim módban, vagy próbáld újra.",
+        invalid_state: "A belépési kérés lejárt vagy érvénytelen. Szavazhatsz anonim módban, vagy indíts új belépést.",
+        auth_failed: "A Google belépés most nem sikerült. Szavazhatsz tovább anonim módban, vagy próbáld újra.",
       };
       setError(authMessages[authError] || "A Google belépés nem sikerült.");
     }
@@ -448,10 +448,20 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
       {auth.authenticated && auth.user ? (
         <section className="boost-card" aria-label="3x vote állapot">
           <p className="boost-card-title">3x VOTE aktív</p>
-          <p className="boost-card-copy">
-            Google belépéssel szavazol. Minden szavazat háromszor számít, és a várakozás csak +0.2 másodperccel nő.
-          </p>
           <p className="boost-card-meta">{auth.user.name}</p>
+          <div className="boost-fact-grid" aria-label="3x vote előnyök">
+            <article className="boost-fact-card">
+              <p className="boost-fact-label">Mit kapsz</p>
+              <p className="boost-fact-value">Minden szavazatod 3x súllyal számít.</p>
+            </article>
+            <article className="boost-fact-card">
+              <p className="boost-fact-label">Cooldown</p>
+              <p className="boost-fact-value">A várakozás csak +0.2 másodperccel nő.</p>
+            </article>
+          </div>
+          <p className="boost-card-copy">
+            A Google-belépést csak arra használjuk, hogy megerősítsük: valódi felhasználó szavaz. A szavazás anonim útja továbbra is működik.
+          </p>
         </section>
       ) : auth.configured ? (
         <section className="boost-card boost-card-warning" aria-label="3x vote belépés">
@@ -462,51 +472,34 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
             <h2>FIGYELEM</h2>
           </header>
 
-          <p className="boost-privacy-strong">
-            Nem gyűjtünk és nem tárolunk személyes adatokat.
-          </p>
-          <p className="boost-card-copy">
-            A Google-belépést kizárólag arra használjuk, hogy megerősítsük: valódi felhasználó szavaz.
-          </p>
-          <p className="boost-card-copy">
-            A rendszer nem menti el a Google-fiókod adatait, és azokat nem használjuk semmilyen más célra.
-          </p>
+          <p className="boost-privacy-strong">Az anonim szavazás most is működik. A Google-belépés csak a 3x VOTE bónusz módhoz kell.</p>
 
-          <hr className="boost-card-divider" />
-
-          <header className="boost-subsection-header">
-            <span className="material-symbols-rounded boost-subsection-icon" aria-hidden="true">
-              flash_on
-            </span>
-            <h3>3x SZAVAZAT GOOGLE-BELÉPÉSSEL</h3>
-          </header>
-
-          <ul className="boost-benefits-list">
-            <li>
-              <span className="material-symbols-rounded boost-benefit-icon" aria-hidden="true">
-                brightness_alert
-              </span>
-              <span className="boost-benefit-highlight">minden szavazatod 3x súllyal számít</span>
-            </li>
-            <li>
-              <span className="material-symbols-rounded boost-benefit-icon" aria-hidden="true">
-                siren
-              </span>
-              <span className="boost-benefit-highlight">a várakozási idő lassabban növekszik</span>
-            </li>
-          </ul>
+          <div className="boost-fact-grid" aria-label="3x vote tudnivalók">
+            <article className="boost-fact-card boost-fact-card-warning">
+              <p className="boost-fact-label">Mit kapsz</p>
+              <p className="boost-fact-value">3x súlyú szavazatot és lassabban növekvő cooldown-t.</p>
+            </article>
+            <article className="boost-fact-card boost-fact-card-warning">
+              <p className="boost-fact-label">Mit használunk</p>
+              <p className="boost-fact-value">Csak a belépési igazolást arra, hogy valódi felhasználó szavaz.</p>
+            </article>
+            <article className="boost-fact-card boost-fact-card-warning">
+              <p className="boost-fact-label">Mit nem tárolunk</p>
+              <p className="boost-fact-value">Nem mentjük el a Google-fiókod adatait külön célra vagy marketinghez.</p>
+            </article>
+          </div>
 
           <a href={loginHref} className="nav-link-button boost-login-button boost-login-button-warning">
             <span className="material-symbols-rounded" aria-hidden="true">
               release_alert
             </span>
-            <span>Belépés Google-fiókkal</span>
+            <span>Belépés Google-fiókkal a 3x VOTE-hoz</span>
           </a>
         </section>
       ) : (
         <section className="boost-card boost-card-muted" aria-label="3x vote állapot">
           <p className="boost-card-title">3x VOTE</p>
-          <p className="boost-card-copy">A Google belépés még nincs bekapcsolva ehhez az oldalhoz.</p>
+          <p className="boost-card-copy">A Google belépés még nincs bekapcsolva ehhez az oldalhoz, de anonim módban ugyanúgy tudsz szavazni.</p>
         </section>
       )}
 
