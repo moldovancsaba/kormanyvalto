@@ -88,8 +88,8 @@ export default async function ParliamentEstimatePage() {
       <section className="kpi-grid">
         <article className="kpi-card">
           <header className="chart-card-head">
-            <h2>Ha most vége lenne</h2>
-            <p>A teljes 199 mandátum kiosztva a jelenlegi vezetés alapján.</p>
+            <h2>Lezárt pillanatkép</h2>
+            <p>A teljes 199 mandátum kiosztva a mostani vezetés alapján.</p>
           </header>
           <div className="kpi-dual-stack">
             <article className="kpi-dual-chip kpi-dual-chip-yes">
@@ -101,12 +101,12 @@ export default async function ParliamentEstimatePage() {
               <span>nem</span>
             </article>
           </div>
-          <p className="kpi-detail">Igen és nem mandátumok véglegesített aránya.</p>
+          <p className="kpi-detail">Az összes mandátum megoszlása, ha most lezárnánk a játékot.</p>
         </article>
         <article className="kpi-card">
           <header className="chart-card-head">
-            <h2>Jelenlegi hivatalos állás</h2>
-            <p>A már eldőlt helyek mandátumaránya, nyitott helyek külön számolva.</p>
+            <h2>Mostani biztos állás</h2>
+            <p>Csak az eldőlt helyek mandátumaránya, a nyitott helyek külön számolva.</p>
           </header>
           <div className="kpi-dual-stack">
             <article className="kpi-dual-chip kpi-dual-chip-yes">
@@ -124,7 +124,7 @@ export default async function ParliamentEstimatePage() {
         </article>
         <article className="kpi-card">
           <header className="chart-card-head">
-            <h2>Listaalap most</h2>
+            <h2>Listaalap</h2>
             <p>Országos és töredékszavazatok összesítve a listás mandátumszámításhoz.</p>
           </header>
           <div className="kpi-value-chip kpi-value-chip-neutral">
@@ -141,20 +141,20 @@ export default async function ParliamentEstimatePage() {
         <ParliamentHemicycle
           estimate={projectedEstimate}
           eyebrow="1. nézet"
-          title="Ha most vége lenne"
+          title="Lezárt pillanatkép"
           subtitle="A még döntetlen vagy adat nélküli EVK-kat a pillanatnyi országos vezetés irányába zárjuk le, hogy teljes 199 fős képet kapjunk."
         />
         <ParliamentHemicycle
           estimate={currentEstimate}
           eyebrow="2. nézet"
-          title="Jelenlegi hivatalos állás"
+          title="Mostani biztos állás"
           subtitle="Csak a ténylegesen vezetett EVK-k és a hivatalos logikával kiosztható listás mandátumok kerülnek be, a nyitott helyek szürkén maradnak."
         />
       </div>
 
       <section className="pie-grid">
-        <BreakdownCard title="Ha most vége lenne - bontás" estimate={projectedEstimate} />
-        <BreakdownCard title="Jelenlegi hivatalos állás - bontás" estimate={currentEstimate} />
+        <BreakdownCard title="Lezárt pillanatkép bontás" estimate={projectedEstimate} />
+        <BreakdownCard title="Mostani biztos állás bontás" estimate={currentEstimate} />
       </section>
 
       <section className="pie-grid">

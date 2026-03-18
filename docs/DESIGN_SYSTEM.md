@@ -148,6 +148,7 @@ Contract:
 - dashboard bloc list pages should keep the same ranking-card visual language even when items stream in via infinite scroll
 - bloc-list routes should let the route-level intro own page orientation and keep the list client focused on card/grid rendering
 - preview dashboard routes should keep the same language and label grammar as production dashboard routes instead of mixing in standalone prototype naming
+- dashboard and mandate cards should use short, direct labels that match the product voice established by page intros instead of older report-style phrasing
 
 ## Vote Interaction Visual Contract
 

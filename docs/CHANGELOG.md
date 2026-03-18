@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 - 2026-03-18
+
+### Changed
+- Tightened dashboard and mandate card copy so analytics surfaces use shorter, more direct Hungarian state labels instead of older report-style phrasing.
+
+### Documentation
+- Updated workflow, design-system, and handover docs for the analytics-copy consistency contract.
+
 ## 1.2.9 - 2026-03-18
 
 ### Changed

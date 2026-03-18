@@ -166,7 +166,7 @@ export default async function DashboardPage() {
       <section className="dashboard-summary-grid">
         <KpiCard
           variant="dashboard"
-          label="Összes eddigi szavazat"
+          label="Összes szavazat"
           subtitle="A teljes rendszer eddigi súlyozott aktivitása."
           value={summary.totalWeightedVotes}
           valueHint="szavazat"
@@ -200,10 +200,10 @@ export default async function DashboardPage() {
         <ChartCard
           title={
             <Link href="/dashboard/beke-szigetei" className="title-inline-chip title-inline-chip-link title-inline-chip-neutral">
-              A béke szigetei
+              Béke szigetei
             </Link>
           }
-          ariaLabel="A béke szigetei"
+          ariaLabel="Béke szigetei"
           subtitle="A legkevesebb, de már mért aktivitást mutató EVK-k."
           tone="cool"
           items={peaceIslands}
@@ -224,7 +224,7 @@ export default async function DashboardPage() {
         <ChartCard
           title="Senki nem tudja"
           ariaLabel="Senki nem tudja"
-          subtitle="A legszorosabb EVK-k, ahol alig van különbség."
+          subtitle="A legszorosabb EVK-k, ahol szinte nincs különbség."
           tone="neutral"
           items={nobodyKnows}
           valueLabel={(item) => `${Math.abs(item.diff)}`}
