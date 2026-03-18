@@ -17,7 +17,8 @@ Owner: Product
   <a href="#product-overview">Product Overview</a> •
   <a href="#quick-start">Quick Start</a> •
   <a href="#operations-and-validation">Operations & Validation</a> •
-  <a href="#documentation-map">Documentation Map</a>
+  <a href="#documentation-map">Documentation Map</a> •
+  <a href="#handover-and-dev-notes">Handover & Dev Notes</a>
 </p>
 
 ## Product Overview
@@ -152,6 +153,11 @@ Rules:
 - [docs/WORKFLOWS.md](docs/WORKFLOWS.md) - active user journeys and vote UX contract
 - [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) - active design-system and shared visual rules
 - [docs/OPERATIONS.md](docs/OPERATIONS.md) - deploy, runtime checks, incident checklist
+
+## Handover and Dev Notes
+
+- [handover.md](handover.md) - current repo state, recent completed work, next recommended step
+- [READMEDEV.md](READMEDEV.md) - developer quick reference and anti-drift rules
 
 ## Deployment
 
