@@ -120,6 +120,7 @@ Contract:
 - route files should not invent local grammars for existing patterns
 - county silhouette stamps in ranking cards resolve from canonical `countyCode` props supplied by shared builders
 - renderer components must not recover county identity from display names when canonical ids are already available
+- dashboard bloc list pages should keep the same ranking-card visual language even when items stream in via infinite scroll
 
 ## Vote Interaction Visual Contract
 

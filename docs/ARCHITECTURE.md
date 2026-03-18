@@ -116,6 +116,7 @@ Current shared ranking builder layer:
 Responsibilities:
 - county-enriched city ranking assembly,
 - balanced county aggregation,
+- bloc-specific city ranking pagination for `/dashboard/igen` and `/dashboard/nem`,
 - top dashboard ranking slices reused by production dashboard and preview,
 - development-time county identity assertions,
 - canonical county identity propagation via `countyCode` and `countyHref`,

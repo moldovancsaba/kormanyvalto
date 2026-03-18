@@ -64,7 +64,7 @@ Tasks:
 
 ## Phase 5. Regression Audit
 
-Status: in progress
+Status: completed in active code
 
 Tasks:
 - walk every dashboard section after the builder refactor:
@@ -79,7 +79,11 @@ Tasks:
   - `A nem városok`
 - confirm title, county, href, tone, and map are coherent
 
+Result:
+- `Kiegyensúlyozott vármegyék` now reuses the shared county ranking card instead of a route-local barometer list.
+- `Az igen városok` and `A nem városok` now page through canonical county-enriched city ranking items, preserving county links and county identity during infinite scroll.
+
 ## Immediate Next Steps
 
-1. Run another full dashboard consistency sweep and update this report.
-2. Extend regression coverage if a new preview or production ranking surface is promoted.
+1. Extend regression coverage if a new preview or production ranking surface is promoted.
+2. Re-run the sweep whenever a dashboard section changes ranking mode, card family, or pagination behavior.

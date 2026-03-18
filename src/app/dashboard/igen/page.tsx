@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { PageShell } from "../../../components/PageChrome";
 import CityBlocGridClient from "../../../components/CityBlocGridClient";
+import { getCityRankingDetailItemsByBloc, type CityRankingDetailItem } from "../../../lib/dashboardDetailData";
 import { getSectionNavItems } from "../../../lib/navigation";
-import { getCityStatsByBloc, type CityVoteStat } from "../../../lib/results";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -16,10 +16,10 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default async function DashboardIgenCitiesPage() {
-  let items: CityVoteStat[] = [];
+  let items: CityRankingDetailItem[] = [];
   let hasMore = false;
   try {
-    const data = await getCityStatsByBloc("yes", 0, 10);
+    const data = await getCityRankingDetailItemsByBloc("yes", 0, 10);
     items = data.items;
     hasMore = data.hasMore;
   } catch {

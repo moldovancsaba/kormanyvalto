@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.8 - 2026-03-18
+
+### Changed
+- Completed the dashboard consistency sweep by moving `/dashboard/kiegyensulyozott-varmegyek` onto the shared county ranking card.
+- Unified `/dashboard/igen` and `/dashboard/nem` around canonical county-enriched dashboard ranking items so infinite-scroll city cards keep county links, county codes, and county tones consistent with the rest of the dashboard.
+
+### Documentation
+- Updated workflow, design-system, architecture, and dashboard consistency docs for the completed sweep and shared bloc-list contract.
+
 ## 1.1.7 - 2026-03-18
 
 ### Changed

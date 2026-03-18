@@ -269,3 +269,24 @@ export async function getBalancedCountyDetailItems(): Promise<CountyBalanceDetai
     .sort((left, right) => Math.abs(left.marginPercent) - Math.abs(right.marginPercent) || right.totalVotes - left.totalVotes);
   return items;
 }
+
+export async function getCityRankingDetailItemsByBloc(
+  bloc: "yes" | "no",
+  offset = 0,
+  limit = 10
+): Promise<{ items: CityRankingDetailItem[]; total: number; hasMore: boolean }> {
+  const votedCities = enrichCityItems(await getVotedCities()).filter((item) => item.leadBloc === bloc);
+  const sorted = [...votedCities].sort((left, right) => {
+    if (bloc === "yes") {
+      return right.diff - left.diff || right.totalVotes - left.totalVotes || left.city.localeCompare(right.city, "hu");
+    }
+    return left.diff - right.diff || right.totalVotes - left.totalVotes || left.city.localeCompare(right.city, "hu");
+  });
+
+  const safeOffset = Math.max(0, offset);
+  const safeLimit = Math.max(1, Math.min(50, limit));
+  const items = sorted.slice(safeOffset, safeOffset + safeLimit);
+  const total = sorted.length;
+  const hasMore = safeOffset + items.length < total;
+  return { items, total, hasMore };
+}

@@ -2,28 +2,22 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { type CityRankingDetailItem } from "../lib/dashboardDetailData";
 import { formatAbsolutePercent } from "../lib/numberFormat";
-
-type BlocCityItem = {
-  city: string;
-  county: string;
-  districtLabel: string;
-  href: string;
-  yes: number;
-  no: number;
-  total: number;
-  diff: number;
-  diffPercent: number;
-  leadBloc: "yes" | "no" | "neutral";
-};
 
 type CityBlocGridClientProps = {
   bloc: "yes" | "no";
   title: string;
   subtitle: string;
-  initialItems: BlocCityItem[];
+  initialItems: CityRankingDetailItem[];
   initialHasMore: boolean;
 };
+
+function getBlocLabel(leadBloc: CityRankingDetailItem["leadBloc"]): string {
+  if (leadBloc === "yes") return "igen";
+  if (leadBloc === "no") return "nem";
+  return "döntetlen";
+}
 
 export default function CityBlocGridClient({
   bloc,
@@ -32,7 +26,7 @@ export default function CityBlocGridClient({
   initialItems,
   initialHasMore,
 }: CityBlocGridClientProps) {
-  const [items, setItems] = useState<BlocCityItem[]>(initialItems);
+  const [items, setItems] = useState<CityRankingDetailItem[]>(initialItems);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +45,7 @@ export default function CityBlocGridClient({
         setLoading(true);
         fetch(`/api/city-cards?bloc=${bloc}&offset=${items.length}&limit=10`, { cache: "no-store" })
           .then(async (res) => {
-            const payload = (await res.json()) as { items?: BlocCityItem[]; hasMore?: boolean; error?: string };
+            const payload = (await res.json()) as { items?: CityRankingDetailItem[]; hasMore?: boolean; error?: string };
             if (!res.ok) throw new Error(payload.error || "Nem sikerült betölteni a következő elemeket.");
             setItems((prev) => [...prev, ...(payload.items ?? [])]);
             setHasMore(Boolean(payload.hasMore));
@@ -87,18 +81,23 @@ export default function CityBlocGridClient({
                   {item.city}
                 </Link>
               </h3>
-              <p>
-                {item.county} · {item.districtLabel}
-              </p>
+              <Link href={item.countyHref} className={`preview-ranking-chip preview-ranking-chip-${item.countyLeadBloc}`}>
+                {item.county}
+              </Link>
+              <p>{item.districtLabel}</p>
             </header>
+
             <div className="preview-trading-card-props">
+              <p>Vármegyei kód: {item.countyCode}</p>
+              <p>Vármegye: {getBlocLabel(item.countyLeadBloc)}</p>
+              <p>EVK: {getBlocLabel(item.leadBloc)}</p>
               <p>Különbség: {item.diff}</p>
-              <p>Eltérés: {formatAbsolutePercent(item.diffPercent)}</p>
-              <p>{item.total} szavazat</p>
+              <p>Eltérés: {formatAbsolutePercent(item.marginPercent)}</p>
+              <p>{item.totalVotes} szavazat</p>
             </div>
             <svg viewBox="0 0 100 10" className="preview-ranking-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
               <rect x="0" y="0" width="100" height="10" className="preview-ranking-track" />
-              <rect x="0" y="0" width={Math.max(8, Math.abs(item.diffPercent))} height="10" className={`preview-card-bar preview-card-bar-${item.leadBloc}`} />
+              <rect x="0" y="0" width={Math.max(8, Math.abs(item.marginPercent))} height="10" className={`preview-card-bar preview-card-bar-${item.leadBloc}`} />
             </svg>
           </article>
         ))}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCityStatsByBloc } from "../../../lib/results";
+import { getCityRankingDetailItemsByBloc } from "../../../lib/dashboardDetailData";
 import { checkRateLimit } from "../../../lib/rateLimit";
 import { normalizePagination } from "../../../lib/requestValidation";
 import { NO_CACHE_HEADERS } from "../../../lib/http";
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const data = await getCityStatsByBloc(bloc, offset, limit);
+    const data = await getCityRankingDetailItemsByBloc(bloc, offset, limit);
     return NextResponse.json(data, { headers: NO_CACHE_HEADERS });
   } catch {
     return NextResponse.json({ error: "Nem sikerült betölteni a városlistát." }, { status: 500, headers: NO_CACHE_HEADERS });
