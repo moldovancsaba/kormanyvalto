@@ -83,7 +83,7 @@ Production dashboard:
 
 Preview dashboard:
 - `/dashboard-preview`
-  - contains staging/validation visuals before promotion to production dashboard, while reusing the shared KPI/pie primitives where behavior matches
+  - contains staging/validation visuals before promotion to production dashboard, limited to preview-specific metrics and active-county coverage summaries
 
 Reusable dashboard visual components:
 - `src/components/dashboard/*`

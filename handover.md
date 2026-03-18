@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.1.5`
+- Current released version: `1.1.7`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -59,15 +59,16 @@ Main files:
 - `docs/DEVELOPMENT.md`
 - `README.md`
 
-### Dashboard builder unification
+### Dashboard builder follow-up
 
-- `/dashboard` and `/dashboard-preview` now reuse the shared ranking builder layer more consistently.
-- Development-time county identity assertions were added to catch builder drift early.
+- Automated regression tests now cover dashboard county identity and ranking order.
+- Dashboard renderers now trust canonical county ids instead of county-name recovery.
+- `/dashboard-preview` now computes only preview-specific metrics plus active-county activity.
 
 Main files:
 - `src/lib/dashboardDetailData.ts`
 - `src/lib/dashboardPreviewData.ts`
-- `src/app/dashboard/page.tsx`
+- `tests/dashboardDetailData.test.ts`
 
 ## Current Open Follow-Up
 
@@ -81,10 +82,9 @@ Project board:
 ## Recommended Next Step
 
 Work next on:
-- automated regression tests for dashboard county identity and ranking outputs,
-- reducing remaining preview-only assembly to preview-specific metrics only,
-- tightening renderer contracts around one canonical county identity path,
-- then run another dashboard consistency sweep.
+- a full dashboard consistency sweep across every production and preview section,
+- any follow-up regressions found during that sweep,
+- then update the dashboard consistency plan and handover again.
 
 ## Important Active Docs
 

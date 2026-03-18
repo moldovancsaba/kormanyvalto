@@ -165,6 +165,6 @@ Routes:
 
 Rules:
 - County-enriched ranking outputs must come from the shared builder in `src/lib/dashboardDetailData.ts`.
-- Preview owns only preview-specific metrics such as coverage and list-vote preview state.
+- Preview owns only preview-specific metrics such as coverage, active-county activity, and list-vote preview state.
 - County identity for dashboard ranking cards flows through canonical `countyCode` and `countyHref` values, not renderer-side county-name recovery.
 - If dashboard ranking metrics fail, pages should still render their surrounding shell with empty ranking states rather than crash.

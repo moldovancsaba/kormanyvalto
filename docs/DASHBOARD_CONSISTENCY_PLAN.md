@@ -55,12 +55,16 @@ Suggested checks:
 
 ## Phase 4. Renderer Contract Tightening
 
+Status: complete in active code
+
 Tasks:
 - update card renderers to trust one canonical county identity source,
 - remove unnecessary fallback ambiguity where possible,
 - ensure map stamps, links, and titles all use the same canonical county object.
 
 ## Phase 5. Regression Audit
+
+Status: in progress
 
 Tasks:
 - walk every dashboard section after the builder refactor:
@@ -77,7 +81,5 @@ Tasks:
 
 ## Immediate Next Steps
 
-1. Add automated regression tests for dashboard county identity and ranking outputs.
-2. Reduce remaining preview-only assembly to preview-specific metrics only.
-3. Tighten renderer contracts to rely on one canonical county identity path.
-4. Run another full dashboard consistency sweep and update this report.
+1. Run another full dashboard consistency sweep and update this report.
+2. Extend regression coverage if a new preview or production ranking surface is promoted.

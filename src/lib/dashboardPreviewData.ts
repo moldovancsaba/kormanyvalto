@@ -1,9 +1,4 @@
 import { constituencies, getCounties } from "./constituencies";
-import {
-  type CityRankingDetailItem,
-  type CountyBalanceDetailItem,
-  getDashboardTopMetrics,
-} from "./dashboardDetailData";
 import { getMatrixStatus } from "./matrixStatus";
 import { getDashboardSummary, getLeadBlocFromCounts, getParliamentEstimate, getScopeVoteCounts } from "./results";
 
@@ -33,8 +28,6 @@ export type DashboardPreviewMetrics = {
   totalRegisteredPlayers: number;
   weightedTripleVotes: number;
   weightedRegularVotes: number;
-  topClosestCities: CityRankingDetailItem[];
-  topStrongestCities: CityRankingDetailItem[];
   topActiveCounties: Array<{
     countyName: string;
     countyCode: string;
@@ -43,58 +36,6 @@ export type DashboardPreviewMetrics = {
     marginPercent: number;
     leadBloc: "yes" | "no" | "neutral";
   }>;
-  topBalancedCounties: CountyBalanceDetailItem[];
-  topWarZones: Array<{
-    city: string;
-    county: string;
-    districtLabel: string;
-    href: string;
-    totalVotes: number;
-    diff: number;
-    diffPercent: number;
-    leadBloc: "yes" | "no" | "neutral";
-  }>;
-  topPeaceIslands: Array<{
-    city: string;
-    county: string;
-    districtLabel: string;
-    href: string;
-    totalVotes: number;
-    diff: number;
-    diffPercent: number;
-    leadBloc: "yes" | "no" | "neutral";
-  }>;
-  topYesCities: Array<{
-    city: string;
-    county: string;
-    districtLabel: string;
-    href: string;
-    totalVotes: number;
-    diff: number;
-    diffPercent: number;
-    leadBloc: "yes" | "no" | "neutral";
-  }>;
-  topNoCities: Array<{
-    city: string;
-    county: string;
-    districtLabel: string;
-    href: string;
-    totalVotes: number;
-    diff: number;
-    diffPercent: number;
-    leadBloc: "yes" | "no" | "neutral";
-  }>;
-  topUncertainCities: Array<{
-    city: string;
-    county: string;
-    districtLabel: string;
-    href: string;
-    totalVotes: number;
-    diff: number;
-    diffPercent: number;
-    leadBloc: "yes" | "no" | "neutral";
-  }>;
-  topIndicatorCities: CityRankingDetailItem[];
 };
 
 function toPercent(part: number, total: number): number {
@@ -104,11 +45,10 @@ function toPercent(part: number, total: number): number {
 
 export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetrics> {
   const districtScopes = constituencies.map((constituency) => `ogy2026/egyeni-valasztokeruletek/${constituency.maz}/${constituency.evk}`);
-  const [summary, districtCounts, projection, dashboardTopMetrics] = await Promise.all([
+  const [summary, districtCounts, projection] = await Promise.all([
     getDashboardSummary(),
     getScopeVoteCounts(districtScopes),
     getParliamentEstimate("projection"),
-    getDashboardTopMetrics(),
   ]);
 
   const totalWeightedVotes = summary.weightedYes + summary.weightedNo;
@@ -150,9 +90,6 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     hasNationalVotes: summary.totalVoteEvents > 0,
   };
 
-  // Preview keeps ownership of coverage/list-vote preview metrics, but ranking
-  // sections should reuse the shared dashboard builder contracts so preview
-  // cannot silently drift from production ordering or county identity logic.
   const countyAggregateList = counties.map((county) => {
     const countyConstituencies = constituencies.filter((constituency) => constituency.maz === county.maz);
     let yesVotes = 0;
@@ -179,87 +116,12 @@ export async function getDashboardPreviewMetrics(): Promise<DashboardPreviewMetr
     .filter((item) => item.totalVotes > 0)
     .sort((left, right) => right.totalVotes - left.totalVotes || left.countyName.localeCompare(right.countyName, "hu"))
     .slice(0, 5);
-  const topBalancedCounties = dashboardTopMetrics.balancedCounties.slice(0, 5);
-
-  const topWarZones = dashboardTopMetrics.warZone
-    .map((item) => ({
-      city: item.city,
-      county: item.county,
-      districtLabel: item.districtLabel,
-      href: item.href,
-      totalVotes: item.total,
-      diff: item.diff,
-      diffPercent: item.diffPercent,
-      leadBloc: item.leadBloc,
-    }));
-
-  const topPeaceIslands = dashboardTopMetrics.peaceIslands
-    .map((item) => ({
-      city: item.city,
-      county: item.county,
-      districtLabel: item.districtLabel,
-      href: item.href,
-      totalVotes: item.total,
-      diff: item.diff,
-      diffPercent: item.diffPercent,
-      leadBloc: item.leadBloc,
-    }));
-
-  const topYesCities = dashboardTopMetrics.yesCities
-    .map((item) => ({
-      city: item.city,
-      county: item.county,
-      districtLabel: item.districtLabel,
-      href: item.href,
-      totalVotes: item.total,
-      diff: item.diff,
-      diffPercent: item.diffPercent,
-      leadBloc: item.leadBloc,
-    }));
-
-  const topNoCities = dashboardTopMetrics.noCities
-    .map((item) => ({
-      city: item.city,
-      county: item.county,
-      districtLabel: item.districtLabel,
-      href: item.href,
-      totalVotes: item.total,
-      diff: item.diff,
-      diffPercent: item.diffPercent,
-      leadBloc: item.leadBloc,
-    }));
-
-  const topUncertainCities = dashboardTopMetrics.nobodyKnows
-    .map((item) => ({
-      city: item.city,
-      county: item.county,
-      districtLabel: item.districtLabel,
-      href: item.href,
-      totalVotes: item.total,
-      diff: item.diff,
-      diffPercent: item.diffPercent,
-      leadBloc: item.leadBloc,
-    }));
-
-  const topClosestCities = dashboardTopMetrics.closestBattlegrounds.slice(0, 5);
-  const topStrongestCities = dashboardTopMetrics.strongestBastions.slice(0, 5);
-  const topIndicatorCities = dashboardTopMetrics.indicatorCities.slice(0, 5);
-
   return {
     leadOverview,
     reportingCoverage,
     totalRegisteredPlayers: summary.totalRegisteredPlayers,
     weightedTripleVotes: summary.weightedTripleVotes,
     weightedRegularVotes: summary.weightedRegularVotes,
-    topClosestCities,
-    topStrongestCities,
     topActiveCounties,
-    topBalancedCounties,
-    topWarZones,
-    topPeaceIslands,
-    topYesCities,
-    topNoCities,
-    topUncertainCities,
-    topIndicatorCities,
   };
 }

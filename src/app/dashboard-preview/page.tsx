@@ -45,16 +45,7 @@ export default async function DashboardPreviewPage() {
     totalRegisteredPlayers: 0,
     weightedTripleVotes: 0,
     weightedRegularVotes: 0,
-    topClosestCities: [],
-    topStrongestCities: [],
     topActiveCounties: [],
-    topBalancedCounties: [],
-    topWarZones: [],
-    topPeaceIslands: [],
-    topYesCities: [],
-    topNoCities: [],
-    topUncertainCities: [],
-    topIndicatorCities: [],
   };
   let listVotePreview = {
     listBasisYes: 0,

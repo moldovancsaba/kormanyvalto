@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.7 - 2026-03-18
+
+### Changed
+- Reduced `src/lib/dashboardPreviewData.ts` further so `/dashboard-preview` computes only preview-specific metrics and active-county activity data that the route actually renders.
+
+### Documentation
+- Updated workflow and architecture docs to reflect the smaller preview-data ownership surface.
+
 ## 1.1.6 - 2026-03-18
 
 ### Added
