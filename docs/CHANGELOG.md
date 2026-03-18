@@ -3,7 +3,7 @@
 ## 1.2.1 - 2026-03-18
 
 ### Fixed
-- Vote history county, city, and `Országos` chips now use the historical result state at the time of each recorded vote instead of the current latest aggregate color.
+- Vote history county, city, and `Országos` chips now use their own historical result state at the time of each recorded vote instead of the current latest aggregate color.
 
 ### Documentation
 - Added the vote history historical-state contract to the workflow docs.

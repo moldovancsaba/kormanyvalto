@@ -61,7 +61,7 @@ Main files:
 
 ### Vote history historical-state fix
 
-- Vote history county, city, and `Országos` chips now reflect the result state that existed immediately after each recorded vote.
+- Vote history county, city, and `Országos` chips now reflect their own result state that existed immediately after each recorded vote.
 - History chips no longer inherit the latest present-day aggregate color for older records.
 
 Main files:

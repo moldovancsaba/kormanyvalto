@@ -245,7 +245,7 @@ export async function getResults(
         : { scope };
 
   const votes = await (await getVotesCollection())
-    .find(filter, { projection: { _id: 0, type: 1, timestamp: 1, scope: 1, weight: 1, mode: 1 } })
+    .find(filter, { projection: { _id: 1, type: 1, timestamp: 1, scope: 1, weight: 1, mode: 1 } })
     .sort({ timestamp: -1 })
     .toArray();
 
@@ -272,29 +272,70 @@ export async function getResults(
     const normalizedScope = vote.scope ?? "main";
     return {
       vote,
+      voteId: String((vote as { _id?: unknown })._id ?? `${normalizedScope}:${vote.timestamp}:${vote.type}`),
       normalizedScope,
       meta: getScopeMeta(normalizedScope),
     };
   });
 
-  const historySnapshots = new Array<{
+  const historyCountyMaz = [...new Set(historyItems.map((item) => item.meta.maz).filter((value): value is string => Boolean(value)))];
+  const historyDistrictScopes = [
+    ...new Set(
+      historyItems
+        .filter((item) => item.meta.maz && item.meta.evk)
+        .map((item) => `ogy2026/egyeni-valasztokeruletek/${item.meta.maz}/${item.meta.evk}`)
+    ),
+  ];
+  const countyContextScopes = constituencies
+    .filter((item) => historyCountyMaz.includes(item.maz))
+    .map((item) => `ogy2026/egyeni-valasztokeruletek/${item.maz}/${item.evk}`);
+  const countyDirectScopes = historyCountyMaz.map((maz) => `ogy2026/egyeni-valasztokeruletek/${maz}`);
+  const needsMainContext = historyItems.some((item) => item.normalizedScope === "main");
+
+  const contextFilterParts: object[] = [];
+  if (historyDistrictScopes.length > 0) {
+    contextFilterParts.push({ scope: { $in: historyDistrictScopes } });
+  }
+  if (countyContextScopes.length > 0) {
+    contextFilterParts.push({ scope: { $in: countyContextScopes } });
+  }
+  if (countyDirectScopes.length > 0) {
+    contextFilterParts.push({ scope: { $in: countyDirectScopes } });
+  }
+  if (needsMainContext) {
+    contextFilterParts.push({ $or: [{ scope: "main" }, { scope: { $exists: false } }] });
+  }
+
+  const contextVotes =
+    contextFilterParts.length > 0
+      ? await (await getVotesCollection())
+          .find(
+            contextFilterParts.length === 1 ? contextFilterParts[0] : { $or: contextFilterParts },
+            { projection: { _id: 1, type: 1, timestamp: 1, scope: 1, weight: 1, mode: 1 } }
+          )
+          .sort({ timestamp: 1 })
+          .toArray()
+      : [];
+
+  const historySnapshotByVoteId = new Map<string, {
     scopeYes: number;
     scopeNo: number;
     countyYes?: number;
     countyNo?: number;
     districtYes?: number;
     districtNo?: number;
-  }>(votes.length);
+  }>();
 
   const historicalScopeTally = new Map<string, { yes: number; no: number }>();
   const historicalCountyTally = new Map<string, { yes: number; no: number }>();
   const historicalDistrictTally = new Map<string, { yes: number; no: number }>();
+  const targetVoteIds = new Set(historyItems.map((item) => item.voteId));
 
-  for (let index = votes.length - 1; index >= 0; index -= 1) {
-    const vote = votes[index];
+  for (const vote of contextVotes) {
     const normalizedScope = vote.scope ?? "main";
     const meta = getScopeMeta(normalizedScope);
     const weight = getVoteWeight(vote);
+    const voteId = String((vote as { _id?: unknown })._id ?? `${normalizedScope}:${vote.timestamp}:${vote.type}`);
 
     addTally(historicalScopeTally, normalizedScope, vote.type, weight);
 
@@ -305,18 +346,20 @@ export async function getResults(
       addTally(historicalCountyTally, meta.maz, vote.type, weight);
     }
 
-    historySnapshots[index] = {
-      scopeYes: historicalScopeTally.get(normalizedScope)?.yes ?? 0,
-      scopeNo: historicalScopeTally.get(normalizedScope)?.no ?? 0,
-      countyYes: meta.maz ? historicalCountyTally.get(meta.maz)?.yes ?? 0 : undefined,
-      countyNo: meta.maz ? historicalCountyTally.get(meta.maz)?.no ?? 0 : undefined,
-      districtYes: meta.maz && meta.evk ? historicalDistrictTally.get(normalizedScope)?.yes ?? 0 : undefined,
-      districtNo: meta.maz && meta.evk ? historicalDistrictTally.get(normalizedScope)?.no ?? 0 : undefined,
-    };
+    if (targetVoteIds.has(voteId)) {
+      historySnapshotByVoteId.set(voteId, {
+        scopeYes: historicalScopeTally.get(normalizedScope)?.yes ?? 0,
+        scopeNo: historicalScopeTally.get(normalizedScope)?.no ?? 0,
+        countyYes: meta.maz ? historicalCountyTally.get(meta.maz)?.yes ?? 0 : undefined,
+        countyNo: meta.maz ? historicalCountyTally.get(meta.maz)?.no ?? 0 : undefined,
+        districtYes: meta.maz && meta.evk ? historicalDistrictTally.get(normalizedScope)?.yes ?? 0 : undefined,
+        districtNo: meta.maz && meta.evk ? historicalDistrictTally.get(normalizedScope)?.no ?? 0 : undefined,
+      });
+    }
   }
 
-  const history = historyItems.map(({ vote, normalizedScope, meta }, index) => {
-    const snapshot = historySnapshots[index] ?? { scopeYes: 0, scopeNo: 0 };
+  const history = historyItems.map(({ vote, voteId, normalizedScope, meta }) => {
+    const snapshot = historySnapshotByVoteId.get(voteId) ?? { scopeYes: 0, scopeNo: 0 };
     return {
       type: vote.type,
       timestamp: vote.timestamp,
