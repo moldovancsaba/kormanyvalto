@@ -146,6 +146,7 @@ Current direction:
 - Global design tokens and component styles in `src/app/globals.css`
 - Design rule: new visual modules should use global classes, not inline style definitions
 - Shared page-intro ownership lives in `src/components/PageChrome.tsx`; route segments should prefer that wrapper over route-local hero/header variants for local page titles
+- The national vote route follows the same route-owned intro pattern; `VoteWidget` should not be the source of page-specific heading copy.
 - KPI/Card system is centralized and reusable:
   - `.kpi-card`, `.kpi-value-chip`, `.kpi-dual-chip`
   - `.chart-card`, `.pie-card`

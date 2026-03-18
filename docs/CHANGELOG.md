@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.8 - 2026-03-18
+
+### Changed
+- Moved the national home vote page onto the shared page-intro pattern so the top-level vote route matches the same local title/orientation structure used across the rest of the app.
+- Removed the remaining widget-owned page heading dependency from the home vote flow.
+
+### Documentation
+- Updated workflow, design-system, architecture, and handover docs for the national vote-page intro contract.
+
 ## 1.2.7 - 2026-03-18
 
 ### Changed

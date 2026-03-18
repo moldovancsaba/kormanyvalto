@@ -29,11 +29,12 @@ Route:
 Flow:
 1. User lands on the national vote page.
 2. Shared county-result hero loads at the top.
-3. Lead snapshot and totals load.
-4. User presses `igen` or `nem`.
-5. Immediate feedback appears before the vote request completes.
-6. Cooldown state appears after the success flash.
-7. Results and history update from the accepted response.
+3. A shared page intro establishes that this is the national vote view.
+4. Lead snapshot and totals load.
+5. User presses `igen` or `nem`.
+6. Immediate feedback appears before the vote request completes.
+7. Cooldown state appears after the success flash.
+8. Results and history update from the accepted response.
 
 Implementation:
 - `src/components/VoteWidget.tsx`

@@ -121,7 +121,7 @@ Implementation:
 Contract:
 - major routes should open with a clear local page intro, not jump directly into a card or body copy
 - intro structure should be eyebrow -> title -> short orientation copy where appropriate
-- dashboard pages, dashboard detail pages, county navigation pages, mandate analytics, preview pages, and legal pages should reuse the same intro family
+- national voting, dashboard pages, dashboard detail pages, county navigation pages, mandate analytics, preview pages, and legal pages should reuse the same intro family
 - when a route supplies the page intro, embedded cards or list clients should not render another page-level `h1`
 
 ### Dashboard cards
