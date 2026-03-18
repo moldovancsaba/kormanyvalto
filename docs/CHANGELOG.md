@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.2 - 2026-03-18
+
+### Changed
+- Normalized navigation and utility button microcopy across the EVK flow and vote widget, including back actions, source links, retry actions, and the 3x login CTA.
+
+### Documentation
+- Updated workflow, design-system, and handover docs for navigation/button microcopy consistency.
+
 ## 1.3.1 - 2026-03-18
 
 ### Changed

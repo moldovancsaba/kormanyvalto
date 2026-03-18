@@ -57,6 +57,10 @@ Flow:
 4. Selecting a county opens a county context page that explains the next step and lists the EVK choices.
 5. Selecting an EVK opens the vote page for that constituency.
 
+Microcopy rules:
+- Back-navigation labels should describe the destination consistently, for example `Vissza a listához` for the county list and `Vissza a vármegyéhez` for a specific county page.
+- External source actions should use the same direct noun-first grammar as the rest of the UI, for example `NVI forrás`.
+
 Navigation label:
 - shared primary-nav button text: `⚠ EVK 2026 ⚠`
 
@@ -128,6 +132,7 @@ Rules:
 - Auth/session reads must not block result loading or ordinary anonymous voting.
 - If a vote is accepted but the follow-up summary refresh fails, the UI must say the vote was saved and offer a retry instead of implying the vote was lost.
 - Vote/result read failures should offer an immediate retry path on the same screen.
+- Retry actions should use the same direct button grammar as navigation actions, for example `Újrapróbálás`.
 
 ## Vote History Contract
 

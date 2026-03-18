@@ -72,7 +72,7 @@ export async function PageHero({ showHero = true }: PageHeroProps) {
         colorMode="result"
         overlayLabel="2026 április 12"
         title="SZAVAZÁS"
-        subtitle="Váltani akarsz? Vagy nem? Kattints!"
+        subtitle="Váltani akarsz? Vagy nem? Válassz."
       />
     </div>
   );

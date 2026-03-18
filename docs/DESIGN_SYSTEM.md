@@ -178,3 +178,4 @@ Non-negotiable rules:
 - If a new stateful pattern appears twice, make it a shared class or shared component.
 - If a visual state changes user-facing behavior, document it here and in `docs/WORKFLOWS.md`.
 - Multi-step navigation pages should use explicit orientation copy rather than assuming the user understands the county -> EVK -> vote hierarchy.
+- Navigation and utility buttons should prefer short destination-first or action-first labels and avoid mixing multiple voices for the same action family.

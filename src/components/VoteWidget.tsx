@@ -430,7 +430,7 @@ export default function VoteWidget({
           <p className="error">{error}</p>
           {error.includes("betölteni") || error.includes("frissítése") ? (
             <button type="button" className="nav-link-button nav-link-button-small nav-link-button-secondary" onClick={() => void retryResultsLoad()}>
-              újrapróbálás
+              Újrapróbálás
             </button>
           ) : null}
         </div>
@@ -499,7 +499,7 @@ export default function VoteWidget({
             <span className="material-symbols-rounded" aria-hidden="true">
               release_alert
             </span>
-            <span>Belépés Google-fiókkal a 3x VOTE-hoz</span>
+            <span>Google-belépés a 3x VOTE-hoz</span>
           </a>
         </section>
       ) : (

@@ -60,8 +60,8 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
           <PageActionLinks
             items={[
               { href: `/ogy2026/egyeni-valasztokeruletek/${item.maz}`, label: "Vissza a vármegyéhez" },
-              { href: "/ogy2026/egyeni-valasztokeruletek", label: "Összes vármegye", secondary: true },
-              { href: item.sourceUrl, label: "Forrás (NVI)", secondary: true, external: true },
+              { href: "/ogy2026/egyeni-valasztokeruletek", label: "Vissza a listához", secondary: true },
+              { href: item.sourceUrl, label: "NVI forrás", secondary: true, external: true },
               ...getSectionNavItems("/ogy2026/egyeni-valasztokeruletek"),
             ]}
           />

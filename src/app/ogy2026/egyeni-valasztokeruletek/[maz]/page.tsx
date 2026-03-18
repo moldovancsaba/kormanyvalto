@@ -58,19 +58,19 @@ export default async function CountyPage({ params }: PageProps) {
   return (
     <PageShell
       navItems={getSectionNavItems("/ogy2026/egyeni-valasztokeruletek", [
-        { href: "/ogy2026/egyeni-valasztokeruletek", label: "Vissza a vármegyékhez" },
+        { href: "/ogy2026/egyeni-valasztokeruletek", label: "Vissza a listához" },
       ])}
     >
       <PageIntro
         eyebrow="EVK 2026"
         title={countyName}
-        intro="2. lépés: válassz egyéni választókerületet. Innen jutsz el a szavazóoldalra."
+        intro="2. lépés: válassz egyéni választókerületet. Innen közvetlenül a szavazáshoz jutsz."
       />
 
       <section className="context-panel" aria-label="Vármegyei navigációs összefoglaló">
         <p className="context-panel-eyebrow">Vármegyei nézet</p>
         <p className="context-panel-title">{countyName}</p>
-        <p className="context-panel-copy">{constituencyCount} körzet közül választhatsz. Minden sor közvetlenül a megfelelő EVK szavazóoldalra visz.</p>
+        <p className="context-panel-copy">{constituencyCount} körzet közül választhatsz. Minden sor közvetlenül a megfelelő EVK oldalára visz.</p>
       </section>
 
       <section className="button-list" aria-label="Körzetek listája">
