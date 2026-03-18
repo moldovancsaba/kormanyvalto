@@ -118,6 +118,8 @@ Shared class families:
 Contract:
 - route files compose from shared families
 - route files should not invent local grammars for existing patterns
+- county silhouette stamps in ranking cards resolve from canonical `countyCode` props supplied by shared builders
+- renderer components must not recover county identity from display names when canonical ids are already available
 
 ## Vote Interaction Visual Contract
 

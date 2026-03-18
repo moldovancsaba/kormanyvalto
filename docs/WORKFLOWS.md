@@ -156,3 +156,15 @@ Implementation:
 - Vote flow must fail open against non-essential sidecars where possible.
 - Security, abuse scoring, telemetry, and analytics must degrade without blocking the main user journey.
 - First-click responsiveness matters; warmup/preload paths are acceptable if they preserve semantics.
+
+## Dashboard Ranking Workflow
+
+Routes:
+- `/dashboard`
+- `/dashboard-preview`
+
+Rules:
+- County-enriched ranking outputs must come from the shared builder in `src/lib/dashboardDetailData.ts`.
+- Preview owns only preview-specific metrics such as coverage and list-vote preview state.
+- County identity for dashboard ranking cards flows through canonical `countyCode` and `countyHref` values, not renderer-side county-name recovery.
+- If dashboard ranking metrics fail, pages should still render their surrounding shell with empty ranking states rather than crash.

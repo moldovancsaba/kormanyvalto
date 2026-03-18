@@ -117,11 +117,14 @@ Responsibilities:
 - county-enriched city ranking assembly,
 - balanced county aggregation,
 - top dashboard ranking slices reused by production dashboard and preview,
-- development-time county identity assertions.
+- development-time county identity assertions,
+- canonical county identity propagation via `countyCode` and `countyHref`,
+- pure builder helpers used by regression tests.
 
 Current direction:
 - `/dashboard` and `/dashboard-preview` should share ranking-builder contracts,
-- preview should only own metrics that are genuinely preview-specific.
+- preview should only own metrics that are genuinely preview-specific,
+- ranking renderers should trust canonical builder ids instead of rebuilding county identity locally.
 
 ## Authentication / 3x Voting Mode
 

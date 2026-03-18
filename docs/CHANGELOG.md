@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.6 - 2026-03-18
+
+### Added
+- Added automated dashboard regression tests for canonical county identity and shared ranking ordering.
+
+### Changed
+- Reduced `src/lib/dashboardPreviewData.ts` to preview-specific metrics while reusing shared ranking payloads directly from `src/lib/dashboardDetailData.ts`.
+- Tightened dashboard ranking renderers so county silhouette stamps resolve from canonical `countyCode` only.
+
+### Documentation
+- Updated workflow, design-system, and architecture docs for the shared dashboard builder ownership and county identity contract.
+
 ## 1.1.5 - 2026-03-18
 
 ### Changed

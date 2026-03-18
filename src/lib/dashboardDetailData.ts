@@ -30,6 +30,8 @@ export type CountyBalanceDetailItem = {
   leadBloc: "yes" | "no" | "neutral";
 };
 
+export type CountyIdentity = Pick<CountyBalanceDetailItem, "countyName" | "countyCode" | "href">;
+
 export type DashboardTopMetrics = {
   votedCities: CityVoteStat[];
   nationalYesPercent: number;
@@ -152,21 +154,23 @@ async function getVotedCities() {
   return stats.filter((item) => item.total > 0);
 }
 
-export async function getNationalYesPercent(): Promise<number> {
-  const votedCities = await getVotedCities();
+export function getNationalYesPercentFromCities(votedCities: Pick<CityVoteStat, "yes" | "no">[]): number {
   const nationalYes = votedCities.reduce((sum, item) => sum + item.yes, 0);
   const nationalNo = votedCities.reduce((sum, item) => sum + item.no, 0);
   const nationalTotal = nationalYes + nationalNo;
   return nationalTotal > 0 ? (nationalYes / nationalTotal) * 100 : 50;
 }
 
-export async function getDashboardTopMetrics(limit = 5): Promise<DashboardTopMetrics> {
-  const votedCities = await getVotedCities();
+export async function getNationalYesPercent(): Promise<number> {
+  return getNationalYesPercentFromCities(await getVotedCities());
+}
+
+export function buildDashboardTopMetrics(votedCities: CityVoteStat[], limit = 5): DashboardTopMetrics {
   // `/dashboard` and `/dashboard-preview` should consume the same county-enriched
   // ranking contracts so card ordering, links, tones, and silhouette identity do
   // not drift independently between the two surfaces.
   const enrichedCities = enrichCityItems(votedCities);
-  const nationalYesPercent = await getNationalYesPercent();
+  const nationalYesPercent = getNationalYesPercentFromCities(votedCities);
   const balancedCountyItems = buildCountyAggregateItems(votedCities);
 
   const warZone = [...votedCities].sort((a, b) => b.total - a.total || a.city.localeCompare(b.city, "hu")).slice(0, limit);
@@ -218,6 +222,10 @@ export async function getDashboardTopMetrics(limit = 5): Promise<DashboardTopMet
     indicatorCities,
     balancedCounties,
   };
+}
+
+export async function getDashboardTopMetrics(limit = 5): Promise<DashboardTopMetrics> {
+  return buildDashboardTopMetrics(await getVotedCities(), limit);
 }
 
 export async function getClosestBattlegroundDetailItems(): Promise<CityRankingDetailItem[]> {

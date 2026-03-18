@@ -1,14 +1,15 @@
 {
   "name": "kormanyvalto",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
-    "lint": "npm run typecheck && npm run check:styles",
-    "check:styles": "node scripts/check-style-rules.mjs"
+    "lint": "npm run typecheck && npm run check:styles && npm run test:dashboard",
+    "check:styles": "node scripts/check-style-rules.mjs",
+    "test:dashboard": "tsx --test tests/dashboardDetailData.test.ts"
   },
   "dependencies": {
     "@upstash/redis": "^1.37.0",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^25.4.0",
     "@types/react": "^19.2.14",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
