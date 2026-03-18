@@ -291,6 +291,18 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
   const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
   const logoutHref = `/api/auth/logout?returnTo=${encodeURIComponent(returnTo)}`;
   const voteSuffix = auth.authenticated ? " x3" : "";
+  const yesButtonLabel =
+    flashVote === "yes"
+      ? "szavaztál"
+      : cooldownLeft > 0
+        ? `igen${voteSuffix} (${cooldownLeft.toFixed(1)}s)`
+        : `igen${voteSuffix}`;
+  const noButtonLabel =
+    flashVote === "no"
+      ? "szavaztál"
+      : cooldownLeft > 0
+        ? `nem${voteSuffix} (${cooldownLeft.toFixed(1)}s)`
+        : `nem${voteSuffix}`;
 
   return (
     <main className="app">
@@ -341,7 +353,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
           onClick={() => addClick("yes")}
           disabled={submitting || loading || cooldownLeft > 0}
         >
-          {cooldownLeft > 0 ? `igen${voteSuffix} (${cooldownLeft.toFixed(1)}s)` : `igen${voteSuffix}`}
+          {yesButtonLabel}
         </button>
         <button
           className={`vote-btn vote-btn-no${flashVote === "no" ? " vote-btn-flash vote-btn-flash-no" : ""}`}
@@ -349,7 +361,7 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
           onClick={() => addClick("no")}
           disabled={submitting || loading || cooldownLeft > 0}
         >
-          {cooldownLeft > 0 ? `nem${voteSuffix} (${cooldownLeft.toFixed(1)}s)` : `nem${voteSuffix}`}
+          {noButtonLabel}
         </button>
       </div>
 
