@@ -49,7 +49,7 @@ Flow:
 1. User enters the county-list route.
 2. The shared interactive hero acts as the first county navigator.
 3. The list below provides the second navigation path.
-4. Selecting a county opens the EVK list.
+4. Selecting a county opens a county context page that explains the next step and lists the EVK choices.
 5. Selecting an EVK opens the vote page for that constituency.
 
 Implementation:
@@ -65,9 +65,9 @@ Route:
 Flow:
 1. User lands on an EVK page.
 2. The shared county-result hero remains visible.
-3. The hero title area is replaced by the EVK identity.
+3. The hero title area is replaced by a clearer county -> EVK identity stack.
 4. Vote interaction uses the same state machine as the national page.
-5. User can navigate back to county context or source data.
+5. User can navigate back to county context, the full county list, or source data without losing orientation.
 
 Implementation:
 - `src/app/ogy2026/egyeni-valasztokeruletek/[maz]/[evk]/page.tsx`

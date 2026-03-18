@@ -62,6 +62,10 @@ Canonical hero copy:
 
 Detailed user-facing contract lives in `docs/WORKFLOWS.md`.
 
+Navigation note:
+- county list, county EVK list, and EVK vote pages are a three-step flow,
+- route-level copy and back links should preserve that hierarchy explicitly.
+
 ## Map System
 
 Generic engine:

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 - 2026-03-18
+
+### Changed
+- Improved county and EVK navigation clarity with explicit step-based copy on the county routes.
+- Added a county context panel on county EVK list pages and a clearer county -> EVK title hierarchy on EVK vote pages.
+- Expanded EVK page actions so users can return to the county page, the full county list, or the NVI source without losing orientation.
+
+### Documentation
+- Updated workflow, design-system, and architecture docs for the county -> EVK -> vote navigation contract.
+
 ## 1.1.9 - 2026-03-18
 
 ### Changed

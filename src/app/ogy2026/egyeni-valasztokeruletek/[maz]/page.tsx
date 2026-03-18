@@ -45,6 +45,7 @@ export default async function CountyPage({ params }: PageProps) {
   }
 
   const countyName = countyConstituencies[0].mazNev;
+  const constituencyCount = countyConstituencies.length;
   const scopes = countyConstituencies.map((c) => `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`);
 
   let counts: Record<string, { yes: number; no: number; yesPercent: number }> = {};
@@ -61,7 +62,13 @@ export default async function CountyPage({ params }: PageProps) {
       ])}
     >
       <h1>{countyName}</h1>
-      <p className="list-subtitle">Válassz egyéni választókerületet.</p>
+      <p className="list-subtitle">2. lépés: válassz egyéni választókerületet. Innen jutsz el a szavazóoldalra.</p>
+
+      <section className="context-panel" aria-label="Vármegyei navigációs összefoglaló">
+        <p className="context-panel-eyebrow">Vármegyei nézet</p>
+        <p className="context-panel-title">{countyName}</p>
+        <p className="context-panel-copy">{constituencyCount} körzet közül választhatsz. Minden sor közvetlenül a megfelelő EVK szavazóoldalra visz.</p>
+      </section>
 
       <section className="button-list" aria-label="Körzetek listája">
         {countyConstituencies.map((c) => {

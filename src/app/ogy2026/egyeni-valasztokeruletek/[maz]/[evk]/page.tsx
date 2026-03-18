@@ -49,17 +49,19 @@ export default async function ConstituencyVotePage({ params }: PageProps) {
         scope={scope}
         hero={<PageHero />}
         heroTitle={
-          <h1>
-            {item.evkNev} - {getSeatLabel(item.szekhely)}
-          </h1>
+          <div className="hero-context">
+            <p className="hero-context-eyebrow">{item.mazNev}</p>
+            <h1>{getSeatLabel(item.szekhely)}</h1>
+            <p className="hero-context-subtitle">{item.evkNev}</p>
+          </div>
         }
         topActions={
           <PageActionLinks
             items={[
-              ...getSectionNavItems("/ogy2026/egyeni-valasztokeruletek", [
-                { href: `/ogy2026/egyeni-valasztokeruletek/${item.maz}`, label: "Vissza a vármegyéhez" },
-              ]),
+              { href: `/ogy2026/egyeni-valasztokeruletek/${item.maz}`, label: "Vissza a vármegyéhez" },
+              { href: "/ogy2026/egyeni-valasztokeruletek", label: "Összes vármegye", secondary: true },
               { href: item.sourceUrl, label: "Forrás (NVI)", secondary: true, external: true },
+              ...getSectionNavItems("/ogy2026/egyeni-valasztokeruletek"),
             ]}
           />
         }

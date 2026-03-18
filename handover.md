@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.1.9`
+- Current released version: `1.2.0`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -59,14 +59,16 @@ Main files:
 - `docs/DEVELOPMENT.md`
 - `README.md`
 
-### Vote reliability hardening
+### County/EVK navigation clarity
 
-- Auth/session reads no longer block the main results load in `VoteWidget`.
-- Accepted votes now stay trustworthy even when the follow-up summary refresh fails.
-- Inline retry action is available when vote/result refresh reads degrade.
+- County list now uses explicit step-based copy so the route reads as step 1 of the flow.
+- County pages now explain that the next action is choosing an EVK and include a county context panel.
+- EVK vote pages now use a clearer county -> EVK title hierarchy and expose both county-level and full-list back paths.
 
 Main files:
-- `src/components/VoteWidget.tsx`
+- `src/app/ogy2026/egyeni-valasztokeruletek/page.tsx`
+- `src/app/ogy2026/egyeni-valasztokeruletek/[maz]/page.tsx`
+- `src/app/ogy2026/egyeni-valasztokeruletek/[maz]/[evk]/page.tsx`
 - `src/app/globals.css`
 - `docs/WORKFLOWS.md`
 
@@ -97,8 +99,8 @@ Project board:
 ## Recommended Next Step
 
 Work next on:
-- continuing roadmap slice 1 with clearer vote-load skeleton/error states or cooldown/trust messaging,
-- then move to county and EVK navigation clarity.
+- roadmap slice 3: trust and transparency around 3x voting mode,
+- then roadmap slice 4: degraded-state review on dashboard and mandate pages.
 
 ## Important Active Docs
 

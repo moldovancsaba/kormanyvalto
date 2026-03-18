@@ -98,6 +98,7 @@ Contract:
 - hero text is top-left overlay content
 - hero uses county result colors
 - hero map is navigation, not a static image
+- EVK vote pages may replace the main hero title with a county -> EVK context stack, but must preserve clear hierarchy and orientation
 
 ### Dashboard cards
 
@@ -147,3 +148,4 @@ Non-negotiable rules:
 - No inline style for new visual modules.
 - If a new stateful pattern appears twice, make it a shared class or shared component.
 - If a visual state changes user-facing behavior, document it here and in `docs/WORKFLOWS.md`.
+- Multi-step navigation pages should use explicit orientation copy rather than assuming the user understands the county -> EVK -> vote hierarchy.

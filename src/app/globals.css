@@ -644,6 +644,37 @@ button:disabled {
   text-align: center;
 }
 
+.context-panel {
+  margin: 0 0 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(236, 244, 255, 0.92) 100%);
+  text-align: center;
+}
+
+.context-panel-eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.context-panel-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.context-panel-copy {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
 .button-list {
   display: grid;
   gap: 0.55rem;
@@ -710,6 +741,28 @@ button:disabled {
   gap: 0.5rem;
   flex-wrap: wrap;
   margin: 0 0 0.85rem;
+}
+
+.hero-context {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: center;
+}
+
+.hero-context-eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-context-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: center;
 }
 
 .small-link-btn {

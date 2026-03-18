@@ -28,7 +28,7 @@ export default async function Ogy2026ConstituenciesPage() {
   return (
     <PageShell navItems={getSectionNavItems("/ogy2026/egyeni-valasztokeruletek")}>
       <h1>OGY 2026 vármegyei lista</h1>
-      <p className="list-subtitle">Frissítés 120 másodpercenként. Válassz vármegyét.</p>
+      <p className="list-subtitle">1. lépés: válassz vármegyét. Utána megmutatjuk az adott vármegye összes egyéni körzetét.</p>
 
       <section className="button-list" aria-label="Vármegyék listája">
         {counties.map((county) => {
