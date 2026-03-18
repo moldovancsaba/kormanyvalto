@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.9 - 2026-03-18
+
+### Changed
+- Normalized `/dashboard-preview` copy and labels so the route uses the same Hungarian page-title and card-label grammar as the rest of the dashboard instead of mixed English and repeated `(preview)` suffixes.
+
+### Documentation
+- Updated workflow, design-system, architecture, and handover docs for the preview-route naming contract.
+
 ## 1.2.8 - 2026-03-18
 
 ### Changed

@@ -196,3 +196,4 @@ Rules:
 - County identity for dashboard ranking cards flows through canonical `countyCode` and `countyHref` values, not renderer-side county-name recovery.
 - Detail routes under `/dashboard/*` should reuse the shared ranking card families for city and county sections, including infinite-scroll bloc lists.
 - If dashboard ranking metrics fail, pages should still render their surrounding shell with empty ranking states rather than crash.
+- `/dashboard-preview` should keep the same Hungarian page-title and card-label grammar as production dashboard routes; preview status belongs in route context, not repeated English or `(preview)` suffixes on every card.

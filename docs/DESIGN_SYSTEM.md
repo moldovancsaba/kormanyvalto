@@ -147,6 +147,7 @@ Contract:
 - renderer components must not recover county identity from display names when canonical ids are already available
 - dashboard bloc list pages should keep the same ranking-card visual language even when items stream in via infinite scroll
 - bloc-list routes should let the route-level intro own page orientation and keep the list client focused on card/grid rendering
+- preview dashboard routes should keep the same language and label grammar as production dashboard routes instead of mixing in standalone prototype naming
 
 ## Vote Interaction Visual Contract
 

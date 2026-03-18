@@ -16,7 +16,7 @@ import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMet
 export const revalidate = 120;
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Dashboard Preview",
+  title: "Grafikon előnézet",
   description: "Kísérleti előnézeti oldal új dashboard grafikonok teszteléséhez.",
   path: "/dashboard-preview",
   socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
@@ -103,7 +103,11 @@ export default async function DashboardPreviewPage() {
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
-      <PageIntro eyebrow="Dashboard Preview" title="Előnézet" intro="Csak a még nem publikált modulok és kísérleti panelek." />
+      <PageIntro
+        eyebrow="Grafikon előnézet"
+        title="Kísérleti panelek"
+        intro="Itt jelennek meg azok a dashboard modulok, amelyek még nem részei a publikált grafikon oldalnak."
+      />
 
       <div className="dashboard-grid">
         <ListVotePreviewCard initialData={listVotePreview} />
@@ -118,7 +122,7 @@ export default async function DashboardPreviewPage() {
         />
         <ReportingCoverageCard metric={metrics.reportingCoverage} />
         <CountyRankingCard
-          title="Aktív vármegyék (preview)"
+          title="Aktív vármegyék"
           subtitle="A legtöbb összesített szavazatot kapó vármegyék."
           emptyText="Nincs még vármegyei aktivitási adat."
           items={metrics.topActiveCounties}
@@ -126,13 +130,13 @@ export default async function DashboardPreviewPage() {
         />
         <KpiCard
           variant="preview"
-          label="Összes regisztrált játékos (preview)"
+          label="Összes regisztrált játékos"
           value={formatNumber(metrics.totalRegisteredPlayers)}
           detail="A 3x VOTE módot használó belépett játékosok"
         />
         <PieCard
           variant="preview"
-          title="3x-os szavazatok vs sima szavazatok (preview)"
+          title="3x-os szavazatok vs sima szavazatok"
           subtitle="Súlyozott összesítés a belépett és anonim játékmód között."
           leftLabel="3x-os"
           leftValue={metrics.weightedTripleVotes}

@@ -88,6 +88,7 @@ Production dashboard:
 Preview dashboard:
 - `/dashboard-preview`
   - contains staging/validation visuals before promotion to production dashboard, limited to preview-specific metrics and active-county coverage summaries
+  - should preserve the same route and card naming grammar as production dashboard pages, with preview status communicated at the route level
 
 Reusable dashboard visual components:
 - `src/components/dashboard/*`
