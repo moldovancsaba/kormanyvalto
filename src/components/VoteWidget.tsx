@@ -308,11 +308,12 @@ export default function VoteWidget({ scope, aggregateMain = false, hero, heroTit
 
   useEffect(() => {
     if (!flashVote) return;
+    if (cooldownLeft <= 0) return;
     const timer = window.setTimeout(() => {
       setFlashVote(null);
     }, 720);
     return () => window.clearTimeout(timer);
-  }, [flashVote]);
+  }, [flashVote, cooldownLeft]);
 
   const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
   const logoutHref = `/api/auth/logout?returnTo=${encodeURIComponent(returnTo)}`;
