@@ -24,7 +24,8 @@ type CityRankingCardProps = {
   subtitle: string;
   emptyText: string;
   items: CityRankingItem[];
-  mode: "closest" | "strongest" | "indicator";
+  mode: "closest" | "strongest" | "indicator" | "activity-low" | "activity-high";
+  nationalYesPercent?: number;
 };
 
 function getBlocLabel(leadBloc: CityRankingItem["leadBloc"]): string {
@@ -60,8 +61,10 @@ function CountyShapeStamp({
   );
 }
 
-export function CityRankingCard({ title, subtitle, emptyText, items, mode }: CityRankingCardProps) {
+export function CityRankingCard({ title, subtitle, emptyText, items, mode, nationalYesPercent }: CityRankingCardProps) {
   const maxMagnitude = Math.max(1, ...items.map((item) => Math.abs(item.marginPercent)));
+  const maxTotalVotes = Math.max(1, ...items.map((item) => item.totalVotes));
+  const maxIndicatorDistance = Math.max(1, ...items.map((item) => item.indicatorDistance ?? 0));
 
   return (
     <section className="preview-visual-card">
@@ -76,8 +79,14 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
         <div className="preview-trading-grid" role="list" aria-label={typeof title === "string" ? title : "Városi rangsor"}>
           {items.map((item, index) => {
             const normalizedPercent =
-              mode === "closest" || mode === "indicator"
+              mode === "closest"
                 ? (maxMagnitude - Math.abs(item.marginPercent)) / maxMagnitude
+                : mode === "indicator"
+                  ? (maxIndicatorDistance - (item.indicatorDistance ?? 0)) / maxIndicatorDistance
+                : mode === "activity-low"
+                  ? (maxTotalVotes - item.totalVotes) / maxTotalVotes
+                  : mode === "activity-high"
+                    ? item.totalVotes / maxTotalVotes
                 : Math.abs(item.marginPercent) / maxMagnitude;
             const barPercent = Math.max(8, normalizedPercent * 100);
 
@@ -104,13 +113,22 @@ export function CityRankingCard({ title, subtitle, emptyText, items, mode }: Cit
                   <p>EVK: {getBlocLabel(item.leadBloc)}</p>
                   {mode === "indicator" ? (
                     <>
-                      <p>Országos: 0,0%</p>
-                      <p>Helyi eltérés: {formatAbsolutePercent(item.marginPercent)}</p>
+                      <p>Országos igen: {(nationalYesPercent ?? 50).toFixed(1).replace(".", ",")}%</p>
+                      <p>Helyi eltérés: {formatAbsolutePercent(item.indicatorDistance ?? 0)}</p>
                       <p>Mintaszám: {item.totalVotes} szavazat</p>
                     </>
                   ) : null}
-                  {mode === "indicator" ? null : <p>{formatAbsolutePercent(item.marginPercent)}</p>}
-                  {mode === "indicator" ? null : <p>{item.totalVotes} szavazat</p>}
+                  {mode === "indicator" ? null : mode === "activity-low" || mode === "activity-high" ? (
+                    <>
+                      <p>{item.totalVotes} szavazat</p>
+                      <p>Eltérés: {formatAbsolutePercent(item.marginPercent)}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>{formatAbsolutePercent(item.marginPercent)}</p>
+                      <p>{item.totalVotes} szavazat</p>
+                    </>
+                  )}
                 </div>
 
                 <svg viewBox="0 0 100 10" className="preview-ranking-bar-svg" preserveAspectRatio="none" aria-hidden="true" focusable="false">

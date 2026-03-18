@@ -9,8 +9,8 @@ import { buildPageMetadata } from "../../../lib/siteMetadata";
 export const revalidate = 120;
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Váltani akarsz?",
-  description: "OGY 2026 körzetek listája",
+  title: "Szavazás 2026 - OGY 2026 vármegyei lista",
+  description: "Szavazás 2026 vármegyei lista és körzetnavigáció.",
   path: "/ogy2026/egyeni-valasztokeruletek",
 });
 

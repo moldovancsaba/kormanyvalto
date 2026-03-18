@@ -24,7 +24,7 @@ export default async function DashboardBekeSzigeteiPage() {
         subtitle="Teljes lista a legalacsonyabb aktivitású EVK-k 20%-ából."
         emptyText="Nincs még elég EVK adat a béke szigetei listához."
         items={items}
-        mode="closest"
+        mode="activity-low"
       />
     </PageShell>
   );

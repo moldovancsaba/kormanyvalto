@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageShell } from "../../../components/PageChrome";
 import { CityRankingCard } from "../../../components/dashboard/CityRankingCard";
 import { getSectionNavItems } from "../../../lib/navigation";
-import { getIndicatorCityDetailItems } from "../../../lib/dashboardDetailData";
+import { getIndicatorCityDetailItems, getNationalYesPercent } from "../../../lib/dashboardDetailData";
 import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../../lib/siteMetadata";
 
 export const revalidate = 120;
@@ -16,7 +16,10 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default async function DashboardElorejelzoVarosokPage() {
-  const items = await getIndicatorCityDetailItems().catch(() => []);
+  const [items, nationalYesPercent] = await Promise.all([
+    getIndicatorCityDetailItems().catch(() => []),
+    getNationalYesPercent().catch(() => 50),
+  ]);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
       <CityRankingCard
@@ -25,6 +28,7 @@ export default async function DashboardElorejelzoVarosokPage() {
         emptyText="Nincs még elég adat az előrejelző városok listához."
         items={items}
         mode="indicator"
+        nationalYesPercent={nationalYesPercent}
       />
     </PageShell>
   );

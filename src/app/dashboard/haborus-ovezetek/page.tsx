@@ -24,7 +24,7 @@ export default async function DashboardHaborusOvezetekPage() {
         subtitle="Teljes lista a legmagasabb aktivitású EVK-k 20%-ából."
         emptyText="Nincs még elég EVK adat a háborús övezetek listához."
         items={items}
-        mode="strongest"
+        mode="activity-high"
       />
     </PageShell>
   );

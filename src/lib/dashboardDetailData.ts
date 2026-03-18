@@ -68,6 +68,14 @@ async function getVotedCities() {
   return stats.filter((item) => item.total > 0);
 }
 
+export async function getNationalYesPercent(): Promise<number> {
+  const votedCities = await getVotedCities();
+  const nationalYes = votedCities.reduce((sum, item) => sum + item.yes, 0);
+  const nationalNo = votedCities.reduce((sum, item) => sum + item.no, 0);
+  const nationalTotal = nationalYes + nationalNo;
+  return nationalTotal > 0 ? (nationalYes / nationalTotal) * 100 : 50;
+}
+
 export async function getClosestBattlegroundDetailItems(): Promise<CityRankingDetailItem[]> {
   const votedCities = await getVotedCities();
   const limit = Math.max(1, Math.ceil(votedCities.length * 0.2));
@@ -102,10 +110,7 @@ export async function getStrongestBastionDetailItems(): Promise<CityRankingDetai
 
 export async function getIndicatorCityDetailItems(): Promise<CityRankingDetailItem[]> {
   const votedCities = await getVotedCities();
-  const nationalYes = votedCities.reduce((sum, item) => sum + item.yes, 0);
-  const nationalNo = votedCities.reduce((sum, item) => sum + item.no, 0);
-  const nationalTotal = nationalYes + nationalNo;
-  const nationalYesPercent = nationalTotal > 0 ? (nationalYes / nationalTotal) * 100 : 50;
+  const nationalYesPercent = await getNationalYesPercent();
 
   return enrichCityItems(votedCities)
     .map((item) => {
