@@ -63,7 +63,7 @@ Microcopy rules:
 - External source actions should use the same direct noun-first grammar as the rest of the UI, for example `NVI forrás`.
 
 Navigation label:
-- shared primary-nav button text: `⚠ EVK 2026 ⚠`
+- shared primary-nav button text: `egyéni választókerületek`
 
 Implementation:
 - `src/components/CountyHeroMap.tsx`

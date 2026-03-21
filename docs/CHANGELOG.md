@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.6 - 2026-03-21
+
+### Changed
+- Renamed the shared EVK primary navigation button from `⚠ EVK 2026 ⚠` to `egyéni választókerületek`.
+
+### Documentation
+- Updated the workflow, developer reference, and handover docs for the new shared navigation label.
+
 ## 1.3.5 - 2026-03-18
 
 ### Added

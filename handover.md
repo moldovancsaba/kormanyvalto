@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.3.5`
+- Current released version: `1.3.6`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -74,6 +74,7 @@ Main files:
 - Navigation and utility buttons now use more consistent microcopy across the EVK flow and voting surfaces.
 - Vote and list-preview error states now normalize raw browser fetch errors into Hungarian user-facing copy.
 - Route transitions now show a shared branded loading screen instead of a blank page.
+- The shared EVK primary navigation label is now `egyéni választókerületek`.
 
 Main files:
 - `src/components/AppLoader.tsx`

@@ -8,7 +8,7 @@ export type NavItem = {
 };
 
 const PRIMARY_SECTION_ITEMS: NavItem[] = [
-  { href: "/ogy2026/egyeni-valasztokeruletek", label: "⚠ EVK 2026 ⚠", danger: true },
+  { href: "/ogy2026/egyeni-valasztokeruletek", label: "egyéni választókerületek", danger: true },
   { href: "/mandatumbecsles", label: "Mandátumbecslés" },
   { href: "/dashboard", label: "Grafikon" },
 ];

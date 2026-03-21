@@ -81,7 +81,7 @@ Implementation:
 
 ### Primary EVK nav label
 
-- Shared label: `⚠ EVK 2026 ⚠`
+- Shared label: `egyéni választókerületek`
 - Implementation: `src/lib/navigation.ts`
 
 ### Dashboard builder contract
