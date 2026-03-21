@@ -37,6 +37,11 @@ npm run build
 
 ## Current Critical Contracts
 
+### Dashboard naming
+
+- Shared dashboard/nav label: `Infóközpont`
+- Preview family: `Infóközpont előnézet`
+
 ### Vote button UX
 
 Canonical sequence:

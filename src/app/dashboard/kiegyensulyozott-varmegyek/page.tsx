@@ -19,7 +19,7 @@ export default async function DashboardKiegyensulyozottVarmegyekPage() {
   const items = await getBalancedCountyDetailItems().catch(() => []);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
-      <PageIntro eyebrow="Grafikon" title="Kiegyensúlyozott vármegyék" intro="A legszorosabb vármegyei állások teljes listája." />
+      <PageIntro eyebrow="Infóközpont" title="Kiegyensúlyozott vármegyék" intro="A legszorosabb vármegyei állások teljes listája." />
       <CountyRankingCard
         title="Kiegyensúlyozott vármegyék"
         subtitle="Teljes lista ugyanabban a sorrendben, mint a dashboard blokk."

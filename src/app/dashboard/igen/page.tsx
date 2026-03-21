@@ -29,7 +29,7 @@ export default async function DashboardIgenCitiesPage() {
 
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
-      <PageIntro eyebrow="Grafikon" title="Az igen városok" intro="Az igen vezetésű városok teljes listája görgetéses betöltéssel." />
+      <PageIntro eyebrow="Infóközpont" title="Az igen városok" intro="Az igen vezetésű városok teljes listája görgetéses betöltéssel." />
       <CityBlocGridClient
         bloc="yes"
         title="Az igen városok"

@@ -19,7 +19,7 @@ export default async function DashboardBekeSzigeteiPage() {
   const items = await getPeaceIslandDetailItems().catch(() => []);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
-      <PageIntro eyebrow="Grafikon" title="Béke szigetei" intro="A legalacsonyabb aktivitású EVK-k teljes listája." />
+      <PageIntro eyebrow="Infóközpont" title="Béke szigetei" intro="A legalacsonyabb aktivitású EVK-k teljes listája." />
       <CityRankingCard
         title="Béke szigetei"
         subtitle="Teljes lista a legalacsonyabb aktivitású EVK-k 20%-ából."

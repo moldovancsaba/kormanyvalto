@@ -19,7 +19,7 @@ export default async function DashboardHaborusOvezetekPage() {
   const items = await getWarZoneDetailItems().catch(() => []);
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
-      <PageIntro eyebrow="Grafikon" title="Háborús övezetek" intro="A legmagasabb aktivitású EVK-k teljes listája." />
+      <PageIntro eyebrow="Infóközpont" title="Háborús övezetek" intro="A legmagasabb aktivitású EVK-k teljes listája." />
       <CityRankingCard
         title="Háborús övezetek"
         subtitle="Teljes lista a legmagasabb aktivitású EVK-k 20%-ából."

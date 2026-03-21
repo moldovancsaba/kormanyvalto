@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.7 - 2026-03-21
+
+### Changed
+- Renamed the dashboard product-language family from `Grafikon` to `Infóközpont`, including the shared navigation label, dashboard eyebrows, and preview naming.
+
+### Documentation
+- Updated workflow, developer reference, handover, and release metadata for the `Infóközpont` naming contract.
+
 ## 1.3.6 - 2026-03-21
 
 ### Changed

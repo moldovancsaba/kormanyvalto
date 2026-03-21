@@ -10,7 +10,7 @@ export type NavItem = {
 const PRIMARY_SECTION_ITEMS: NavItem[] = [
   { href: "/ogy2026/egyeni-valasztokeruletek", label: "egyéni választókerületek", danger: true },
   { href: "/mandatumbecsles", label: "Mandátumbecslés" },
-  { href: "/dashboard", label: "Grafikon" },
+  { href: "/dashboard", label: "Infóközpont" },
 ];
 
 export function getPrimarySectionItems(currentPath?: string) {

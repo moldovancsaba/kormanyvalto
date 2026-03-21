@@ -19,7 +19,7 @@ import {
 export const revalidate = 120;
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Grafikon",
+  title: "Infóközpont",
   description: "Kormanyvalto dashboard a legforróbb, legcsendesebb és legmegosztottabb egyéni körzetekkel.",
   path: "/dashboard",
   socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
@@ -55,7 +55,7 @@ function ChartCard({ title, ariaLabel, subtitle, tone, items, valueLabel, valueF
       </header>
 
       {items.length === 0 ? (
-        <p className="chart-empty">Nincs elég adat ehhez a grafikonhoz.</p>
+        <p className="chart-empty">Nincs elég adat ehhez az infóközponthoz.</p>
       ) : (
         <div className="chart-columns" role="img" aria-label={ariaLabel}>
           {items.map((item, index) => {
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
       <PageIntro
-        eyebrow="Grafikon"
+        eyebrow="Infóközpont"
         title="Általános hangulat"
         intro="A legforróbb egyéni körzetek, a legcsendesebb körzetközpontok, és azok a helyek, ahol az igen és a nem fej fej mellett halad."
       />

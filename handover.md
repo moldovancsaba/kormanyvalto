@@ -8,7 +8,7 @@ Canonical: Yes
 
 - Branch: `main`
 - Source of truth remote: `origin`
-- Current released version: `1.3.6`
+- Current released version: `1.3.7`
 - Verification gate:
   - `npm run lint`
   - `npm run build`
@@ -75,6 +75,7 @@ Main files:
 - Vote and list-preview error states now normalize raw browser fetch errors into Hungarian user-facing copy.
 - Route transitions now show a shared branded loading screen instead of a blank page.
 - The shared EVK primary navigation label is now `egyéni választókerületek`.
+- The dashboard product-language family is now `Infóközpont`.
 
 Main files:
 - `src/components/AppLoader.tsx`

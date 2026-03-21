@@ -16,7 +16,7 @@ import { buildPageMetadata, DASHBOARD_SOCIAL_IMAGE_URL } from "../../lib/siteMet
 export const revalidate = 120;
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Grafikon előnézet",
+  title: "Infóközpont előnézet",
   description: "Kísérleti előnézeti oldal új dashboard grafikonok teszteléséhez.",
   path: "/dashboard-preview",
   socialImagePath: DASHBOARD_SOCIAL_IMAGE_URL,
@@ -104,9 +104,9 @@ export default async function DashboardPreviewPage() {
   return (
     <PageShell pageClassName="dashboard-page" navItems={getSectionNavItems("/dashboard")}>
       <PageIntro
-        eyebrow="Grafikon előnézet"
+        eyebrow="Infóközpont előnézet"
         title="Kísérleti panelek"
-        intro="Itt jelennek meg azok a dashboard modulok, amelyek még nem részei a publikált grafikon oldalnak."
+        intro="Itt jelennek meg azok a dashboard modulok, amelyek még nem részei a publikált infóközpont oldalnak."
       />
 
       <div className="dashboard-grid">

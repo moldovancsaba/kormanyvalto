@@ -12,7 +12,7 @@ export default function AppLoader() {
           <div className="app-loader-bar app-loader-bar-6" />
         </div>
         <p className="app-loading-title">Az oldal tartalma töltődik</p>
-        <p className="app-loading-copy">Közben előkészítjük a szavazási és grafikon adatokat.</p>
+        <p className="app-loading-copy">Közben előkészítjük a szavazási és infóközpont adatokat.</p>
       </section>
     </main>
   );
