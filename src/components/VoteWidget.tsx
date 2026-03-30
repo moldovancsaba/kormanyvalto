@@ -7,6 +7,7 @@ type ClickStore = {
   yesCount: number;
   noCount: number;
   cooldownSec?: number;
+  vipWeight?: number;
   matrixStatus?: {
     code: "YY" | "YN" | "NY" | "NN" | "TT";
     text: string;
@@ -22,6 +23,7 @@ type ClickStore = {
     sourceCountyTone?: "yes" | "no" | "neutral";
     sourceCityTone?: "yes" | "no" | "neutral";
     weight: number;
+    mode?: "anonymous" | "google" | "vip";
   }[];
 };
 
@@ -108,6 +110,7 @@ export default function VoteWidget({
         sourceCountyTone: item.sourceCountyTone ?? "neutral",
         sourceCityTone: item.sourceCityTone ?? "neutral",
         weight: item.weight,
+        mode: item.mode,
       })),
     [data.history]
   );
@@ -545,7 +548,11 @@ export default function VoteWidget({
                 <span className={`vote-pill ${item.type === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}>
                   {item.type === "yes" ? "igen" : "nem"}
                 </span>
-                {item.weight > 1 ? <span className="weight-pill">x{item.weight}</span> : null}
+                {item.mode === "vip" ? (
+                  <span className="weight-pill weight-pill-vip">VIP x{item.weight}</span>
+                ) : item.weight > 1 ? (
+                  <span className="weight-pill">x{item.weight}</span>
+                ) : null}
                 <span>
                   {formatter.format(new Date(item.ts))}
                   {item.sourceCounty ? " - " : ""}

@@ -3,9 +3,10 @@ import { assessVoteAbuse, detectVoteAnomaly, logAbuseAssessment, logVoteAnomaly,
 import { addVote, type VoteType } from "../../../lib/results";
 import { isTrustedOrigin, NO_CACHE_HEADERS } from "../../../lib/http";
 import { checkRateLimit } from "../../../lib/rateLimit";
-import { ANON_VOTER_COOKIE, shouldUseSecureCookies } from "../../../lib/auth";
+import { ANON_VOTER_COOKIE, readAppSessionFromRequest, shouldUseSecureCookies } from "../../../lib/auth";
 import { getCooldownSec, getNextCooldownSec, getVoteActor, reserveVoteSlot, withAdjustedCooldown } from "../../../lib/voteEngine";
 import { normalizeScope } from "../../../lib/requestValidation";
+import { getRandomVipWeight, getRandomVipCooldown, getNickname, addVipVote } from "../../../lib/vip";
 
 export async function HEAD(req: NextRequest) {
   try {
@@ -53,12 +54,50 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => null);
     const type = body?.type as VoteType | undefined;
     const scope = normalizeScope(body?.scope);
+    const isVip = body?.vip === true;
 
     if (type !== "yes" && type !== "no") {
       return NextResponse.json({ error: "Invalid vote type" }, { status: 400, headers: NO_CACHE_HEADERS });
     }
     if (!scope) {
       return NextResponse.json({ error: "Invalid scope" }, { status: 400, headers: NO_CACHE_HEADERS });
+    }
+
+    if (isVip) {
+      const session = await readAppSessionFromRequest(req);
+      if (!session) {
+        return NextResponse.json({ error: "VIP szavazáshoz Google belépés szükséges" }, { status: 401, headers: NO_CACHE_HEADERS });
+      }
+
+      const weight = getRandomVipWeight();
+      const cooldownSec = getRandomVipCooldown();
+      const nickname = await getNickname(session.sub);
+
+      await addVipVote({
+        userId: session.sub,
+        nickname: nickname ?? undefined,
+        scope,
+        type,
+        weight,
+      });
+
+      await addVote({
+        type,
+        scope,
+        weight,
+        mode: "vip",
+      });
+
+      return NextResponse.json(
+        {
+          yesCount: 0,
+          noCount: 0,
+          history: [],
+          cooldownSec,
+          vipWeight: weight,
+        },
+        { headers: NO_CACHE_HEADERS }
+      );
     }
 
     const actor = await getVoteActor(req);

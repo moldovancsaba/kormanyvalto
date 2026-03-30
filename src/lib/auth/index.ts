@@ -146,7 +146,7 @@ function createRandomToken() {
   return base64Url(randomBytes(24));
 }
 
-async function signToken(payload: JWTPayload, expiresInSec: number) {
+export async function signToken(payload: JWTPayload, expiresInSec: number) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -154,7 +154,7 @@ async function signToken(payload: JWTPayload, expiresInSec: number) {
     .sign(getSecret());
 }
 
-async function verifySignedToken<T extends JWTPayload>(token: string): Promise<T | null> {
+export async function verifySignedToken<T extends JWTPayload>(token: string): Promise<T | null> {
   try {
     const verified = await jwtVerify(token, getSecret(), {
       algorithms: ["HS256"],

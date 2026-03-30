@@ -10,12 +10,12 @@ import {
   readAppSessionFromRequest,
 } from "./auth";
 
-export type VoteMode = "anonymous" | "google";
+export type VoteMode = "anonymous" | "google" | "vip";
 
 export type VoteActor = {
   actorId: string;
   mode: VoteMode;
-  weight: 1 | 3;
+  weight: number;
   cooldownStep: number;
   shouldSetAnonymousCookie: boolean;
   anonymousCookieToken: string | null;

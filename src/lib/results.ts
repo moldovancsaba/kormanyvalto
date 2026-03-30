@@ -377,7 +377,7 @@ export async function getResults(
           ? getLeadBlocFromCounts(snapshot.districtYes, snapshot.districtNo)
           : undefined,
       weight: getVoteWeight(vote),
-      mode: (vote.mode === "google" ? "google" : "anonymous") as VoteMode,
+      mode: (vote.mode === "google" ? "google" : vote.mode === "vip" ? "vip" : "anonymous") as VoteMode,
     };
   });
 

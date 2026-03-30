@@ -1,0 +1,71 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { PageIntro, PageShell } from "../../../../components/PageChrome";
+import { constituencies, getCounties } from "../../../../lib/constituencies";
+import { getVipNavItems } from "../../../../lib/navigation";
+import { getScopeVoteCounts } from "../../../../lib/results";
+import { buildPageMetadata } from "../../../../lib/siteMetadata";
+
+export const revalidate = 120;
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "VIP EVK 2026 - Vármegyék",
+  description: "VIP vármegyei lista és körzetnavigáció.",
+  path: "/vip/ogy2026/egyeni-valasztokeruletek",
+});
+
+export default async function VipConstituenciesPage() {
+  const counties = getCounties();
+  const scopes = constituencies.map((c) => `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`);
+
+  let counts: Record<string, { yes: number; no: number; yesPercent: number }> = {};
+  try {
+    counts = await getScopeVoteCounts(scopes);
+  } catch {
+    counts = {};
+  }
+
+  return (
+    <PageShell navItems={getVipNavItems("/vip/ogy2026/egyeni-valasztokeruletek")}>
+      <PageIntro
+        eyebrow="VIP EVK 2026"
+        title="Vármegyék"
+        intro="1. lépés: válassz vármegyét. Utána megmutatjuk az adott vármegye összes egyéni körzetét."
+      />
+
+      <section className="button-list" aria-label="Vármegyék listája">
+        {counties.map((county) => {
+          const countyConstituencies = constituencies.filter((c) => c.maz === county.maz);
+          const totalYes = countyConstituencies.reduce((sum, c) => {
+            const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
+            return sum + (counts[scope]?.yes ?? 0);
+          }, 0);
+          const totalNo = countyConstituencies.reduce((sum, c) => {
+            const scope = `ogy2026/egyeni-valasztokeruletek/${c.maz}/${c.evk}`;
+            return sum + (counts[scope]?.no ?? 0);
+          }, 0);
+          const total = totalYes + totalNo;
+          const yesPercent = total === 0 ? 50 : Number(((totalYes / total) * 100).toFixed(1));
+          return (
+            <Link
+              key={county.maz}
+              href={`/vip/ogy2026/egyeni-valasztokeruletek/${county.maz}`}
+              className="route-button route-button--barometer route-button--vip"
+            >
+              <svg viewBox="0 0 100 10" className="route-button-barometer-bg" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <rect x="0" y="0" width="100" height="10" className="route-button-bar-no" />
+                <rect x="0" y="0" width={yesPercent} height="10" className="route-button-bar-yes" />
+              </svg>
+              <span className="route-button-content">
+                <span className="route-button-title">{county.mazNev}</span>
+                <span className="route-button-meta">
+                  körzetek: {countyConstituencies.length} | igen: {totalYes} | nem: {totalNo}
+                </span>
+              </span>
+            </Link>
+          );
+        })}
+      </section>
+    </PageShell>
+  );
+}
