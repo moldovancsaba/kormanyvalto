@@ -11,10 +11,12 @@ const PRIMARY_SECTION_ITEMS: NavItem[] = [
   { href: "/ogy2026/egyeni-valasztokeruletek", label: "egyéni választókerületek", danger: true },
   { href: "/mandatumbecsles", label: "Mandátumbecslés" },
   { href: "/dashboard", label: "Infóközpont" },
+  { href: "/ranglistak", label: "Ranglisták" },
 ];
 
 const VIP_SECTION_ITEMS: NavItem[] = [
   { href: "/vip/ogy2026/egyeni-valasztokeruletek", label: "VIP körzetek", danger: true },
+  { href: "/vip/ranglistak", label: "Ranglisták" },
   { href: "/", label: "Normál nézet", secondary: true },
 ];
 

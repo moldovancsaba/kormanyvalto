@@ -102,27 +102,42 @@ export async function addVipVote({
 }
 
 export async function getVipLeaderboardUsers(limit = 20): Promise<LeaderboardUserEntry[]> {
-  const collection = await getVipVotesCollection();
-  const rows = await collection
-    .aggregate<{ _id: string; totalVotes: number; totalWeight: number }>([
-      { $match: { nickname: { $exists: true, $ne: "" } } },
+  const client = await getMongoClient();
+  const db = client.db(getMongoDbName());
+
+  const rows = await db
+    .collection("vip_votes")
+    .aggregate([
       {
         $group: {
           _id: "$userId",
-          nickname: { $last: "$nickname" },
           totalVotes: { $sum: 1 },
           totalWeight: { $sum: "$weight" },
         },
       },
+      {
+        $lookup: {
+          from: "nicknames",
+          localField: "_id",
+          foreignField: "_id",
+          as: "nicknameDoc",
+        },
+      },
+      {
+        $addFields: {
+          nickname: { $arrayElemAt: ["$nicknameDoc.nickname", 0] },
+        },
+      },
+      { $match: { nickname: { $exists: true, $nin: [null, ""] } } },
       { $sort: { totalWeight: -1 } },
       { $limit: limit },
     ])
     .toArray();
 
   return rows.map((row) => ({
-    nickname: (row as unknown as { nickname: string }).nickname || row._id,
-    totalVotes: row.totalVotes,
-    totalWeight: row.totalWeight,
+    nickname: (row as { nickname?: string }).nickname || (row._id as string),
+    totalVotes: row.totalVotes as number,
+    totalWeight: row.totalWeight as number,
   }));
 }
 

@@ -34,21 +34,6 @@ type AuthState = {
   } | null;
 };
 
-type LeaderboardUser = {
-  nickname: string;
-  totalVotes: number;
-  totalWeight: number;
-};
-
-type LeaderboardDistrict = {
-  scope: string;
-  label: string;
-  county: string;
-  city: string;
-  totalVotes: number;
-  totalWeight: number;
-};
-
 type VipVoteWidgetProps = {
   scope: string;
   hero?: ReactNode;
@@ -69,8 +54,6 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
   const [nickname, setNickname] = useState<string | null>(null);
   const [nicknameInput, setNicknameInput] = useState("");
   const [nicknameSaving, setNicknameSaving] = useState(false);
-  const [leaderboardUsers, setLeaderboardUsers] = useState<LeaderboardUser[]>([]);
-  const [leaderboardDistricts, setLeaderboardDistricts] = useState<LeaderboardDistrict[]>([]);
 
   const formatter = useMemo(
     () =>
@@ -109,14 +92,6 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
     }
   };
 
-  const loadLeaderboard = async () => {
-    const res = await fetch("/api/vip/leaderboard", { cache: "no-store" });
-    if (!res.ok) return;
-    const body = await res.json();
-    setLeaderboardUsers(body.users || []);
-    setLeaderboardDistricts(body.districts || []);
-  };
-
   const applyCooldown = (seconds: number) => {
     const normalized = Math.max(0, Number(seconds.toFixed(1)));
     if (normalized <= 0) {
@@ -145,7 +120,6 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
   useEffect(() => {
     if (auth.authenticated) {
       loadNickname().catch(() => undefined);
-      loadLeaderboard().catch(() => undefined);
     }
   }, [auth.authenticated]);
 
@@ -192,7 +166,6 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
       applyCooldown(cd);
 
       await loadResults().catch(() => undefined);
-      loadLeaderboard().catch(() => undefined);
     } catch (voteError) {
       setFlashVote(null);
       setFlashWeight(null);
@@ -222,7 +195,6 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
         throw new Error(body?.error || "Nem sikerült menteni a becenevet.");
       }
       setNickname(cleaned);
-      loadLeaderboard().catch(() => undefined);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Nem sikerült menteni a becenevet.");
     } finally {
@@ -232,20 +204,27 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
 
   const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
 
-  const flashLabel = flashVote && flashWeight ? `${flashVote === "yes" ? "igen" : "nem"} VIP x${flashWeight}` : null;
+  const vipHref = (href: string | undefined) => {
+    if (!href) return undefined;
+    if (href.startsWith("/vip")) return href;
+    if (href.startsWith("/")) return `/vip${href}`;
+    return href;
+  };
+
+  const flashLabel = flashVote && flashWeight ? `VIP ${flashVote === "yes" ? "igen" : "nem"} x${flashWeight}` : null;
 
   const yesButtonLabel =
     flashVote === "yes" && flashLabel
       ? flashLabel
       : cooldownLeft > 0
-        ? `igen VIP (${cooldownLeft.toFixed(1)}s)`
-        : "igen VIP";
+        ? `VIP igen (${cooldownLeft.toFixed(1)}s)`
+        : "VIP igen";
   const noButtonLabel =
     flashVote === "no" && flashLabel
       ? flashLabel
       : cooldownLeft > 0
-        ? `nem VIP (${cooldownLeft.toFixed(1)}s)`
-        : "nem VIP";
+        ? `VIP nem (${cooldownLeft.toFixed(1)}s)`
+        : "VIP nem";
 
   return (
     <main className="app vip-app">
@@ -409,7 +388,7 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
                       {item.sourceCounty ? (
                         item.sourceCountyHref ? (
                           <a
-                            href={item.sourceCountyHref}
+                            href={vipHref(item.sourceCountyHref)}
                             className={`history-chip history-chip-${item.sourceCountyTone ?? "neutral"}`}
                             aria-label={`${item.sourceCounty} oldal`}
                           >
@@ -424,7 +403,7 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
                           {" "}
                           {item.sourceCityHref ? (
                             <a
-                              href={item.sourceCityHref}
+                              href={vipHref(item.sourceCityHref)}
                               className={`history-chip history-chip-${item.sourceCityTone ?? "neutral"}`}
                               aria-label={`${item.sourceCity} oldal`}
                             >
@@ -445,39 +424,13 @@ export default function VipVoteWidget({ scope, hero, topActions, pageIntro }: Vi
         </>
       ) : null}
 
-      {auth.authenticated && leaderboardUsers.length > 0 ? (
-        <section className="vip-leaderboard" aria-label="VIP ranglista - felhasználók">
-          <h2>VIP ranglista - felhasználók</h2>
-          <ol className="vip-leaderboard-list">
-            {leaderboardUsers.map((user, idx) => (
-              <li key={user.nickname} className="vip-leaderboard-item">
-                <span className="vip-leaderboard-rank">{idx + 1}.</span>
-                <span className="vip-leaderboard-name">{user.nickname}</span>
-                <span className="vip-leaderboard-score">
-                  {user.totalWeight} súly ({user.totalVotes} szavazat)
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
-      ) : null}
-
-      {auth.authenticated && leaderboardDistricts.length > 0 ? (
-        <section className="vip-leaderboard" aria-label="VIP ranglista - körzetek">
-          <h2>VIP ranglista - legtöbb szavazatú körzetek</h2>
-          <ol className="vip-leaderboard-list">
-            {leaderboardDistricts.map((district, idx) => (
-              <li key={district.scope} className="vip-leaderboard-item">
-                <span className="vip-leaderboard-rank">{idx + 1}.</span>
-                <span className="vip-leaderboard-name">{district.label}</span>
-                <span className="vip-leaderboard-meta">{district.county}</span>
-                <span className="vip-leaderboard-score">
-                  {district.totalWeight} súly ({district.totalVotes} szavazat)
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
+      {auth.authenticated ? (
+        <div className="vip-leaderboard-link-strip">
+          <a href="/vip/ranglistak" className="nav-link-button">
+            <span className="material-symbols-rounded" aria-hidden="true">leaderboard</span>
+            <span>VIP ranglisták megtekintése</span>
+          </a>
+        </div>
       ) : null}
 
       {auth.authenticated ? (
